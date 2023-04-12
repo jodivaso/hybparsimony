@@ -31,5 +31,5 @@ fitness = getFitness(Lasso, mean_squared_error, linearModels_complexity, minimiz
 #
 # HYBparsimony_model.fit(X, y)
 
-HYBparsimony_model = HYBparsimony(features=diabetes.feature_names, npart=5, maxiter=3)
-HYBparsimony_model.fit(X, y)
+HYBparsimony_model = HYBparsimony(features=diabetes.feature_names, npart=10, maxiter=3000)
+HYBparsimony_model.fit(X, y, time_limit=1)

@@ -116,7 +116,9 @@ class HYBparsimony(object):
             self.fitness = getFitness(self.dict['estimator'], mean_squared_error, self.dict['complexity'], n_jobs=-1)
 
 
-    def fit(self, X, y, iter_ini=0):
+    def fit(self, X, y, iter_ini=0, time_limit=None):
+
+        start_time = time.time()
 
         if self.seed_ini:
             np.random.seed(self.seed_ini)
@@ -307,6 +309,9 @@ class HYBparsimony(object):
             if iter == self.maxiter:
                 break
             if (len(best_val_cost) - (np.min(np.arange(len(best_val_cost))[best_val_cost >= (np.max(best_val_cost) - self.tol)]))) >= self.early_stop:
+                break
+            if time_limit is not None and time_limit < (time.time() - start_time)/60:
+                print("Time limit reached. Stopped.")
                 break
 
             ####################################################
