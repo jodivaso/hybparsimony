@@ -6,7 +6,7 @@ import numpy as np
 import warnings
 import os
 
-def getFitness(algorithm, metric, complexity, cv=RepeatedKFold(n_splits=10, n_repeats=5, random_state=42), minimize=False, test_size=0.2, random_state=42, n_jobs=-1, ignore_warnings = True):
+def getFitness(algorithm, metric, complexity, custom_eval_fun=cross_val_score, minimize=False, test_size=0.2, random_state=42, n_jobs=-1, ignore_warnings = True):
     r"""
      Fitness function for GAparsimony.
 
@@ -81,7 +81,9 @@ def getFitness(algorithm, metric, complexity, cv=RepeatedKFold(n_splits=10, n_re
 
             # train the model
             aux = algorithm(**cromosoma.params)
-            fitness_val = cross_val_score(aux, data_train_model, y_train, scoring=make_scorer(metric), cv=cv, n_jobs=n_jobs).mean()
+            #fitness_val = cross_val_score(aux, data_train_model, y_train, scoring=make_scorer(metric), cv=RepeatedKFold(n_splits=10, n_repeats=5), n_jobs=n_jobs).mean()
+            fitness_val = custom_eval_fun(aux, data_train_model, y_train).mean()
+            #print("f", fitness_val)
             modelo = algorithm(**cromosoma.params).fit(data_train_model, y_train)
             if test_size != None:
                 fitness_test = metric(modelo.predict(data_test_model), y_test)
@@ -92,7 +94,7 @@ def getFitness(algorithm, metric, complexity, cv=RepeatedKFold(n_splits=10, n_re
             warnings.simplefilter("default")
             os.environ["PYTHONWARNINGS"] = "default"
 
-
+            # El híbrido funciona de forma que cuanto más alto es mejor. Por tanto, con RMSE deberíamos trabajar con su negación.
             if minimize:
                 fitness_val = -fitness_val
                 if test_size != None:

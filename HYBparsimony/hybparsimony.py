@@ -10,16 +10,24 @@ import pandas as pd
 import time
 from numpy.random import multinomial
 from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import cross_val_score
+from sklearn.metrics import make_scorer
+
+
+def default_cross_val_score_regression(estimator,X,y):
+    return cross_val_score(estimator,X,y,cv=5, scoring=make_scorer(mean_squared_error))
+
 
 class HYBparsimony(object):
 
     def __init__(self,
                  fitness = None,
-                 params =None,
+                 params = None,
                  features = None,
                  algorithm="Ridge",
+                 custom_eval_fun=default_cross_val_score_regression,
                  type_ini_pop="improvedLHS",
-                 npart=50,
+                 npart = 40,
                  maxiter=40,
                  early_stop=None,
                  Lambda=1.0,
@@ -109,11 +117,16 @@ class HYBparsimony(object):
         if self.seed_ini:
             np.random.seed(self.seed_ini)
 
+        # Custom cross val score
+        self.custom_eval_fun = custom_eval_fun
+
         ## The default algorithm selection.
         if algorithm == "Ridge":
             self.dict = models.Ridge_Model
             self.params = {k: self.dict[k] for k in self.dict.keys() if k not in ["estimator", "complexity"]}
-            self.fitness = getFitness(self.dict['estimator'], mean_squared_error, self.dict['complexity'], n_jobs=-1)
+            self.fitness = getFitness(self.dict['estimator'], mean_squared_error, self.dict['complexity'],
+                                      self.custom_eval_fun, minimize=True, n_jobs=-1)
+
 
 
     def fit(self, X, y, iter_ini=0, time_limit=None):
@@ -267,6 +280,8 @@ class HYBparsimony(object):
                                             bestcomplexity]
                 self.best_model = _modelsSorted[0]
                 self.best_model_conf = PopSorted[0].copy()
+
+            print("BEST SCORE:", self.best_score)
 
             # Update global best positions, fitness and complexity of each particle (with NO rerank)
             for i in range(self.npart):
