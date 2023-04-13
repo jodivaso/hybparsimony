@@ -17,7 +17,8 @@ KRidge_Model = {"estimator": KernelRidge,
                 "gamma": {"range": (0, 1), "type": Population.FLOAT},
                 "kernel": {"value": "rbf", "type": Population.CONSTANT}}
 
-MLPRegressor_Model = {"estimator": MLPRegressor, "complexity": mlp_complexity,
+MLPRegressor_Model = {"estimator": MLPRegressor, # The estimator
+                      "complexity": mlp_complexity, # The complexity
                       "hidden_layer_sizes": {"range": (1, 25), "type": Population.INTEGER},
                       "alpha": {"range": (0, 1), "type": Population.FLOAT},
                       "solver": {"value": "lbfgs", "type": Population.CONSTANT},

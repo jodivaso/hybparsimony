@@ -227,7 +227,7 @@ class HYBparsimony(object):
         crossover_applied = False
 
         for iter in range(self.maxiter):
-            print("ITER", iter)
+            print("Running iteration", iter)
             self.iter = iter
 
             tic = time.time()
@@ -321,7 +321,7 @@ class HYBparsimony(object):
                 self.best_model = _modelsSorted[0]
                 self.best_model_conf = PopSorted[0].copy()
 
-            print("BEST SCORE:", self.best_score)
+            print("Current best score:", self.best_score)
 
             # Update global best positions, fitness and complexity of each particle (with NO rerank)
             for i in range(self.npart):
