@@ -633,6 +633,20 @@ class HYBparsimony(object):
 
         # Guardo las features seleccionadas
         aux = self.best_model_conf[nparams:nparams + nfs]
-        aux = (aux >= 0.5)
-        self.selected_features = np.array(self.features)[aux]
+        self.selected_features_boolean = (aux >= 0.5) # Me guardo como una lista de booleanos si las features están o no
+        self.selected_features = np.array(self.features)[self.selected_features_boolean] # Me guardo los nombres
 
+        return self.best_model
+
+    def predict(self, X):
+        num_rows, num_cols = X.shape
+        if num_cols == len(self.selected_features): #Si nos han pasado un X donde ya he cogido las columnas que debía coger
+            preds = self.best_model.predict(X)
+        else: # En otro caso, nos han pasado un X entero y nos tenemos que quedar solo con las columnas seleccionadas.
+            if isinstance(X, pd.Series): # Si es un dataframe, puedo acceder a las columnas por nombre/booleano
+                X_selected_features = X[self.selected_features]
+            else: #Si es un Numpy, entonces tengo que quedarme con las columnas apropiadas
+                X_selected_features = X[:,self.selected_features_boolean] # Cojo todas las filas pero solo las columnas apropiadas.
+            preds = self.best_model.predict(X_selected_features)
+
+        return preds

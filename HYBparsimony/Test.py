@@ -40,7 +40,8 @@ if __name__ == "__main__":
 
     HYBparsimony_model = HYBparsimony()
     HYBparsimony_model.fit(X, y, time_limit=0.25)
-    #preds = HYBparsimony_model.best_model.predict(X) # No hay predict??? Hacerlo! Y que también el fit lo devuelva.
+    preds = HYBparsimony_model.predict(X)
+    print(mean_squared_error(y, preds))
 
     # f = make_scorer(mean_squared_error)
     # preds = Ridge().fit(X,y).predict(X)
