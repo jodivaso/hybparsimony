@@ -20,8 +20,6 @@ params = {"alpha":{"range": (1., 25.9), "type": Population.FLOAT},
 
 rerank_error=0.01
 
-fitness = getFitness(Lasso, mean_squared_error, linearModels_complexity, minimize=True, test_size=0.2, random_state=42, n_jobs=-1)
-
 # HYBparsimony_model = HYBparsimony(fitness=fitness,
 #                                 params = params,
 #                                 features = diabetes.feature_names,
@@ -37,9 +35,17 @@ fitness = getFitness(Lasso, mean_squared_error, linearModels_complexity, minimiz
 def custom_fun (estimator, X, y):
     return cross_val_score(estimator,X,y, cv=RepeatedKFold(n_splits=10, n_repeats=5))
 
-if __name__ == '__main__':
+#Y si le paso una custom, ¿Cómo sé si hay que minimizar? Realmente tengo un problema y es que tengo que pasar métrica!
+if __name__ == "__main__":
+
     HYBparsimony_model = HYBparsimony()
     HYBparsimony_model.fit(X, y, time_limit=0.25)
+    #preds = HYBparsimony_model.best_model.predict(X) # No hay predict??? Hacerlo! Y que también el fit lo devuelva.
+
+    # f = make_scorer(mean_squared_error)
+    # preds = Ridge().fit(X,y).predict(X)
+    # print(f._score_func(preds,y)) #Esto es una ñapa tremenda! Del Scorer accedo al score_func original.
+
 
 
 

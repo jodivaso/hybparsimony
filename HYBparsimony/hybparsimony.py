@@ -40,7 +40,8 @@ class HYBparsimony(object):
                  K=3,
                  pmutation = 0.1,
                  #pcrossover_elitists = None,  # an array or a float (number between 0 and 1).
-                 pcrossover = None,  # an array or a float (number between 0 and 1), % of worst individuals to substitute from crossover.
+                 #pcrossover = None,  # an array or a float (number between 0 and 1), % of worst individuals to substitute from crossover.
+                 gamma_crossover = 0.5,
                  tol = 1e-4,
                  rerank_error=0.005,
                  keep_history = False,
@@ -90,23 +91,30 @@ class HYBparsimony(object):
         # (otherwise, they will be influenced by the best of the iteration in each neighbourhood)
         self.best_global_thres = best_global_thres
 
-        if pcrossover is not None:
-            if isinstance(pcrossover,(list,np.ndarray)): #If it is a list or an np array
-                if len(pcrossover) < maxiter:
-                    # If the length of the pcrossover array is lower than the iterations, the array is completed with zeros
-                    # up to the number of iterations.
-                    self.pcrossover = np.zeros(maxiter).astype(float)
-                    self.pcrossover[:len(pcrossover)] = pcrossover[:]
-                else:
-                    self.pcrossover = pcrossover
-            else:
-                # If the parameter was a float, then an array is built in which each position contains that float.
-                self.pcrossover = np.full(maxiter, pcrossover, dtype=float)
-            # Ensure all numbers are in the range [0,1]
-            self.pcrossover[self.pcrossover < 0] = 0
-            self.pcrossover[self.pcrossover > 1] = 1
-        else:
-            self.pcrossover = None
+        # if pcrossover is not None:
+        #     if isinstance(pcrossover,(list,np.ndarray)): #If it is a list or an np array
+        #         if len(pcrossover) < maxiter:
+        #             # If the length of the pcrossover array is lower than the iterations, the array is completed with zeros
+        #             # up to the number of iterations.
+        #             self.pcrossover = np.zeros(maxiter).astype(float)
+        #             self.pcrossover[:len(pcrossover)] = pcrossover[:]
+        #         else:
+        #             self.pcrossover = pcrossover
+        #     else:
+        #         # If the parameter was a float, then an array is built in which each position contains that float.
+        #         self.pcrossover = np.full(maxiter, pcrossover, dtype=float)
+        #     # Ensure all numbers are in the range [0,1]
+        #     self.pcrossover[self.pcrossover < 0] = 0
+        #     self.pcrossover[self.pcrossover > 1] = 1
+        # else:
+        #     self.pcrossover = None
+
+        # El gamma del crossover (ahora construyo el self.pcrossover a partir del gamma).
+        self.pcrossover = None
+        if gamma_crossover != 0.0:
+            perc_malos = 0.80 * np.exp(-gamma_crossover * np.arange(self.maxiter))
+            perc_malos[perc_malos < 0.10] = 0.10
+            self.pcrossover = perc_malos
 
         self.n_jobs=n_jobs
         if self.n_jobs < 1:
@@ -622,3 +630,9 @@ class HYBparsimony(object):
                 population._pop[out_min, j] = population._min[j]
                 velocity[out_max, j] = 0
                 velocity[out_min, j] = 0
+
+        # Guardo las features seleccionadas
+        aux = self.best_model_conf[nparams:nparams + nfs]
+        aux = (aux >= 0.5)
+        self.selected_features = np.array(self.features)[aux]
+
