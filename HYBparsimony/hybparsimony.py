@@ -20,7 +20,6 @@ from sklearn.metrics import make_scorer
 def default_cross_val_score_regression(estimator,X,y):
     return cross_val_score(estimator,X,y,cv=5, scoring=make_scorer(mean_squared_error))
 
-
 class HYBparsimony(object):
 
     def __init__(self,
@@ -142,12 +141,13 @@ class HYBparsimony(object):
             self.fitness = getFitness(self.dict['estimator'], mean_squared_error, self.dict['complexity'],
                                       self.custom_eval_fun, minimize=True)
         else: # Hacemos paralelismo
-            self.fitness= partial(fitness_for_parallel,self.dict['estimator'], mean_squared_error, self.dict['complexity'],
-                                  self.custom_eval_fun, minimize=True)
+            self.fitness = partial(fitness_for_parallel,self.dict['estimator'], mean_squared_error,
+                                   self.dict['complexity'], self.custom_eval_fun, minimize=True)
 
 
 
     def fit(self, X, y, iter_ini=0, time_limit=None):
+
         if self.n_jobs > 1:
             pool = Pool(self.n_jobs)
 
@@ -609,7 +609,8 @@ class HYBparsimony(object):
             #######################################################
 
             for j in range(nparams):
-                population._pop[indexes_except_substituted_particles, j] = population._pop[indexes_except_substituted_particles, j] + velocity[indexes_except_substituted_particles, j]
+                population._pop[indexes_except_substituted_particles, j] = \
+                    population._pop[indexes_except_substituted_particles, j] + velocity[indexes_except_substituted_particles, j]
 
             ################################################################################################
             # Confinement Method for SPSO 2007 - absorbing2007 (hydroPSO) - Deterministic Back (Clerc, 2007)

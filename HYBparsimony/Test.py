@@ -38,7 +38,7 @@ def custom_fun (estimator, X, y):
     return cross_val_score(estimator,X,y, cv=RepeatedKFold(n_splits=10, n_repeats=5))
 
 if __name__ == '__main__':
-    HYBparsimony_model = HYBparsimony(algorithm="KRidge")
+    HYBparsimony_model = HYBparsimony()
     HYBparsimony_model.fit(X, y, time_limit=0.25)
 
 
