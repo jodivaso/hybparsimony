@@ -1,7 +1,10 @@
 import copy
-
+import multiprocessing
+from multiprocessing import Pool
+from functools import partial
 from HYBparsimony import Population, order, getFitness
 from HYBparsimony.util import parsimony_monitor, parsimony_summary, models
+from HYBparsimony.util.fitness import fitness_for_parallel
 from HYBparsimony.util.hyb_aux import _rerank, _crossover, _population
 from HYBparsimony.lhs import randomLHS
 import math
@@ -28,7 +31,7 @@ class HYBparsimony(object):
                  custom_eval_fun=default_cross_val_score_regression,
                  type_ini_pop="improvedLHS",
                  npart = 40,
-                 maxiter=40,
+                 maxiter=250,
                  early_stop=None,
                  Lambda=1.0,
                  c1 = 1/2 + math.log(2),
@@ -48,6 +51,7 @@ class HYBparsimony(object):
                  seed_ini = None,
                  not_muted = 3,
                  feat_mut_thres = 0.1,
+                 n_jobs=-1,
                  verbose=0):
 
         self.type_ini_pop = type_ini_pop
@@ -105,6 +109,9 @@ class HYBparsimony(object):
         else:
             self.pcrossover = None
 
+        self.n_jobs=n_jobs
+        if self.n_jobs < 1:
+            self.n_jobs = multiprocessing.cpu_count()  # Si ponemos un -1, entonces todos los cores (aunque la validación cruzada ya hará más aún!).
 
         if particles_to_delete is not None and len(particles_to_delete) < maxiter:
             # If the length of the particles to delete is lower than the iterations, the array is completed with zeros
@@ -124,12 +131,25 @@ class HYBparsimony(object):
         if algorithm == "Ridge":
             self.dict = models.Ridge_Model
             self.params = {k: self.dict[k] for k in self.dict.keys() if k not in ["estimator", "complexity"]}
-            self.fitness = getFitness(self.dict['estimator'], mean_squared_error, self.dict['complexity'],
-                                      self.custom_eval_fun, minimize=True, n_jobs=-1)
+            if self.n_jobs == 1:
+                self.fitness = getFitness(self.dict['estimator'], mean_squared_error, self.dict['complexity'],
+                                          self.custom_eval_fun, minimize=True)
+            else: # Hacemos paralelismo
+                self.fitness= partial(fitness_for_parallel,self.dict['estimator'], mean_squared_error, self.dict['complexity'],
+                                      self.custom_eval_fun, minimize=True)
 
 
 
     def fit(self, X, y, iter_ini=0, time_limit=None):
+        if self.n_jobs > 1:
+            pool = Pool(self.n_jobs)
+
+        if self.features is None: # Si no hay features (nombre de las columnas a optimizar), entonces cojo todas
+            if "pandas" in str(type(X)):
+                self.features = X.columns # Si es un DataFrame, saco los nombres de las columnas.
+            else: # SI no, entonces es un numpy array y pongo números del 0 al número de columnas
+                num_rows, num_cols = X.shape
+                self.features = list(range(num_cols))
 
         start_time = time.time()
 
@@ -208,17 +228,30 @@ class HYBparsimony(object):
             # Compute solutions
             #####################################################
 
+            if self.n_jobs == 1: # Si NO hay paralelismo (comportamiento por defecto)
+                for t in valid_particles:
+                    c = population.getChromosome(t)
 
-            for t in valid_particles:
-                c = population.getChromosome(t)
+                    if np.sum(c.columns) > 0:
+                        fit = self.fitness(c, X=X, y=y)
+                        fitnessval[t] = fit[0][0]
+                        fitnesstst[t] = fit[0][1]
+                        complexity[t] = fit[0][2]
+                        _models[t] = fit[1]
+            else:
+                list_params = []
+                for t in valid_particles:  # Se entrenan todas siempre (salvo las que eliminemos del proceso)
+                    c = population.getChromosome(t)
+                    if np.sum(c.columns) > 0:
+                        list_params.append([c,X,y])
 
-                if np.sum(c.columns) > 0:
-                    fit = self.fitness(c, X=X, y=y)
+                results = pool.starmap(self.fitness, list_params)  ## Aquí se hace el paralelismo.
+                # Recorremos los resultados
+                for fit, t in zip(results, valid_particles):
                     fitnessval[t] = fit[0][0]
                     fitnesstst[t] = fit[0][1]
                     complexity[t] = fit[0][2]
                     _models[t] = fit[1]
-
 
             if self.seed_ini:
                 np.random.seed(self.seed_ini * iter)

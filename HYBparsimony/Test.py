@@ -1,7 +1,7 @@
 from sklearn.linear_model import Lasso
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import cross_val_score, RepeatedKFold
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, make_scorer
 
 from sklearn.datasets import load_diabetes
 
@@ -37,6 +37,11 @@ fitness = getFitness(Lasso, mean_squared_error, linearModels_complexity, minimiz
 def custom_fun (estimator, X, y):
     return cross_val_score(estimator,X,y, cv=RepeatedKFold(n_splits=10, n_repeats=5))
 
-HYBparsimony_model = HYBparsimony(features=diabetes.feature_names, npart=40, maxiter=200)
-HYBparsimony_model.fit(X, y, time_limit=0.25)
+if __name__ == '__main__':
+    HYBparsimony_model = HYBparsimony(n_jobs=7)
+    HYBparsimony_model.fit(X, y, time_limit=0.25)
+
+
+
+
 
