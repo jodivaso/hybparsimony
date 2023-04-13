@@ -635,7 +635,7 @@ class HYBparsimony(object):
         aux = self.best_model_conf[nparams:nparams + nfs]
         self.selected_features_boolean = (aux >= 0.5) # Me guardo como una lista de booleanos si las features están o no
         self.selected_features = np.array(self.features)[self.selected_features_boolean] # Me guardo los nombres
-
+        print("Selected features:", self.selected_features)
         return self.best_model
 
     def predict(self, X):
