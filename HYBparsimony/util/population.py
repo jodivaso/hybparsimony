@@ -97,8 +97,8 @@ class Population:
                     t.append(np.vectorize(lambda x: float(x), otypes=[float]))
                     gen.append(lambda y, x=x, **kwargs: np.random.uniform(low=self._min[y], high=self._max[y]))
                 elif params[x]["type"] == Population.POWER:
-                    t.append(np.vectorize(lambda x: pow(10,x), otypes=[int]))
-                    gen.append(lambda y, x=x, **kwargs: np.random.randint(low=self._min[y], high=self._max[y]))
+                    t.append(np.vectorize(lambda x: pow(10,x), otypes=[float])) # TODO: No tengo claro que esté bien.
+                    gen.append(lambda y, x=x, **kwargs: pow(10,np.random.randint(low=self._min[y], high=self._max[y])))
                 elif params[x]["type"] == Population.CATEGORICAL:
                     t.append(np.vectorize(lambda y, x=x: y if type(y) is str else params[x]["range"][int(np.trunc(y))], otypes=[str]))
                     gen.append(lambda y, x=x, **kwargs: np.random.randint(low=self._min[y], high=self._max[y]))
