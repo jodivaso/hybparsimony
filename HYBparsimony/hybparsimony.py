@@ -24,9 +24,9 @@ class HYBparsimony(object):
 
     def __init__(self,
                  fitness = None,
-                 params = None,
+                 dict_model = None,
                  features = None,
-                 algorithm="Ridge",
+                 algorithm = None,
                  custom_eval_fun=default_cross_val_score_regression,
                  type_ini_pop="improvedLHS",
                  npart = 40,
@@ -56,7 +56,6 @@ class HYBparsimony(object):
 
         self.type_ini_pop = type_ini_pop
         self.fitness = fitness
-        self.params = params
         self.features = features
         self.npart = npart
         self.maxiter = maxiter
@@ -134,23 +133,28 @@ class HYBparsimony(object):
         # Custom cross val score
         self.custom_eval_fun = custom_eval_fun
 
+        self.algorithm = dict_model
         ## The default algorithm selection.
-        if algorithm == "Ridge":
-            self.dict = models.Ridge_Model
-        elif algorithm == "KRidge":
-            self.dict = models.KRidge_Model
-        elif algorithm == "MLPRegressor":
-            self.dict = models.MLPRegressor_Model
 
-        self.params = {k: self.dict[k] for k in self.dict.keys() if k not in ["estimator", "complexity"]}
+        # ALGORITHM puede ser un String o un diccionario
+        if algorithm is None:
+            self.algorithm = models.Ridge_Model
+        elif algorithm == "KRidge":
+            self.algorithm = models.KRidge_Model
+        elif algorithm == "MLPRegressor":
+            self.algorithm = models.MLPRegressor_Model
+        elif isinstance(algorithm,dict): # Si es un diccionario
+            self.algorithm=algorithm
+
+        self.params = {k: self.algorithm[k] for k in self.algorithm.keys() if k not in ["estimator", "complexity"]}
 
         # Función fitness (para regressión)
         if self.n_jobs == 1:
-            self.fitness = getFitness(self.dict['estimator'], mean_squared_error, self.dict['complexity'],
+            self.fitness = getFitness(self.algorithm['estimator'], mean_squared_error, self.algorithm['complexity'],
                                       self.custom_eval_fun, minimize=True)
         else: # Hacemos paralelismo
-            self.fitness = partial(fitness_for_parallel,self.dict['estimator'], mean_squared_error,
-                                   self.dict['complexity'], self.custom_eval_fun, minimize=True)
+            self.fitness = partial(fitness_for_parallel,self.algorithm['estimator'], mean_squared_error,
+                                   self.algorithm['complexity'], self.custom_eval_fun, minimize=True)
 
 
 
