@@ -130,13 +130,20 @@ class HYBparsimony(object):
         ## The default algorithm selection.
         if algorithm == "Ridge":
             self.dict = models.Ridge_Model
-            self.params = {k: self.dict[k] for k in self.dict.keys() if k not in ["estimator", "complexity"]}
-            if self.n_jobs == 1:
-                self.fitness = getFitness(self.dict['estimator'], mean_squared_error, self.dict['complexity'],
-                                          self.custom_eval_fun, minimize=True)
-            else: # Hacemos paralelismo
-                self.fitness= partial(fitness_for_parallel,self.dict['estimator'], mean_squared_error, self.dict['complexity'],
+        elif algorithm == "KRidge":
+            self.dict = models.KRidge_Model
+        elif algorithm == "MLPRegressor":
+            self.dict = models.MLPRegressor_Model
+
+        self.params = {k: self.dict[k] for k in self.dict.keys() if k not in ["estimator", "complexity"]}
+
+        # Función fitness (para regressión)
+        if self.n_jobs == 1:
+            self.fitness = getFitness(self.dict['estimator'], mean_squared_error, self.dict['complexity'],
                                       self.custom_eval_fun, minimize=True)
+        else: # Hacemos paralelismo
+            self.fitness= partial(fitness_for_parallel,self.dict['estimator'], mean_squared_error, self.dict['complexity'],
+                                  self.custom_eval_fun, minimize=True)
 
 
 

@@ -73,6 +73,11 @@ def linearModels_complexity(model, nFeatures, **kwargs):
     int_comp = np.min((1E09-1,np.sum(model.coef_**2))) # Internal Complexity Sum of squared weigths
     return nFeatures*1E09 + int_comp
 
+def kernel_ridge_complexity(model, nFeatures, **kwargs):
+    weights_l2 = np.sum(model.dual_coef_ ** 2)
+    int_comp = np.min((1E09 - 1, weights_l2))  # More leaves more complex
+    return nFeatures * 1E09 + int_comp
+
 def svm_complexity(model, nFeatures, **kwargs):
     r"""
     Complexity function for SVM models.
