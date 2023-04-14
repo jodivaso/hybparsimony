@@ -16,9 +16,16 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import make_scorer
 
+# Para comprobar si es clasificación o regresión
+# TODO: Seguro que hay alguna forma mejor. De hecho, ¿esto funciona si y no es np array? ¿Y si es multioutput?
+def check_classification(y):
+    return np.issubdtype(y.dtype, np.integer)
 
 def default_cross_val_score_regression(estimator, X,y):
     return cross_val_score(estimator,X,y,cv=5, scoring="neg_mean_squared_error")
+
+def default_cross_val_score_classification(estimator, X,y):
+    return cross_val_score(estimator,X,y,cv=5, scoring="neg_log_loss")
 
 class HYBparsimony(object):
 
@@ -159,6 +166,15 @@ class HYBparsimony(object):
 
 
     def fit(self, X, y, iter_ini=0, time_limit=None):
+
+
+        #############################################
+        #  SOME LOGIC ON PARAMETERS' INITIALIZATION
+        #############################################
+        if check_classification(y): # Si es clasificación, hago una cosa. Si es regresión, otra.
+        else:
+
+
 
         if self.n_jobs > 1:
             pool = Pool(self.n_jobs)
@@ -653,3 +669,4 @@ class HYBparsimony(object):
             preds = self.best_model.predict(X_selected_features)
 
         return preds
+
