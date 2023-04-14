@@ -142,7 +142,7 @@ def _rerank(fitnessval, complexity, popSize, rerank_error, preserve_best=True):
     return position
 
 
-def _crossover(population, velocities, fitnessval, fitnesstst, complexity, parents_indexes, children_indexes, alpha=0.1, perc_to_swap=0.5):
+def _crossover(population, velocities, fitnessval, complexity, parents_indexes, children_indexes, alpha=0.1, perc_to_swap=0.5):
 
     #p = parents.copy()
     c = children_indexes.copy()
@@ -226,7 +226,7 @@ def _crossover(population, velocities, fitnessval, fitnesstst, complexity, paren
 
     population[c] = children
     fitnessval[c] = aux.copy()
-    fitnesstst[c] = aux.copy()
+    #fitnesstst[c] = aux.copy()
     complexity[c] = aux.copy()
 
     velocities[c] = velocities_children

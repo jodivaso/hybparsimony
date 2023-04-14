@@ -6,7 +6,7 @@ import numpy as np
 import warnings
 import os
 
-def getFitness(algorithm, metric, complexity, custom_eval_fun=cross_val_score, minimize=False, test_size=0.2, random_state=42, n_jobs=-1, ignore_warnings = True):
+def getFitness(algorithm, complexity, custom_eval_fun=cross_val_score, ignore_warnings = True):
     r"""
      Fitness function for GAparsimony.
 
@@ -52,8 +52,6 @@ def getFitness(algorithm, metric, complexity, custom_eval_fun=cross_val_score, m
 
     if algorithm is None:
         raise Exception("An algorithm function must be provided!!!")
-    if metric is None or not callable(metric):
-        raise Exception("A metric function must be provided!!!")
     if complexity is None or not callable(complexity):
         raise Exception("A complexity function must be provided!!!")
 
@@ -63,17 +61,13 @@ def getFitness(algorithm, metric, complexity, custom_eval_fun=cross_val_score, m
             kwargs["X"] = kwargs["X"].values
         if "pandas" in str(type(kwargs["y"])):
             kwargs["y"] = kwargs["y"].values
-        if test_size != None:
-            X_train, X_test, y_train, y_test = train_test_split(kwargs["X"], kwargs["y"], test_size=test_size, random_state=random_state)
-        else:
-            X_train = kwargs["X"]
-            y_train = kwargs["y"]
+
+        X_train = kwargs["X"]
+        y_train = kwargs["y"]
             
         try:
             # Extract features from the original DB plus response (last column)
             data_train_model = X_train[: , cromosoma.columns]
-            if test_size != None:
-                data_test_model = X_test[: , cromosoma.columns]
 
             if ignore_warnings:
                 warnings.simplefilter("ignore")
@@ -81,53 +75,37 @@ def getFitness(algorithm, metric, complexity, custom_eval_fun=cross_val_score, m
 
             # train the model
             aux = algorithm(**cromosoma.params)
-            #fitness_val = cross_val_score(aux, data_train_model, y_train, scoring=make_scorer(metric), cv=RepeatedKFold(n_splits=10, n_repeats=5), n_jobs=n_jobs).mean()
             fitness_val = custom_eval_fun(aux, data_train_model, y_train).mean()
-            #print("f", fitness_val)
             modelo = algorithm(**cromosoma.params).fit(data_train_model, y_train)
-            if test_size != None:
-                fitness_test = metric(modelo.predict(data_test_model), y_test)
-            else:
-                fitness_test = np.inf
 
             # Reset warnings to default values
             warnings.simplefilter("default")
             os.environ["PYTHONWARNINGS"] = "default"
 
             # El híbrido funciona de forma que cuanto más alto es mejor. Por tanto, con RMSE deberíamos trabajar con su negación.
-            if minimize:
-                fitness_val = -fitness_val
-                if test_size != None:
-                    fitness_test = -fitness_test
-
-            return np.array([fitness_val, fitness_test, complexity(modelo, np.sum(cromosoma.columns))]), modelo
+            return np.array([fitness_val, complexity(modelo, np.sum(cromosoma.columns))]), modelo
         except Exception as e:    
             print(e)
-            return np.array([np.NINF, np.NINF, np.Inf]), None
+            return np.array([np.NINF, np.Inf]), None
 
     return fitness
 
 
 
 ##Hago una igual pero sin estar anidada, para permitir el pickle y por tanto el paralelismo.
-def fitness_for_parallel(algorithm, metric, complexity, custom_eval_fun=cross_val_score, cromosoma=None, X=None,y=None,
+def fitness_for_parallel(algorithm, complexity, custom_eval_fun=cross_val_score, cromosoma=None, X=None,y=None,
                          minimize=False, test_size=0.2, random_state=42, ignore_warnings = True):
     if "pandas" in str(type(X)):
         X = X.values
     if "pandas" in str(type(y)):
         y = y.values
-    if test_size != None:
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size,
-                                                            random_state=random_state)
-    else:
-        X_train = X
-        y_train = y
+
+    X_train = X
+    y_train = y
 
     try:
         # Extract features from the original DB plus response (last column)
         data_train_model = X_train[:, cromosoma.columns]
-        if test_size != None:
-            data_test_model = X_test[:, cromosoma.columns]
 
         if ignore_warnings:
             warnings.simplefilter("ignore")
@@ -135,26 +113,16 @@ def fitness_for_parallel(algorithm, metric, complexity, custom_eval_fun=cross_va
 
         # train the model
         aux = algorithm(**cromosoma.params)
-        # fitness_val = cross_val_score(aux, data_train_model, y_train, scoring=make_scorer(metric), cv=RepeatedKFold(n_splits=10, n_repeats=5), n_jobs=n_jobs).mean()
         fitness_val = custom_eval_fun(aux, data_train_model, y_train).mean()
-        # print("f", fitness_val)
         modelo = algorithm(**cromosoma.params).fit(data_train_model, y_train)
-        if test_size != None:
-            fitness_test = metric(modelo.predict(data_test_model), y_test)
-        else:
-            fitness_test = np.inf
 
         # Reset warnings to default values
         warnings.simplefilter("default")
         os.environ["PYTHONWARNINGS"] = "default"
 
-        # El híbrido funciona de forma que cuanto más alto es mejor. Por tanto, con RMSE deberíamos trabajar con su negación.
-        if minimize:
-            fitness_val = -fitness_val
-            if test_size != None:
-                fitness_test = -fitness_test
+        # El híbrido funciona de forma que cuanto más alto es mejor. Por tanto, con RMSE deberíamos trabajar con negativos.
 
-        return np.array([fitness_val, fitness_test, complexity(modelo, np.sum(cromosoma.columns))]), modelo
+        return np.array([fitness_val, complexity(modelo, np.sum(cromosoma.columns))]), modelo
     except Exception as e:
         print(e)
-        return np.array([np.NINF, np.NINF, np.Inf]), None
+        return np.array([np.NINF, np.Inf]), None

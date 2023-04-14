@@ -17,8 +17,8 @@ from sklearn.model_selection import cross_val_score
 from sklearn.metrics import make_scorer
 
 
-def default_cross_val_score_regression(estimator,X,y):
-    return cross_val_score(estimator,X,y,cv=5, scoring=make_scorer(mean_squared_error))
+def default_cross_val_score_regression(estimator, X,y):
+    return cross_val_score(estimator,X,y,cv=5, scoring="neg_mean_squared_error")
 
 class HYBparsimony(object):
 
@@ -150,11 +150,11 @@ class HYBparsimony(object):
 
         # Función fitness (para regressión)
         if self.n_jobs == 1:
-            self.fitness = getFitness(self.algorithm['estimator'], mean_squared_error, self.algorithm['complexity'],
-                                      self.custom_eval_fun, minimize=True)
+            self.fitness = getFitness(self.algorithm['estimator'], self.algorithm['complexity'],
+                                      self.custom_eval_fun)
         else: # Hacemos paralelismo
-            self.fitness = partial(fitness_for_parallel,self.algorithm['estimator'], mean_squared_error,
-                                   self.algorithm['complexity'], self.custom_eval_fun, minimize=True)
+            self.fitness = partial(fitness_for_parallel, self.algorithm['estimator'],
+                                   self.algorithm['complexity'], self.custom_eval_fun)
 
 
 
@@ -186,7 +186,7 @@ class HYBparsimony(object):
 
         nfs = len(population.colsnames)
         nparams = len(population._params)
-        self._summary = np.empty((self.maxiter, 6 * 3,))
+        self._summary = np.empty((self.maxiter, 6 * 2,))
         self._summary[:] = np.nan
         self.best_score = np.NINF
         self.best_complexity = np.Inf
@@ -255,8 +255,8 @@ class HYBparsimony(object):
                     if np.sum(c.columns) > 0:
                         fit = self.fitness(c, X=X, y=y)
                         fitnessval[t] = fit[0][0]
-                        fitnesstst[t] = fit[0][1]
-                        complexity[t] = fit[0][2]
+                       # fitnesstst[t] = fit[0][1]
+                        complexity[t] = fit[0][1]
                         _models[t] = fit[1]
             else:
                 list_params = []
@@ -269,8 +269,8 @@ class HYBparsimony(object):
                 # Recorremos los resultados
                 for fit, t in zip(results, valid_particles):
                     fitnessval[t] = fit[0][0]
-                    fitnesstst[t] = fit[0][1]
-                    complexity[t] = fit[0][2]
+                    #fitnesstst[t] = fit[0][1]
+                    complexity[t] = fit[0][1]
                     _models[t] = fit[1]
 
             if self.seed_ini:
@@ -282,40 +282,40 @@ class HYBparsimony(object):
 
             PopSorted = population[sort, :]
             FitnessValSorted = fitnessval[sort]
-            FitnessTstSorted = fitnesstst[sort]
+            #FitnessTstSorted = fitnesstst[sort]
             ComplexitySorted = complexity[sort]
             _modelsSorted = _models[sort]
 
 
             if self.verbose == 2:
                 print("\nStep 1. Fitness sorted")
-                print(np.c_[FitnessValSorted, FitnessTstSorted, ComplexitySorted, population.population][:10, :])
+                print(np.c_[FitnessValSorted, ComplexitySorted, population.population][:10, :])
                 # input("Press [enter] to continue")
 
             if self.rerank_error != 0.0:
                 ord_rerank = _rerank(FitnessValSorted, ComplexitySorted, self.npart, self.rerank_error)
                 PopSorted = PopSorted[ord_rerank]
                 FitnessValSorted = FitnessValSorted[ord_rerank]
-                FitnessTstSorted = FitnessTstSorted[ord_rerank]
+               # FitnessTstSorted = FitnessTstSorted[ord_rerank]
                 ComplexitySorted = ComplexitySorted[ord_rerank]
                 _modelsSorted = _modelsSorted[ord_rerank]
 
                 if self.verbose == 2:
                     print("\nStep 2. Fitness reranked")
-                    print(np.c_[FitnessValSorted, FitnessTstSorted, ComplexitySorted, population.population][:10, :])
+                    print(np.c_[FitnessValSorted, ComplexitySorted, population.population][:10, :])
                     # input("Press [enter] to continue")
 
 
             # Keep results
             # ---------------
-            self._summary[iter, :] = parsimony_summary(FitnessValSorted, FitnessTstSorted, ComplexitySorted)
+            self._summary[iter, :] = parsimony_summary(FitnessValSorted, ComplexitySorted)
 
             # Keep Best Solution of this iteration
             # ------------------
             bestfitnessVal = FitnessValSorted[0]
-            bestfitnessTst = FitnessTstSorted[0]
+            #bestfitnessTst = FitnessTstSorted[0]
             bestcomplexity = ComplexitySorted[0]
-            bestIterSolution = np.concatenate([[bestfitnessVal, bestfitnessTst, bestcomplexity], PopSorted[0]])
+            bestIterSolution = np.concatenate([[bestfitnessVal, bestcomplexity], PopSorted[0]])
             self.bestSolList.append(bestIterSolution)
             self.best_models_list.append(_modelsSorted[0])
             self.best_models_conf_list.append(PopSorted[0])
@@ -327,10 +327,7 @@ class HYBparsimony(object):
                 self.best_score = bestfitnessVal
                 self.best_complexity = bestcomplexity
                 self.bestsolution = bestIterSolution
-                self.solution_best_score = np.r_[self.best_score,
-                                            bestfitnessVal,
-                                            bestfitnessTst,
-                                            bestcomplexity]
+                self.solution_best_score = np.r_[self.best_score, bestfitnessVal, bestcomplexity]
                 self.best_model = _modelsSorted[0]
                 self.best_model_conf = PopSorted[0].copy()
 
@@ -362,11 +359,11 @@ class HYBparsimony(object):
             # Call to 'monitor' function
             # --------------------------
             if self.verbose > 0:
-                parsimony_monitor(iter, fitnessval, bestfitnessVal, bestfitnessTst, bestcomplexity, elapsed_gen)
+                parsimony_monitor(iter, fitnessval, bestfitnessVal, bestcomplexity, elapsed_gen)
 
             if self.verbose == 2:
                 print("\nStep 3. Fitness results")
-                print(np.c_[FitnessValSorted, FitnessTstSorted, ComplexitySorted, population.population][:10, :])
+                print(np.c_[FitnessValSorted, ComplexitySorted, population.population][:10, :])
                 # input("Press [enter] to continue")
 
             # Exit?
@@ -508,7 +505,7 @@ class HYBparsimony(object):
                 population_selection = copy.deepcopy(population) # Hago deepcopy porque es array de arrays.
                 population_selection._pop = population_selection._pop[sel]
                 fitnessval_selection = fitnessval[sel].copy()
-                fitnesstst_selection = fitnesstst[sel].copy()
+                #fitnesstst_selection = fitnesstst[sel].copy()
                 complexity_selection = complexity[sel].copy()
                 velocity_selection = velocity[sel].copy()
 
@@ -522,14 +519,15 @@ class HYBparsimony(object):
                 # Hacemos crossover de la población seleccionada
                 population_crossover = copy.deepcopy(population_selection)
                 fitnessval_crossover = fitnessval_selection.copy()
-                fitnesstst_crossover = fitnesstst_selection.copy()
+                #fitnesstst_crossover = fitnesstst_selection.copy()
                 complexity_crossover = complexity_selection.copy()
                 velocity_crossover = velocity_selection.copy()
 
                 for i in range(nmating):
                     parents_indexes = mating[i,]
                     # Voy haciendo el crossover en la nueva población
-                    _crossover(population_crossover, velocity_crossover, fitnessval_crossover, fitnesstst_crossover, complexity_crossover, parents_indexes, children_indexes=parents_indexes)
+                    _crossover(population_crossover, velocity_crossover, fitnessval_crossover, complexity_crossover,
+                               parents_indexes, children_indexes=parents_indexes)
 
                 # Ahora cojo la población original, y sustituyo el % de malos a sustituir por individuos aleatorios de la población del crossover.
                 npart_worst = max(1, int(np.floor(self.npart * self.pcrossover[iter])))
@@ -540,7 +538,7 @@ class HYBparsimony(object):
                 for i in indexes_worst_particles: #Esto ya me asegura que no toco los elitistas, solo sustituyo las partículas malas.
                     population._pop[i] = population_crossover._pop[random_array[i]]
                     fitnessval[i] = fitnessval_crossover[random_array[i]]
-                    fitnesstst[i] = fitnesstst_crossover[random_array[i]]
+                    #fitnesstst[i] = fitnesstst_crossover[random_array[i]]
                     complexity[i] = complexity_crossover[random_array[i]]
                     velocity[i] = velocity[random_array[i]]
 
