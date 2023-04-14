@@ -237,7 +237,7 @@ class HYBparsimony(object):
 
         update_neighbourhoods = False
         crossover_applied = False
-
+        nparams = len(population._params)
         for iter in range(self.maxiter):
             print("Running iteration", iter)
             self.iter = iter
@@ -575,7 +575,7 @@ class HYBparsimony(object):
             ##############################
             # Update positions of FEATURES
             ##############################
-            nparams = len(population._params)
+
             for nf in range(nparams,nparams + nfs): # We must move to the features (the particles contain first hyper-parameters and then features)
                 for p in indexes_except_substituted_particles:
                     population._pop[p,nf] = population._pop[p,nf] + velocity[p,nf] # Update positions for the model positions (x = x + v)
