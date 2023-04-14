@@ -185,6 +185,7 @@ class HYBparsimony(object):
 
 
         nfs = len(population.colsnames)
+        nparams = len(population._params)
         self._summary = np.empty((self.maxiter, 6 * 3,))
         self._summary[:] = np.nan
         self.best_score = np.NINF
@@ -194,7 +195,7 @@ class HYBparsimony(object):
         best_fit_particle = np.empty(self.npart)
         best_fit_particle[:] = np.NINF
 
-        best_pos_particle = np.empty(shape=(self.npart, len(population._params) + nfs))
+        best_pos_particle = np.empty(shape=(self.npart, nparams + nfs))
         best_complexity_particle = np.empty(self.npart)  # Complexities
         best_complexity_particle[:] = np.Inf
 
@@ -202,7 +203,7 @@ class HYBparsimony(object):
         vmax = self.Lambda * range_numbers
         range_as_pd = pd.Series(range_numbers)
         lower_as_pd = pd.Series(population._min)
-        v_norm = randomLHS(self.npart, len(population._params) + nfs)
+        v_norm = randomLHS(self.npart, nparams + nfs)
         v_norm = pd.DataFrame(v_norm)
         v_norm = v_norm.apply(lambda row: row * range_as_pd, axis=1)
         v_norm = v_norm.apply(lambda row: row + lower_as_pd, axis=1)
@@ -237,7 +238,7 @@ class HYBparsimony(object):
 
         update_neighbourhoods = False
         crossover_applied = False
-        nparams = len(population._params)
+
         for iter in range(self.maxiter):
             print("Running iteration", iter)
             self.iter = iter
@@ -449,7 +450,7 @@ class HYBparsimony(object):
             ###########################################
             # Compute Local bests in the Neighbourhoods
             ###########################################
-            best_pos_neighbourhood = np.empty(shape=(self.npart, len(population._params) + nfs))  # Matrix in which i-th row contains the best particle of the i-th neighbourhood.
+            best_pos_neighbourhood = np.empty(shape=(self.npart, nparams + nfs))  # Matrix in which i-th row contains the best particle of the i-th neighbourhood.
             best_fit_neighbourhood = np.empty(self.npart)  # Array that contains in position i the score of the best particle of the i-th neighbourhood.
             best_fit_neighbourhood[:] = np.Inf
 
@@ -551,9 +552,9 @@ class HYBparsimony(object):
             indexes_except_substituted_particles = [i for i in range(self.npart) if i not in indexes_worst_particles]
 
             U1 = np.random.uniform(low=0, high=1,
-                                   size=(self.npart, len(population._params) + nfs))  # En el artículo se llaman r1 y r2
+                                   size=(self.npart, nparams + nfs))  # En el artículo se llaman r1 y r2
             U2 = np.random.uniform(low=0, high=1,
-                                   size=(self.npart, len(population._params) + nfs))  # En el artículo se llaman r1 y r2
+                                   size=(self.npart, nparams + nfs))  # En el artículo se llaman r1 y r2
 
             IW = self.IW_max - (self.IW_max - self.IW_min) * iter / self.maxiter
 
@@ -567,7 +568,7 @@ class HYBparsimony(object):
 
             # Limit velocity to vmax to avoid explosion
 
-            for j in range(len(population._params) + nfs):
+            for j in range(nparams + nfs):
                 vmax_pos = np.where(abs(velocity[:,j]) > vmax[j])[0]
                 for i in vmax_pos:
                     velocity[i, j] = math.copysign(1, velocity[i, j]) * abs(vmax[j])

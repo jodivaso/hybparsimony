@@ -64,6 +64,8 @@ if __name__ == "__main__":
     # HYBparsimony_model = HYBparsimony(algorithm=KNN_Model)
     # HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
     # print(HYBparsimony_model.best_model)
+    # print(HYBparsimony_model.selected_features)
+
 
 
 
