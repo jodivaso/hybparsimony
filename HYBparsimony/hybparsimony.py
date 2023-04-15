@@ -34,6 +34,7 @@ class HYBparsimony(object):
                  features = None,
                  algorithm = None,
                  custom_eval_fun=None,
+                 cv=None,
                  type_ini_pop="improvedLHS",
                  npart = 40,
                  maxiter=250,
@@ -141,6 +142,8 @@ class HYBparsimony(object):
 
         self.algorithm = algorithm
 
+        self._cv=cv
+
 
 
     def fit(self, X, y, iter_ini=0, time_limit=None):
@@ -150,7 +153,10 @@ class HYBparsimony(object):
         #  SOME LOGIC ON PARAMETERS' INITIALIZATION
         #############################################
 
-        if self.custom_eval_fun is None:
+        if self._cv is not None and self.custom_eval_fun is None: # Si hay CV y no hay custom_eval, pongo la de por defecto con el cv que nos pasan.
+            self.custom_eval_fun = partial(cross_val_score, cv = self._cv, scoring="neg_log_loss") \
+                if check_classification(y) else partial(cross_val_score, cv = self._cv, scoring="neg_mean_squared_error")
+        elif self.custom_eval_fun is None: # Si CV es None y custom_eval también es None, pongo el de por defecto.
             self.custom_eval_fun = default_cv_score_classification if check_classification(y) else default_cv_score_regression
 
         ## The default algorithm selection.

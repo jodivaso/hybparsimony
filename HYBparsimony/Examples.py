@@ -88,13 +88,24 @@ if __name__ == "__main__":
     #                     EJEMPLO CUSTOM_EVAL                     #
     ###############################################################
 
-    # def custom_fun(estimator, X, y): # CV con repeatedKfold.
+    # def custom_fun(estimator, X, y):
     #     return cross_val_score(estimator, X, y, scoring="accuracy")
     #
     # HYBparsimony_model = HYBparsimony(n_jobs=1,custom_eval_fun=custom_fun) # Este con paralelismo NO funciona
     # HYBparsimony_model.fit(X_train, y_train, time_limit=0.5)
     # preds = HYBparsimony_model.predict(X_test)
     # print("Accuracy test", accuracy_score(y_test, preds))
+
+
+    ###############################################################
+    #                          EJEMPLO CV
+    ###############################################################
+
+    HYBparsimony_model = HYBparsimony(cv=RepeatedKFold(n_splits=10, n_repeats=5))
+    HYBparsimony_model.fit(X_train, y_train, time_limit=0.5)
+    preds = HYBparsimony_model.predict(X_test)
+    print("Accuracy test", accuracy_score(y_test, preds))
+
 
 
 
