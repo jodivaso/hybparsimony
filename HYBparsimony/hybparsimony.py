@@ -21,20 +21,19 @@ from sklearn.metrics import make_scorer
 def check_classification(y):
     return np.issubdtype(y.dtype, np.integer)
 
-def default_cross_val_score_regression(estimator, X,y):
+def default_cv_score_regression(estimator, X,y):
     return cross_val_score(estimator,X,y,cv=5, scoring="neg_mean_squared_error")
 
-def default_cross_val_score_classification(estimator, X,y):
+def default_cv_score_classification(estimator, X,y):
     return cross_val_score(estimator,X,y,cv=5, scoring="neg_log_loss")
 
 class HYBparsimony(object):
 
     def __init__(self,
                  fitness = None,
-                 dict_model = None,
                  features = None,
                  algorithm = None,
-                 custom_eval_fun=default_cross_val_score_regression,
+                 custom_eval_fun=None,
                  type_ini_pop="improvedLHS",
                  npart = 40,
                  maxiter=250,
@@ -140,18 +139,29 @@ class HYBparsimony(object):
         # Custom cross val score
         self.custom_eval_fun = custom_eval_fun
 
-        self.algorithm = dict_model
+        self.algorithm = algorithm
+
+
+
+    def fit(self, X, y, iter_ini=0, time_limit=None):
+
+
+        #############################################
+        #  SOME LOGIC ON PARAMETERS' INITIALIZATION
+        #############################################
+
+        if self.custom_eval_fun is None:
+            self.custom_eval_fun = default_cv_score_classification if check_classification(y) else default_cv_score_regression
+
         ## The default algorithm selection.
 
-        # ALGORITHM puede ser un String o un diccionario
-        if algorithm is None:
-            self.algorithm = models.Ridge_Model
-        elif algorithm == "KRidge":
+        # ALGORITHM debe acabar siendo un diccionario
+        if self.algorithm is None:
+            self.algorithm = models.Logistic_Model if check_classification(y) else models.Ridge_Model
+        elif self.algorithm == "KRidge":
             self.algorithm = models.KRidge_Model
-        elif algorithm == "MLPRegressor":
+        elif self.algorithm == "MLPRegressor":
             self.algorithm = models.MLPRegressor_Model
-        elif isinstance(algorithm,dict): # Si es un diccionario
-            self.algorithm=algorithm
 
         self.params = {k: self.algorithm[k] for k in self.algorithm.keys() if k not in ["estimator", "complexity"]}
 
@@ -163,19 +173,6 @@ class HYBparsimony(object):
             self.fitness = partial(fitness_for_parallel, self.algorithm['estimator'],
                                    self.algorithm['complexity'], self.custom_eval_fun)
 
-
-
-    def fit(self, X, y, iter_ini=0, time_limit=None):
-
-
-        #############################################
-        #  SOME LOGIC ON PARAMETERS' INITIALIZATION
-        #############################################
-        if check_classification(y): # Si es clasificación, hago una cosa. Si es regresión, otra.
-        else:
-
-
-
         if self.n_jobs > 1:
             pool = Pool(self.n_jobs)
 
@@ -185,6 +182,12 @@ class HYBparsimony(object):
             else: # SI no, entonces es un numpy array y pongo números del 0 al número de columnas
                 num_rows, num_cols = X.shape
                 self.features = list(range(num_cols))
+
+
+
+        #############################################
+        #               THE HYBRID METHOD
+        #############################################
 
         start_time = time.time()
 
@@ -667,6 +670,20 @@ class HYBparsimony(object):
             else: #Si es un Numpy, entonces tengo que quedarme con las columnas apropiadas
                 X_selected_features = X[:,self.selected_features_boolean] # Cojo todas las filas pero solo las columnas apropiadas.
             preds = self.best_model.predict(X_selected_features)
+
+        return preds
+
+
+    def predict_proba(self, X):
+        num_rows, num_cols = X.shape
+        if num_cols == len(self.selected_features): #Si nos han pasado un X donde ya he cogido las columnas que debía coger
+            preds = self.best_model.predict_proba(X)
+        else: # En otro caso, nos han pasado un X entero y nos tenemos que quedar solo con las columnas seleccionadas.
+            if isinstance(X, pd.Series): # Si es un dataframe, puedo acceder a las columnas por nombre/booleano
+                X_selected_features = X[self.selected_features]
+            else: #Si es un Numpy, entonces tengo que quedarme con las columnas apropiadas
+                X_selected_features = X[:,self.selected_features_boolean] # Cojo todas las filas pero solo las columnas apropiadas.
+            preds = self.best_model.predict_proba(X_selected_features)
 
         return preds
 

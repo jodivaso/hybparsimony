@@ -1,15 +1,19 @@
-from sklearn.linear_model import Lasso
+from sklearn.linear_model import Lasso, RidgeClassifier, LogisticRegression
 from sklearn.model_selection import train_test_split, cross_val_score, RepeatedKFold
-from sklearn.metrics import mean_squared_error
-from sklearn.datasets import load_diabetes
+from sklearn.metrics import mean_squared_error, log_loss
+from sklearn.datasets import load_diabetes, load_iris
 from sklearn.neighbors import KNeighborsRegressor
 
 from HYBparsimony import Population, HYBparsimony
 
 #Y si le paso una custom, ¿Cómo sé si hay que minimizar? Realmente tengo un problema y es que tengo que pasar métrica!
+from HYBparsimony.hybparsimony import default_cv_score_classification
 from HYBparsimony.util import knn_complexity
+from HYBparsimony.util.models import Logistic_Model
 
 if __name__ == "__main__":
+
+    # REGRESIÓN
     # Cargo un dataset de regresión
     diabetes = load_diabetes()
     X, y = diabetes.data, diabetes.target
@@ -67,7 +71,23 @@ if __name__ == "__main__":
     # print(HYBparsimony_model.selected_features)
 
 
+    # CLASIFICACIÓN
 
+    # Cargo un dataset de clasificación
+    iris = load_iris()
+    X, y = iris.data, iris.target
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2)
+
+    ###############################################################
+    #                       EJEMPLO BÁSICO                        #
+    ###############################################################
+
+    # print(default_cv_score_classification(LogisticRegression(), X_train,y_train))
+
+    HYBparsimony_model = HYBparsimony()
+    HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
+    preds = HYBparsimony_model.predict_proba(X_test)
+    print("Log loss test", log_loss(y_test, preds))
 
 
 

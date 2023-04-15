@@ -1,9 +1,13 @@
 from sklearn.kernel_ridge import KernelRidge
-from sklearn.linear_model import Ridge
+from sklearn.linear_model import Ridge, RidgeClassifier, LogisticRegression
 from sklearn.neural_network import MLPRegressor
 from HYBparsimony import Population
 from HYBparsimony.util import linearModels_complexity, mlp_complexity
 from HYBparsimony.util.complexity import kernel_ridge_complexity
+
+#####################
+# REGRESSION MODELS
+# ###################
 
 Ridge_Model = {"estimator": Ridge,
                "complexity": linearModels_complexity,
@@ -27,3 +31,17 @@ MLPRegressor_Model = {"estimator": MLPRegressor, # The estimator
                       "tol": {"value": 1e-5, "type": Population.CONSTANT},
                       "random_state": {"value": 1234, "type": Population.CONSTANT},
                       "max_iter": {"value": 5000, "type": Population.CONSTANT}}
+
+#########################
+# CLASSIFICATION MODELS
+# #######################
+
+RidgeClassifier_Model = {"estimator": RidgeClassifier,
+               "complexity": linearModels_complexity,
+               "alpha": {"range": (-5, 3), "type": Population.POWER}
+               }
+
+Logistic_Model = {"estimator": LogisticRegression,
+                 "complexity": linearModels_complexity,
+                 "C": {"range": (-5, 3), "type": Population.POWER}
+                 }
