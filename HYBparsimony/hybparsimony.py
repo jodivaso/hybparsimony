@@ -35,6 +35,7 @@ class HYBparsimony(object):
                  algorithm = None,
                  custom_eval_fun=None,
                  cv=None,
+                 scoring=None,
                  type_ini_pop="improvedLHS",
                  npart = 40,
                  maxiter=250,
@@ -143,6 +144,7 @@ class HYBparsimony(object):
         self.algorithm = algorithm
 
         self._cv=cv
+        self._scoring=scoring
 
 
 
@@ -154,10 +156,17 @@ class HYBparsimony(object):
         #############################################
 
         if self._cv is not None and self.custom_eval_fun is None: # Si hay CV y no hay custom_eval, pongo la de por defecto con el cv que nos pasan.
-            self.custom_eval_fun = partial(cross_val_score, cv = self._cv, scoring="neg_log_loss") \
-                if check_classification(y) else partial(cross_val_score, cv = self._cv, scoring="neg_mean_squared_error")
-        elif self.custom_eval_fun is None: # Si CV es None y custom_eval también es None, pongo el de por defecto.
-            self.custom_eval_fun = default_cv_score_classification if check_classification(y) else default_cv_score_regression
+            # Si hay scoring hago una cosa y si no, pongo lo de por defecto
+            if self._scoring is not None:
+                self.custom_eval_fun = partial(cross_val_score, cv=self._cv, scoring= self._scoring)
+            else: # Por defecto:
+                self.custom_eval_fun = partial(cross_val_score, cv = self._cv, scoring="neg_log_loss") \
+                    if check_classification(y) else partial(cross_val_score, cv = self._cv, scoring="neg_mean_squared_error")
+        elif self.custom_eval_fun is None: # Si CV es None y custom_eval también es None, entonces depende de si hay scoring
+            if self._scoring is not None: # si hay scoring, entonces se lo pongo
+                self.custom_eval_fun = partial(cross_val_score, scoring=self._scoring)
+            else: # Si no hay ni custom_eval_fun, ni scoring, ni cv, pongo el de por defecto
+                self.custom_eval_fun = default_cv_score_classification if check_classification(y) else default_cv_score_regression
 
         ## The default algorithm selection.
 
