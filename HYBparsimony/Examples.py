@@ -3,10 +3,7 @@ from sklearn.model_selection import train_test_split, cross_val_score, RepeatedK
 from sklearn.metrics import mean_squared_error, log_loss, accuracy_score
 from sklearn.datasets import load_diabetes, load_iris
 from sklearn.neighbors import KNeighborsRegressor
-
 from HYBparsimony import Population, HYBparsimony
-
-#Y si le paso una custom, ¿Cómo sé si hay que minimizar? Realmente tengo un problema y es que tengo que pasar métrica!
 from HYBparsimony.hybparsimony import default_cv_score_classification
 from HYBparsimony.util import knn_complexity
 from HYBparsimony.util.models import Logistic_Model
