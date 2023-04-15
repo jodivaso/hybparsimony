@@ -1,6 +1,6 @@
 from sklearn.linear_model import Lasso, RidgeClassifier, LogisticRegression
 from sklearn.model_selection import train_test_split, cross_val_score, RepeatedKFold
-from sklearn.metrics import mean_squared_error, log_loss
+from sklearn.metrics import mean_squared_error, log_loss, accuracy_score
 from sklearn.datasets import load_diabetes, load_iris
 from sklearn.neighbors import KNeighborsRegressor
 
@@ -82,14 +82,22 @@ if __name__ == "__main__":
     #                       EJEMPLO BÁSICO                        #
     ###############################################################
 
-    # print(default_cv_score_classification(LogisticRegression(), X_train,y_train))
+    # HYBparsimony_model = HYBparsimony()
+    # HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
+    # preds = HYBparsimony_model.predict_proba(X_test)
+    # print("Log loss test", log_loss(y_test, preds))
 
-    HYBparsimony_model = HYBparsimony()
-    HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
-    preds = HYBparsimony_model.predict_proba(X_test)
-    print("Log loss test", log_loss(y_test, preds))
+    ###############################################################
+    #                     EJEMPLO CUSTOM_EVAL                     #
+    ###############################################################
 
-
+    # def custom_fun(estimator, X, y): # CV con repeatedKfold.
+    #     return cross_val_score(estimator, X, y, scoring="accuracy")
+    #
+    # HYBparsimony_model = HYBparsimony(n_jobs=1,custom_eval_fun=custom_fun) # Este con paralelismo NO funciona
+    # HYBparsimony_model.fit(X_train, y_train, time_limit=0.5)
+    # preds = HYBparsimony_model.predict(X_test)
+    # print("Accuracy test", accuracy_score(y_test, preds))
 
 
 
