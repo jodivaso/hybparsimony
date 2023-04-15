@@ -19,10 +19,10 @@ if __name__ == "__main__":
     ###############################################################
     #                       EJEMPLO BÁSICO                        #
     ###############################################################
-    # HYBparsimony_model = HYBparsimony()
-    # HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
-    # preds = HYBparsimony_model.predict(X_test)
-    # print("RMSE test", mean_squared_error(y_test, preds))
+    HYBparsimony_model = HYBparsimony()
+    HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
+    preds = HYBparsimony_model.predict(X_test)
+    print("RMSE test", mean_squared_error(y_test, preds))
 
     ###############################################################
     #                       EJEMPLO OTRO SCORING                  #
@@ -35,10 +35,10 @@ if __name__ == "__main__":
     ###############################################################
     #                          EJEMPLO OTRO CV                    #
     ###############################################################
-    HYBparsimony_model = HYBparsimony(cv=RepeatedKFold(n_splits=10, n_repeats=5))
-    HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
-    preds = HYBparsimony_model.predict(X_test)
-    print("RMSE test", mean_squared_error(y_test, preds))
+    # HYBparsimony_model = HYBparsimony(cv=RepeatedKFold(n_splits=10, n_repeats=5))
+    # HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
+    # preds = HYBparsimony_model.predict(X_test)
+    # print("RMSE test", mean_squared_error(y_test, preds))
 
     ###############################################################
     #                EJEMPLO OTRO SCORING Y OTRO CV               #

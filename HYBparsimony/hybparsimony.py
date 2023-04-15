@@ -18,6 +18,9 @@ from sklearn.metrics import make_scorer
 
 # Para comprobar si es clasificación o regresión
 # TODO: Seguro que hay alguna forma mejor. De hecho, ¿esto funciona si y no es np array? ¿Y si es multioutput?
+from HYBparsimony.util.models import check_algorithm
+
+
 def check_classification(y):
     return np.issubdtype(y.dtype, np.integer)
 
@@ -141,6 +144,7 @@ class HYBparsimony(object):
         # Custom cross val score
         self.custom_eval_fun = custom_eval_fun
 
+        check_algorithm(algorithm) # This will raise an exception if a bad argument is found
         self.algorithm = algorithm
 
         self._cv=cv
