@@ -672,6 +672,9 @@ class HYBparsimony(object):
                 velocity[out_max, j] = 0
                 velocity[out_min, j] = 0
 
+        if self.n_jobs>1:
+            pool.close()
+
         # Guardo las features seleccionadas
         aux = self.best_model_conf[nparams:nparams + nfs]
         self.selected_features_boolean = (aux >= 0.5) # Me guardo como una lista de booleanos si las features están o no

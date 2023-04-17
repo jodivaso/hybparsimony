@@ -70,8 +70,8 @@ def _rerank(fitnessval, complexity, popSize, rerank_error, preserve_best=True):
     """
 
     cost1 = fitnessval.copy().astype(float)
-    cost1[np.isnan(cost1)] = np.NINF
-
+    # cost1[np.isnan(cost1)] = np.NINF
+    cost1[~np.isfinite(cost1)] = np.NINF
     sort = order(cost1, decreasing=True)
     cost1 = cost1[sort]
     complexity = complexity.copy()
@@ -80,7 +80,7 @@ def _rerank(fitnessval, complexity, popSize, rerank_error, preserve_best=True):
     position = sort
 
     # start
-    if preserve_best and len(cost1)>1:
+    if preserve_best and len(cost1) > 1:
         pos1 = 1
         pos2 = 2
         error_posic = cost1[1]
@@ -88,8 +88,8 @@ def _rerank(fitnessval, complexity, popSize, rerank_error, preserve_best=True):
         pos1 = 0
         pos2 = 1
         error_posic = cost1[0]
-    cambio = False
 
+    cambio = False
     while not pos1 == popSize:
         # Obtaining errors
         if pos2 >= popSize:
@@ -107,38 +107,29 @@ def _rerank(fitnessval, complexity, popSize, rerank_error, preserve_best=True):
             error_dif = abs(error_indiv2 - error_posic)
         else:
             error_dif = np.Inf
-        if error_dif < rerank_error:
 
+        if error_dif < rerank_error:
             # If there is not difference between errors swap if Size2nd < SizeFirst
             size_indiv1 = complexity[pos1]
             size_indiv2 = complexity[pos2]
             if size_indiv2 < size_indiv1:
+                # if self.verbose == 2:
+                #     print(f"SWAP!!: pos1={pos1}(J={cost1[pos1]}, Cmp={size_indiv1}), pos2={pos2}(J={cost1[pos2]}, Cmp={size_indiv2}), error_dif={error_dif}")
+                #     print("-----------------------------------------------------")
                 cambio = True
-
                 swap_indiv = cost1[pos1]
                 cost1[pos1] = cost1[pos2]
                 cost1[pos2] = swap_indiv
-
                 complexity[pos1], complexity[pos2] = complexity[pos2], complexity[pos1]
-
                 position[pos1], position[pos2] = position[pos2], position[pos1]
-
-                # if self.verbose == 2:
-                #     print(f"SWAP!!: pos1={pos1}({size_indiv1}), pos2={pos2}({size_indiv2}), error_dif={error_dif}")
-                #     print("-----------------------------------------------------")
             pos2 = pos2 + 1
-
         elif cambio:
             cambio = False
             pos2 = pos1 + 1
         else:
             pos1 = pos1 + 1
             pos2 = pos1 + 1
-            error_dif2 = abs(cost1[pos1] - error_posic)
-            if not np.isfinite(error_dif2):
-                error_dif2 = np.Inf
-            if error_dif2 >= rerank_error:
-                error_posic = cost1[pos1]
+            error_posic = cost1[pos1]
     return position
 
 

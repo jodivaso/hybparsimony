@@ -53,14 +53,14 @@ if __name__ == "__main__":
     #                     EJEMPLO CUSTOM_EVAL                     #
     ###############################################################
 
-    def custom_fun(estimator, X, y): # CV con repeatedKfold.
-        return cross_val_score(estimator, X, y, cv=RepeatedKFold(n_splits=10, n_repeats=5))
-
-    # Este con paralelismo NO funciona (sí funciona si el custom_fun lo definimos fuera del if main)
-    HYBparsimony_model = HYBparsimony(n_jobs=1, custom_eval_fun=custom_fun)
-    HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
-    preds = HYBparsimony_model.predict(X_test)
-    print("RMSE test", mean_squared_error(y_test, preds))
+    # def custom_fun(estimator, X, y): # CV con repeatedKfold.
+    #     return cross_val_score(estimator, X, y, cv=RepeatedKFold(n_splits=10, n_repeats=5))
+    #
+    # # Este con paralelismo NO funciona (sí funciona si el custom_fun lo definimos fuera del if main)
+    # HYBparsimony_model = HYBparsimony(n_jobs=1, custom_eval_fun=custom_fun)
+    # HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
+    # preds = HYBparsimony_model.predict(X_test)
+    # print("RMSE test", mean_squared_error(y_test, preds))
 
     ###############################################################
     #                     EJEMPLO OTRO ALGORITMO                  #
@@ -113,23 +113,23 @@ if __name__ == "__main__":
     #                     EJEMPLO CUSTOM_EVAL                     #
     ###############################################################
 
-    # def custom_fun(estimator, X, y):
-    #     return cross_val_score(estimator, X, y, scoring="accuracy")
-    #
-    # HYBparsimony_model = HYBparsimony(n_jobs=1,custom_eval_fun=custom_fun) # Este con paralelismo NO funciona
-    # HYBparsimony_model.fit(X_train, y_train, time_limit=0.5)
-    # preds = HYBparsimony_model.predict(X_test)
-    # print("Accuracy test", accuracy_score(y_test, preds))
+    def custom_fun(estimator, X, y):
+        return cross_val_score(estimator, X, y, scoring="accuracy")
+
+    HYBparsimony_model = HYBparsimony(n_jobs=1,custom_eval_fun=custom_fun) # Este con paralelismo NO funciona
+    HYBparsimony_model.fit(X_train, y_train, time_limit=0.5)
+    preds = HYBparsimony_model.predict(X_test)
+    print("Accuracy test", accuracy_score(y_test, preds))
 
 
     ###############################################################
     #                        EJEMPLO OTRO CV
     ###############################################################
 
-    # HYBparsimony_model = HYBparsimony(cv=RepeatedKFold(n_splits=10, n_repeats=5))
-    # HYBparsimony_model.fit(X_train, y_train, time_limit=0.5)
-    # preds = HYBparsimony_model.predict(X_test)
-    # print("Accuracy test", accuracy_score(y_test, preds))
+    HYBparsimony_model = HYBparsimony(seed_ini=2, cv=RepeatedKFold(n_splits=10, n_repeats=5))
+    HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
+    preds = HYBparsimony_model.predict(X_test)
+    print("Accuracy test", accuracy_score(y_test, preds))
 
 
 
