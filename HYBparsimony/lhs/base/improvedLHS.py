@@ -11,7 +11,8 @@ def _improvedLHS( n,  k, dup=1, seed=None):
     nsamples = n
     nparameters = k
     duplication = dup
-    result = np.empty((k, n)).astype(int)
+    # result = np.empty((k, n)).astype(int)
+    result = np.empty((k, n), dtype='int')
     #  ********** matrix_unsafe<int> m_result = matrix_unsafe<int>(nparameters, nsamples, result);
     #  the length of the point1 columns and the list1 vector 
     size = duplication * (nsamples - 1)

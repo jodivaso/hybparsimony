@@ -104,10 +104,10 @@ if __name__ == "__main__":
     #                       EJEMPLO BÁSICO                        #
     ###############################################################
 
-    # HYBparsimony_model = HYBparsimony()
-    # HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
-    # preds = HYBparsimony_model.predict_proba(X_test)
-    # print("Log loss test", log_loss(y_test, preds))
+    HYBparsimony_model = HYBparsimony()
+    HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
+    preds = HYBparsimony_model.predict_proba(X_test)
+    print("Log loss test", log_loss(y_test, preds))
 
     ###############################################################
     #                     EJEMPLO CUSTOM_EVAL                     #
@@ -126,8 +126,8 @@ if __name__ == "__main__":
     #                        EJEMPLO OTRO CV
     ###############################################################
 
-    HYBparsimony_model = HYBparsimony(seed_ini=2, cv=RepeatedKFold(n_splits=10, n_repeats=5))
-    HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
+    HYBparsimony_model = HYBparsimony(seed_ini=5, cv=RepeatedKFold(n_splits=10, n_repeats=5))
+    HYBparsimony_model.fit(X_train, y_train, time_limit=1)
     preds = HYBparsimony_model.predict(X_test)
     print("Accuracy test", accuracy_score(y_test, preds))
 
