@@ -127,7 +127,7 @@ if __name__ == "__main__":
     #                        EJEMPLO OTRO CV
     ###############################################################
 
-    HYBparsimony_model = HYBparsimony(seed_ini=i, cv=RepeatedKFold(n_splits=10, n_repeats=5))
+    HYBparsimony_model = HYBparsimony(cv=RepeatedKFold(n_splits=10, n_repeats=5))
     HYBparsimony_model.fit(X_train, y_train, time_limit=1)
     preds = HYBparsimony_model.predict(X_test)
     print("Accuracy test", accuracy_score(y_test, preds))

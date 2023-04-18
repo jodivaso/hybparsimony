@@ -482,7 +482,7 @@ class HYBparsimony(object):
             # The best score wrt to rerank should be 0.85. But if we get 0.80 with cost 10 in the next
             # iteration, that would be chosen. This is wrong, since we would be moving to worse scores. The
             # rerank must be applied wrt the best global score of each particle.
-            for t in range(self.npart):
+            for t in [p for p in range(self.npart) if np.isfinite(fitnessval[p])]:# Solo cogemos las partículas que tienen fitnessval finito (que no sea Nan ni inf)
                 # Three cases:
                 # (1) If the best improves much, then update.
                 # (2) If the best does not improve much, but the complexity is lower, then update.
