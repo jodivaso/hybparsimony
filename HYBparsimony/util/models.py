@@ -65,5 +65,6 @@ RidgeClassifier_Model = {"estimator": RidgeClassifier,
 
 Logistic_Model = {"estimator": LogisticRegression,
                  "complexity": linearModels_complexity,
-                 "C": {"range": (-5, 3), "type": Population.POWER}
+                # "C": {"range": (-5, 3), "type": Population.POWER}
+                "C": {"range": (0.001, 10), "type": Population.FLOAT}
                  }

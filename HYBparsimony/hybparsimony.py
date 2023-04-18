@@ -1,5 +1,6 @@
 import copy
 import multiprocessing
+import random
 from multiprocessing import Pool
 from functools import partial
 from HYBparsimony import Population, order, getFitness
@@ -49,10 +50,10 @@ class HYBparsimony(object):
                  IW_max=0.9,
                  IW_min=0.4,
                  K=3,
-                 pmutation = 0.1,
+                 pmutation = 0,
                  #pcrossover_elitists = None,  # an array or a float (number between 0 and 1).
                  #pcrossover = None,  # an array or a float (number between 0 and 1), % of worst individuals to substitute from crossover.
-                 gamma_crossover = 0.5,
+                 gamma_crossover = 0,
                  tol = 1e-4,
                  rerank_error=0.005,
                  keep_history = False,
@@ -273,6 +274,7 @@ class HYBparsimony(object):
         complexity = np.empty(self.npart)
         complexity[:] = np.nan
         _models = np.empty(self.npart).astype(object)
+        _models[:] = None
 
         update_neighbourhoods = False
         crossover_applied = False
@@ -296,10 +298,15 @@ class HYBparsimony(object):
                        # fitnesstst[t] = fit[0][1]
                         complexity[t] = fit[0][1]
                         _models[t] = fit[1]
+                    if _models[t].C!=population[t,0]:
+                        print("PROBLEMA GORDOOOOOOOOOOOOOOOOOOOOOOOO")
+                        print(_models[t].C, population[t,0])
             else:
                 list_params = []
                 for t in valid_particles:  # Se entrenan todas siempre (salvo las que eliminemos del proceso)
                     c = population.getChromosome(t)
+                    #print("PARAM C", c.params)
+                    #print("En population:", population._population[t,0])
                     if np.sum(c.columns) > 0:
                         list_params.append([c,X,y])
 
@@ -318,12 +325,34 @@ class HYBparsimony(object):
             # ----------------------------
             sort = order(fitnessval, kind='heapsort', decreasing=True, na_last=True)
 
-            PopSorted = population[sort, :]
-            FitnessValSorted = fitnessval[sort]
+            PopSorted = population[sort, :].copy()
+            FitnessValSorted = fitnessval[sort].copy()
             #FitnessTstSorted = fitnesstst[sort]
-            ComplexitySorted = complexity[sort]
-            _modelsSorted = _models[sort]
+            ComplexitySorted = complexity[sort].copy()
+            _modelsSorted = _models[sort].copy()
 
+            salir=False
+            for i in range(40):
+                if _models[i].C != population[i, 0]:
+                    print(i, _models[i].C, population[i, 0])
+                    salir=True
+            if salir:
+                print("SORT", sort)
+                break
+
+            # SANITY CHECK: (Y POR QUÉ PASA ESTO???????)
+            # if _modelsSorted[0].C != PopSorted[0][0]: # No coincide el orden!!!
+            #     print("Population sin sort:", population[:,:])
+            #     print("LEN Population:", len(population[:,:]))
+            #     print("LEN models:", len(_models))
+            #     print("Models sin sort:", _models)
+            #
+            #     print("Fitnessval", fitnessval)
+            #     print("sort", sort)
+            #     print("MODELS", _modelsSorted)
+            #     print("POPSORTED", PopSorted)
+            #     print("FitnessvalSorted", FitnessValSorted)
+            #     break
 
             if self.verbose == 2:
                 print("\nStep 1. Fitness sorted")
@@ -332,11 +361,11 @@ class HYBparsimony(object):
 
             if self.rerank_error != 0.0:
                 ord_rerank = _rerank(FitnessValSorted, ComplexitySorted, self.npart, self.rerank_error)
-                PopSorted = PopSorted[ord_rerank]
-                FitnessValSorted = FitnessValSorted[ord_rerank]
+                PopSorted = PopSorted[ord_rerank].copy()
+                FitnessValSorted = FitnessValSorted[ord_rerank].copy()
                # FitnessTstSorted = FitnessTstSorted[ord_rerank]
-                ComplexitySorted = ComplexitySorted[ord_rerank]
-                _modelsSorted = _modelsSorted[ord_rerank]
+                ComplexitySorted = ComplexitySorted[ord_rerank].copy()
+                _modelsSorted = _modelsSorted[ord_rerank].copy()
 
                 if self.verbose == 2:
                     print("\nStep 2. Fitness reranked")
@@ -368,6 +397,12 @@ class HYBparsimony(object):
                 self.solution_best_score = np.r_[self.best_score, bestfitnessVal, bestcomplexity]
                 self.best_model = _modelsSorted[0]
                 self.best_model_conf = PopSorted[0].copy()
+                # print("ACTUALIZO", self.best_model.C, self.best_model_conf)
+                # if self.best_model_conf[0] != self.best_model.C:
+                #     print("problemas")
+                #     print("MODELS", _modelsSorted)
+                #     print("POPSORTED", PopSorted)
+                #     print("fitnessvalsorted", FitnessValSorted)
 
             print("Current best score:", self.best_score)
 
@@ -403,6 +438,10 @@ class HYBparsimony(object):
                 print("\nStep 3. Fitness results")
                 print(np.c_[FitnessValSorted, ComplexitySorted, population.population][:10, :])
                 # input("Press [enter] to continue")
+
+            #print((population._pop))
+            #print((population._pop[sort])[ord_rerank])
+            #print((fitnessval[sort])[ord_rerank])
 
             # Exit?
             # -----
@@ -672,6 +711,16 @@ class HYBparsimony(object):
                 velocity[out_max, j] = 0
                 velocity[out_min, j] = 0
 
+            # ASEGURARNOS QUE AL MENOS UNA FEATURE SE SELECCIONA EN CADA PARTICULA
+            # TODO: Esto debería hacerse en otro lado!
+            for i in range(self.npart):  # the particles contain first hyper-parameters and then feature
+                aux = population._pop[i, nparams:]
+                if (aux<0.5).all():
+                    feature_to_change = random.randint(nparams, nparams + nfs - 1)
+                    new_value = random.uniform(0.5, 1)
+                    population._pop[i, feature_to_change] = new_value
+
+
         if self.n_jobs>1:
             pool.close()
 
@@ -680,19 +729,33 @@ class HYBparsimony(object):
         self.selected_features_boolean = (aux >= 0.5) # Me guardo como una lista de booleanos si las features están o no
         self.selected_features = np.array(self.features)[self.selected_features_boolean] # Me guardo los nombres
         print("Selected features:", self.selected_features)
+
+
+
         return self.best_model
 
     def predict(self, X):
         num_rows, num_cols = X.shape
         if num_cols == len(self.selected_features): #Si nos han pasado un X donde ya he cogido las columnas que debía coger
+            if self.best_model.n_features_in_ != len(self.selected_features):
+                print("Problemas")
+                print("C=", self.best_model.C)
+                print("Best model conf", self.best_model_conf)
+                print("NUM_FEATURES_IN", self.best_model.n_features_in_)
+                print("BMCL", self.best_models_conf_list)
             preds = self.best_model.predict(X)
         else: # En otro caso, nos han pasado un X entero y nos tenemos que quedar solo con las columnas seleccionadas.
             if isinstance(X, pd.Series): # Si es un dataframe, puedo acceder a las columnas por nombre/booleano
                 X_selected_features = X[self.selected_features]
             else: #Si es un Numpy, entonces tengo que quedarme con las columnas apropiadas
                 X_selected_features = X[:,self.selected_features_boolean] # Cojo todas las filas pero solo las columnas apropiadas.
+            if self.best_model.n_features_in_ != len(self.selected_features):
+                print("Problemas")
+                print("C=", self.best_model.C)
+                print("Best model conf", self.best_model_conf)
+                print("NUM_FEATURES_IN", self.best_model.n_features_in_)
+                print("BMCL", self.best_models_conf_list)
             preds = self.best_model.predict(X_selected_features)
-
         return preds
 
 
