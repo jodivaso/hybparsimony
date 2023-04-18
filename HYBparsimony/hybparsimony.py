@@ -298,15 +298,11 @@ class HYBparsimony(object):
                        # fitnesstst[t] = fit[0][1]
                         complexity[t] = fit[0][1]
                         _models[t] = fit[1]
-                    if _models[t].C!=population[t,0]:
-                        print("PROBLEMA GORDOOOOOOOOOOOOOOOOOOOOOOOO")
-                        print(_models[t].C, population[t,0])
+
             else:
                 list_params = []
                 for t in valid_particles:  # Se entrenan todas siempre (salvo las que eliminemos del proceso)
                     c = population.getChromosome(t)
-                    #print("PARAM C", c.params)
-                    #print("En population:", population._population[t,0])
                     if np.sum(c.columns) > 0:
                         list_params.append([c,X,y])
 
@@ -330,29 +326,6 @@ class HYBparsimony(object):
             #FitnessTstSorted = fitnesstst[sort]
             ComplexitySorted = complexity[sort].copy()
             _modelsSorted = _models[sort].copy()
-
-            salir=False
-            for i in range(40):
-                if _models[i].C != population[i, 0]:
-                    print(i, _models[i].C, population[i, 0])
-                    salir=True
-            if salir:
-                print("SORT", sort)
-                break
-
-            # SANITY CHECK: (Y POR QUÉ PASA ESTO???????)
-            # if _modelsSorted[0].C != PopSorted[0][0]: # No coincide el orden!!!
-            #     print("Population sin sort:", population[:,:])
-            #     print("LEN Population:", len(population[:,:]))
-            #     print("LEN models:", len(_models))
-            #     print("Models sin sort:", _models)
-            #
-            #     print("Fitnessval", fitnessval)
-            #     print("sort", sort)
-            #     print("MODELS", _modelsSorted)
-            #     print("POPSORTED", PopSorted)
-            #     print("FitnessvalSorted", FitnessValSorted)
-            #     break
 
             if self.verbose == 2:
                 print("\nStep 1. Fitness sorted")
@@ -737,24 +710,12 @@ class HYBparsimony(object):
     def predict(self, X):
         num_rows, num_cols = X.shape
         if num_cols == len(self.selected_features): #Si nos han pasado un X donde ya he cogido las columnas que debía coger
-            if self.best_model.n_features_in_ != len(self.selected_features):
-                print("Problemas")
-                print("C=", self.best_model.C)
-                print("Best model conf", self.best_model_conf)
-                print("NUM_FEATURES_IN", self.best_model.n_features_in_)
-                print("BMCL", self.best_models_conf_list)
             preds = self.best_model.predict(X)
         else: # En otro caso, nos han pasado un X entero y nos tenemos que quedar solo con las columnas seleccionadas.
             if isinstance(X, pd.Series): # Si es un dataframe, puedo acceder a las columnas por nombre/booleano
                 X_selected_features = X[self.selected_features]
             else: #Si es un Numpy, entonces tengo que quedarme con las columnas apropiadas
                 X_selected_features = X[:,self.selected_features_boolean] # Cojo todas las filas pero solo las columnas apropiadas.
-            if self.best_model.n_features_in_ != len(self.selected_features):
-                print("Problemas")
-                print("C=", self.best_model.C)
-                print("Best model conf", self.best_model_conf)
-                print("NUM_FEATURES_IN", self.best_model.n_features_in_)
-                print("BMCL", self.best_models_conf_list)
             preds = self.best_model.predict(X_selected_features)
         return preds
 
