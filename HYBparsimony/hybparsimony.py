@@ -50,10 +50,10 @@ class HYBparsimony(object):
                  IW_max=0.9,
                  IW_min=0.4,
                  K=3,
-                 pmutation = 0,
+                 pmutation = 0.1,
                  #pcrossover_elitists = None,  # an array or a float (number between 0 and 1).
                  #pcrossover = None,  # an array or a float (number between 0 and 1), % of worst individuals to substitute from crossover.
-                 gamma_crossover = 0,
+                 gamma_crossover = 0.5,
                  tol = 1e-4,
                  rerank_error=0.005,
                  keep_history = False,
@@ -322,10 +322,10 @@ class HYBparsimony(object):
             sort = order(fitnessval, kind='heapsort', decreasing=True, na_last=True)
 
             PopSorted = population[sort, :].copy()
-            FitnessValSorted = fitnessval[sort].copy()
+            FitnessValSorted = fitnessval[sort]
             #FitnessTstSorted = fitnesstst[sort]
-            ComplexitySorted = complexity[sort].copy()
-            _modelsSorted = _models[sort].copy()
+            ComplexitySorted = complexity[sort]
+            _modelsSorted = _models[sort]
 
             if self.verbose == 2:
                 print("\nStep 1. Fitness sorted")
@@ -334,11 +334,11 @@ class HYBparsimony(object):
 
             if self.rerank_error != 0.0:
                 ord_rerank = _rerank(FitnessValSorted, ComplexitySorted, self.npart, self.rerank_error)
-                PopSorted = PopSorted[ord_rerank].copy()
-                FitnessValSorted = FitnessValSorted[ord_rerank].copy()
+                PopSorted = PopSorted[ord_rerank]
+                FitnessValSorted = FitnessValSorted[ord_rerank]
                # FitnessTstSorted = FitnessTstSorted[ord_rerank]
-                ComplexitySorted = ComplexitySorted[ord_rerank].copy()
-                _modelsSorted = _modelsSorted[ord_rerank].copy()
+                ComplexitySorted = ComplexitySorted[ord_rerank]
+                _modelsSorted = _modelsSorted[ord_rerank]
 
                 if self.verbose == 2:
                     print("\nStep 2. Fitness reranked")
