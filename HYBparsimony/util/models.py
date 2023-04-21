@@ -7,7 +7,7 @@ from HYBparsimony.util.complexity import kernel_ridge_complexity, generic_comple
 import warnings
 import inspect
 
-_valid_algorithms = ["Ridge", "Kridge", "MLPRegressor", "RidgeClassifier", "LogisticRegression"]
+_valid_algorithms = ["Ridge", "KernelRidge", "MLPRegressor", "RidgeClassifier", "LogisticRegression"]
 valid_algorithms = [x.lower() for x in _valid_algorithms]
 
 def check_algorithm(algorithm):
@@ -36,17 +36,16 @@ Ridge_Model = {"estimator": Ridge,
                "alpha": {"range": (-5, 3), "type": Population.POWER}
                }
 
-
-KRidge_Model = {"estimator": KernelRidge,
+KernelRidge_Model = {"estimator": KernelRidge,
                 "complexity":kernel_ridge_complexity,
-                "alpha": {"range": (0, 1), "type": Population.FLOAT},
-                "gamma": {"range": (0, 1), "type": Population.FLOAT},
+                "alpha": {"range": (-5, 3), "type": Population.POWER},
+                "gamma": {"range": (-5, 3), "type": Population.POWER},
                 "kernel": {"value": "rbf", "type": Population.CONSTANT}}
 
 MLPRegressor_Model = {"estimator": MLPRegressor, # The estimator
                       "complexity": mlp_complexity, # The complexity
                       "hidden_layer_sizes": {"range": (1, 25), "type": Population.INTEGER},
-                      "alpha": {"range": (0, 1), "type": Population.FLOAT},
+                      "alpha": {"range": (-5, 3), "type": Population.POWER},
                       "solver": {"value": "lbfgs", "type": Population.CONSTANT},
                       "activation": {"value": "logistic", "type": Population.CONSTANT},
                       "n_iter_no_change": {"value": 20, "type": Population.CONSTANT},
