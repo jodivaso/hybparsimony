@@ -7,14 +7,14 @@ from HYBparsimony.util.complexity import kernel_ridge_complexity, generic_comple
 import warnings
 import inspect
 
-_valid_algorithms = ["Ridge", "KernelRidge", "MLPRegressor", "RidgeClassifier", "LogisticRegression"]
-valid_algorithms = [x.lower() for x in _valid_algorithms]
-
-def check_algorithm(algorithm):
+# Function to return correct algorithm dictionary
+def check_algorithm(algorithm, is_classification):
     if algorithm is not None:
         if isinstance(algorithm, str):
-            if algorithm.lower() not in valid_algorithms:
+            if algorithm not in list(algorithms_dict.keys()):
                 raise ValueError(algorithm, "is not available")
+            else:
+                algorithm = algorithms_dict[algorithm]
         elif isinstance(algorithm, dict):
             estimator = algorithm.get("estimator")
             if estimator is None:
@@ -26,43 +26,49 @@ def check_algorithm(algorithm):
             if algorithm.get("complexity") is None:
                 warnings.warn("The dictionary does not contain a complexity function, the default one (number of features) will be used")
                 algorithm["complexity"] = generic_complexity
-
-#####################
-# REGRESSION MODELS
-# ###################
-
-Ridge_Model = {"estimator": Ridge,
+    else:
+        algorithm= models.Logistic_Model if is_classification else models.Ridge_Model
+    
+    return algorithm   
+            
+algorithms_dict = dict(
+    #####################
+    # REGRESSION MODELS
+    # ###################
+    Ridge = {"estimator": Ridge,
                "complexity": linearModels_complexity,
                "alpha": {"range": (-5, 3), "type": Population.POWER}
-               }
+               },
 
-KernelRidge_Model = {"estimator": KernelRidge,
-                "complexity":kernel_ridge_complexity,
-                "alpha": {"range": (-5, 3), "type": Population.POWER},
-                "gamma": {"range": (-5, 3), "type": Population.POWER},
-                "kernel": {"value": "rbf", "type": Population.CONSTANT}}
+    KernelRidge = {"estimator": KernelRidge,
+                    "complexity":kernel_ridge_complexity,
+                    "alpha": {"range": (-5, 3), "type": Population.POWER},
+                    "gamma": {"range": (-5, 3), "type": Population.POWER},
+                    "kernel": {"value": "rbf", "type": Population.CONSTANT}
+                  },
 
-MLPRegressor_Model = {"estimator": MLPRegressor, # The estimator
-                      "complexity": mlp_complexity, # The complexity
-                      "hidden_layer_sizes": {"range": (1, 25), "type": Population.INTEGER},
-                      "alpha": {"range": (-5, 3), "type": Population.POWER},
-                      "solver": {"value": "lbfgs", "type": Population.CONSTANT},
-                      "activation": {"value": "logistic", "type": Population.CONSTANT},
-                      "n_iter_no_change": {"value": 20, "type": Population.CONSTANT},
-                      "tol": {"value": 1e-5, "type": Population.CONSTANT},
-                      "random_state": {"value": 1234, "type": Population.CONSTANT},
-                      "max_iter": {"value": 5000, "type": Population.CONSTANT}}
+    MLPRegressor = {"estimator": MLPRegressor, # The estimator
+                  "complexity": mlp_complexity, # The complexity
+                  "hidden_layer_sizes": {"range": (1, 25), "type": Population.INTEGER},
+                  "alpha": {"range": (-5, 3), "type": Population.POWER},
+                  "solver": {"value": "lbfgs", "type": Population.CONSTANT},
+                  "activation": {"value": "logistic", "type": Population.CONSTANT},
+                  "n_iter_no_change": {"value": 20, "type": Population.CONSTANT},
+                  "tol": {"value": 1e-5, "type": Population.CONSTANT},
+                  "random_state": {"value": 1234, "type": Population.CONSTANT},
+                  "max_iter": {"value": 5000, "type": Population.CONSTANT}
+                   },
 
-#########################
-# CLASSIFICATION MODELS
-# #######################
+    #########################
+    # CLASSIFICATION MODELS
+    # #######################
+    RidgeClassifier = {"estimator": RidgeClassifier,
+                   "complexity": linearModels_complexity,
+                   "alpha": {"range": (-5, 3), "type": Population.POWER}
+                   },
 
-RidgeClassifier_Model = {"estimator": RidgeClassifier,
-               "complexity": linearModels_complexity,
-               "alpha": {"range": (-5, 3), "type": Population.POWER}
-               }
-
-Logistic_Model = {"estimator": LogisticRegression,
-                 "complexity": linearModels_complexity,
-                 "C": {"range": (-5, 3), "type": Population.POWER}
-                 }
+    LogisticRegression = {"estimator": LogisticRegression,
+                     "complexity": linearModels_complexity,
+                     "C": {"range": (-5, 3), "type": Population.POWER}
+                     }
+)
