@@ -145,12 +145,9 @@ class HYBparsimony(object):
         # Custom cross val score
         self.custom_eval_fun = custom_eval_fun
 
-        check_algorithm(algorithm) # This will raise an exception if a bad argument is found
-        self.algorithm = algorithm
-
         self._cv=cv
         self._scoring=scoring
-
+        self.algorithm = algorithm
 
 
     def fit(self, X, y, iter_ini=0, time_limit=None):
@@ -173,25 +170,11 @@ class HYBparsimony(object):
             else: # Si no hay ni custom_eval_fun, ni scoring, ni cv, pongo el de por defecto
                 self.custom_eval_fun = default_cv_score_classification if check_classification(y) else default_cv_score_regression
 
-        ## The default algorithm selection.
-
-        # 'self.algorithm' must be a dictionary
-        if self.algorithm is None:
-            self.algorithm = models.Logistic_Model if check_classification(y) else models.Ridge_Model
-        elif self.algorithm == "Ridge":
-            self.algorithm = models.Ridge_Model
-        elif self.algorithm == "KernelRidge":
-            self.algorithm = models.KernelRidge_Model
-        elif self.algorithm == "MLPRegressor":
-            self.algorithm = models.MLPRegressor_Model
-        elif self.algorithm == "RidgeClassifier":
-            self.algorithm = models.RidgeClassifier_Model
-        elif self.algorithm == "Logistic_Model":
-            self.algorithm = models.Logistic_Model
- 
+        # Select and check algorithm dictionary
+        self.algorithm = check_algorithm(self.algorithm, check_classification(y))
         self.params = {k: self.algorithm[k] for k in self.algorithm.keys() if k not in ["estimator", "complexity"]}
 
-        # Función fitness (para regressión)
+        # Función fitness (for regression)
         if self.n_jobs == 1:
             self.fitness = getFitness(self.algorithm['estimator'], self.algorithm['complexity'],
                                       self.custom_eval_fun)
