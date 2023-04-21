@@ -175,14 +175,20 @@ class HYBparsimony(object):
 
         ## The default algorithm selection.
 
-        # ALGORITHM debe acabar siendo un diccionario
+        # 'self.algorithm' must be a dictionary
         if self.algorithm is None:
             self.algorithm = models.Logistic_Model if check_classification(y) else models.Ridge_Model
-        elif self.algorithm == "KRidge":
-            self.algorithm = models.KRidge_Model
+        elif self.algorithm == "Ridge":
+            self.algorithm = models.Ridge_Model
+        elif self.algorithm == "KernelRidge":
+            self.algorithm = models.KernelRidge_Model
         elif self.algorithm == "MLPRegressor":
             self.algorithm = models.MLPRegressor_Model
-
+        elif self.algorithm == "RidgeClassifier":
+            self.algorithm = models.RidgeClassifier_Model
+        elif self.algorithm == "Logistic_Model":
+            self.algorithm = models.Logistic_Model
+ 
         self.params = {k: self.algorithm[k] for k in self.algorithm.keys() if k not in ["estimator", "complexity"]}
 
         # Función fitness (para regressión)
