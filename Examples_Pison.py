@@ -42,7 +42,7 @@ if __name__ == "__main__":
                                           features=diabetes.feature_names,
                                           rerank_error=0.001,
                                           verbose=0)
-        HYBparsimony_model.fit(X_train, y_train, time_limit=5.0)
+        HYBparsimony_model.fit(X_train, y_train, time_limit=0.10)
         preds = HYBparsimony_model.predict(X_test)
         print(algo, "RMSE test", mean_squared_error(y_test, preds))
         print('Selected features:',HYBparsimony_model.selected_features)

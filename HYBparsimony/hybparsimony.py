@@ -690,7 +690,7 @@ class HYBparsimony(object):
         aux = self.best_model_conf[nparams:nparams + nfs]
         self.selected_features_boolean = (aux >= 0.5) # Me guardo como una lista de booleanos si las features están o no
         self.selected_features = np.array(self.features)[self.selected_features_boolean] # Me guardo los nombres
-        if self.verbose > 0:
+        if self.verbose == 2:
             print("Selected features:", self.selected_features)
         return self.best_model
 
@@ -699,8 +699,8 @@ class HYBparsimony(object):
         if num_cols == len(self.selected_features): #Si nos han pasado un X donde ya he cogido las columnas que debía coger
             preds = self.best_model.predict(X)
         else: # En otro caso, nos han pasado un X entero y nos tenemos que quedar solo con las columnas seleccionadas.
-            if isinstance(X, pd.Series): # Si es un dataframe, puedo acceder a las columnas por nombre/booleano
-                X_selected_features = X[self.selected_features]
+            if isinstance(X, pd.DataFrame): # Si es un dataframe, puedo acceder a las columnas por nombre/booleano
+                X_selected_features = X[self.selected_features].values
             else: #Si es un Numpy, entonces tengo que quedarme con las columnas apropiadas
                 X_selected_features = X[:,self.selected_features_boolean] # Cojo todas las filas pero solo las columnas apropiadas.
             preds = self.best_model.predict(X_selected_features)
@@ -712,8 +712,8 @@ class HYBparsimony(object):
         if num_cols == len(self.selected_features): #Si nos han pasado un X donde ya he cogido las columnas que debía coger
             preds = self.best_model.predict_proba(X)
         else: # En otro caso, nos han pasado un X entero y nos tenemos que quedar solo con las columnas seleccionadas.
-            if isinstance(X, pd.Series): # Si es un dataframe, puedo acceder a las columnas por nombre/booleano
-                X_selected_features = X[self.selected_features]
+            if isinstance(X, pd.DataFrame): # Si es un dataframe, puedo acceder a las columnas por nombre/booleano
+                X_selected_features = X[self.selected_features].values
             else: #Si es un Numpy, entonces tengo que quedarme con las columnas apropiadas
                 X_selected_features = X[:,self.selected_features_boolean] # Cojo todas las filas pero solo las columnas apropiadas.
             preds = self.best_model.predict_proba(X_selected_features)
