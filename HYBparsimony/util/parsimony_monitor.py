@@ -21,8 +21,8 @@ def parsimony_monitor(iter, fitnessval, bestfitnessVal, bestcomplexity, minutes_
 
     fitnessval = fitnessval[~np.isnan(fitnessval)]
 
-    print(f"HYBparsimony | iter = {iter}")
-    print("|".join([f"MeanVal = {round(np.mean(fitnessval), digits)}".center(16 + digits),
+    # print(f"HYBparsimony | iter = {iter}")
+    print(", ".join([f"MeanVal = {round(np.mean(fitnessval), digits)}".center(16 + digits),
                     f"ValBest = {round(bestfitnessVal, digits)}".center(16 + digits),
                     # f"TstBest = {round(bestfitnessTst, digits)}".center(16 + digits),
                     f"ComplexBest = {round(bestcomplexity, digits)}".center(19 + digits),

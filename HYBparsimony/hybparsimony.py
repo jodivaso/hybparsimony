@@ -60,7 +60,7 @@ class HYBparsimony(object):
                  feat_thres = 0.90,
                  best_global_thres = 1,
                  particles_to_delete=None,
-                 seed_ini = None,
+                 seed_ini = 1234,
                  not_muted = 3,
                  feat_mut_thres = 0.1,
                  n_jobs=-1,
@@ -268,9 +268,9 @@ class HYBparsimony(object):
         crossover_applied = False
 
         for iter in range(self.maxiter):
-            print("Running iteration", iter)
-            self.iter = iter
-
+            if self.verbose > 0:
+                print("Running iteration", iter)
+            
             tic = time.time()
             #####################################################
             # Compute solutions
@@ -364,8 +364,8 @@ class HYBparsimony(object):
                 #     print("MODELS", _modelsSorted)
                 #     print("POPSORTED", PopSorted)
                 #     print("fitnessvalsorted", FitnessValSorted)
-
-            print("Current best score:", self.best_score)
+            if self.verbose > 0:
+                print("Current best score:", self.best_score)
 
             # Update global best positions, fitness and complexity of each particle (with NO rerank)
             for i in range(self.npart):
@@ -414,7 +414,8 @@ class HYBparsimony(object):
             if (len(best_val_cost) - (np.min(np.arange(len(best_val_cost))[best_val_cost >= (np.max(best_val_cost) - self.tol)]))) >= self.early_stop:
                 break
             if time_limit is not None and time_limit < (time.time() - start_time)/60:
-                print("Time limit reached. Stopped.")
+                if self.verbose > 0:
+                    print("Time limit reached. Stopped.")
                 break
 
             ####################################################
@@ -689,10 +690,8 @@ class HYBparsimony(object):
         aux = self.best_model_conf[nparams:nparams + nfs]
         self.selected_features_boolean = (aux >= 0.5) # Me guardo como una lista de booleanos si las features están o no
         self.selected_features = np.array(self.features)[self.selected_features_boolean] # Me guardo los nombres
-        print("Selected features:", self.selected_features)
-
-
-
+        if self.verbose > 0:
+            print("Selected features:", self.selected_features)
         return self.best_model
 
     def predict(self, X):
