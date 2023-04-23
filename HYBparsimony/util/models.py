@@ -27,8 +27,7 @@ def check_algorithm(algorithm, is_classification):
                 warnings.warn("The dictionary does not contain a complexity function, the default one (number of features) will be used")
                 algorithm["complexity"] = generic_complexity
     else:
-        algorithm= models.Logistic_Model if is_classification else models.Ridge_Model
-    
+        algorithm=algorithms_dict['LogisticRegression'] if is_classification else algorithms_dict['Ridge'] 
     return algorithm   
             
 algorithms_dict = dict(
