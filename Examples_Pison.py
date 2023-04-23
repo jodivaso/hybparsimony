@@ -96,7 +96,7 @@ if __name__ == "__main__":
 
     # CLASIFICACIÓN
 
-    # # Cargo un dataset de clasificación
+    # Cargo un dataset de clasificación
     # iris = load_iris()
     # X, y = iris.data, iris.target
     # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state=12345)
@@ -116,7 +116,7 @@ if __name__ == "__main__":
 
     # def custom_fun(estimator, X, y):
     #     return cross_val_score(estimator, X, y, scoring="accuracy")
-    #
+    
     # HYBparsimony_model = HYBparsimony(n_jobs=1,custom_eval_fun=custom_fun) # Este con paralelismo NO funciona
     # HYBparsimony_model.fit(X_train, y_train, time_limit=0.5)
     # preds = HYBparsimony_model.predict(X_test)

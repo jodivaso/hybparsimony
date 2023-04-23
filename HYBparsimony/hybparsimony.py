@@ -84,11 +84,10 @@ class HYBparsimony(object):
         self.verbose = verbose
         self.seed_ini = seed_ini
 
-        self.pmutation = pmutation
-        # if pmutation is None:
-        #     self.pmutation = 1 / len(features)
-        # else:
-        #     self.pmutation = pmutation
+        if pmutation is None:
+            self.pmutation = 0.0
+        else:
+            self.pmutation = pmutation
         self.not_muted = not_muted
         self.feat_mut_thres = feat_mut_thres
 
@@ -174,7 +173,7 @@ class HYBparsimony(object):
         self.algorithm = check_algorithm(self.algorithm, check_classification(y))
         self.params = {k: self.algorithm[k] for k in self.algorithm.keys() if k not in ["estimator", "complexity"]}
 
-        # Función fitness (for regression)
+        # Fitness function (for regression)
         if self.n_jobs == 1:
             self.fitness = getFitness(self.algorithm['estimator'], self.algorithm['complexity'],
                                       self.custom_eval_fun)
