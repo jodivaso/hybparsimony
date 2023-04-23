@@ -75,13 +75,13 @@ if __name__ == "__main__":
         name_db = names_tiempo[0].split('_')[0]
         num_cols = names_tiempo[3]
         gamma_crossover = names_tiempo[4]
-        list_csv = os.listdir('datasets')
+        list_csv = os.listdir('../datasets')
         list_csv = [i for i in list_csv if f'{name_db}' in i]
         file_db = list_csv[0]
         time_limit = int(names_tiempo[1])  # Time limit in minutes
         
         # Train with a max of 2000 rows
-        df_VAL = pd.read_csv('datasets/' + file_db)
+        df_VAL = pd.read_csv('../datasets/' + file_db)
         train_val_size = df_VAL.shape[0]//2
         if train_val_size>2000:
             train_val_size = 2000
