@@ -25,7 +25,7 @@ import warnings
 from sklearn.exceptions import ConvergenceWarning
 from sklearn import __version__ as sk_version
 
-DIR_SALIDA = 'experiments_23abr2023/'
+DIR_SALIDA = '../experiments_23abr2023/'
 NUM_RUNS = 5
 
 tiempos = [['slice_norm_reduc.csv', 3, 2000, 378, 0.50], 
