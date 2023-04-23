@@ -27,10 +27,12 @@ if __name__ == "__main__":
     y_train = scaler_y.fit_transform(y_train.reshape(-1,1)).flatten()
     y_test = scaler_y.transform(y_test.reshape(-1,1)).flatten()
 
+
     ########################################################
     #         EJEMPLO ALGORITMOS REGRESION                 #
     ########################################################
-    algorithms_reg = ['Ridge', 'Lasso', 'KernelRidge', 'KNeighborsRegressor',
+    algorithms_reg = ['Ridge', 'Lasso', 
+                      'KernelRidge', 'KNeighborsRegressor',
                     'MLPRegressor', 'SVR',
                     'DecisionTreeRegressor', 'RandomForestRegressor'
                     ]
@@ -44,7 +46,7 @@ if __name__ == "__main__":
                                           verbose=0)
         HYBparsimony_model.fit(X_train, y_train, time_limit=0.10)
         preds = HYBparsimony_model.predict(X_test)
-        print(algo, "RMSE test", mean_squared_error(y_test, preds))
+        print(algo, "MSE test", mean_squared_error(y_test, preds))
         print('Selected features:',HYBparsimony_model.selected_features)
         print(HYBparsimony_model.best_model)
         print('#######################')

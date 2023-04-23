@@ -39,17 +39,17 @@ algorithms_dict = dict(
     # ###################
     Ridge = {"estimator": Ridge,
                "complexity": linearModels_complexity,
-               "alpha": {"range": (-5, 3), "type": Population.POWER}
+               "alpha": {"range": (-5, 5), "type": Population.POWER}
                },
 
     Lasso = {"estimator": Lasso,
                "complexity": linearModels_complexity,
-               "alpha": {"range": (-5, 3), "type": Population.POWER}
+               "alpha": {"range": (-5, 5), "type": Population.POWER}
                },
 
     KernelRidge = {"estimator": KernelRidge,
                     "complexity":kernel_ridge_complexity,
-                    "alpha": {"range": (-5, 3), "type": Population.POWER},
+                    "alpha": {"range": (-5, 5), "type": Population.POWER},
                     "gamma": {"range": (-5, 3), "type": Population.POWER},
                     "kernel": {"value": "rbf", "type": Population.CONSTANT}
                   },
@@ -57,7 +57,7 @@ algorithms_dict = dict(
     MLPRegressor = {"estimator": MLPRegressor, # The estimator
                   "complexity": mlp_complexity, # The complexity
                   "hidden_layer_sizes": {"range": (1, 25), "type": Population.INTEGER},
-                  "alpha": {"range": (-5, 3), "type": Population.POWER},
+                  "alpha": {"range": (-5, 5), "type": Population.POWER},
                   "solver": {"value": "lbfgs", "type": Population.CONSTANT},
                   "activation": {"value": "logistic", "type": Population.CONSTANT},
                   "n_iter_no_change": {"value": 20, "type": Population.CONSTANT},
