@@ -19,10 +19,11 @@ if __name__ == "__main__":
     ###############################################################
     #                       EJEMPLO BÁSICO                        #
     ###############################################################
-    # HYBparsimony_model = HYBparsimony()
-    # HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
-    # preds = HYBparsimony_model.predict(X_test)
-    # print("RMSE test", mean_squared_error(y_test, preds))
+    HYBparsimony_model = HYBparsimony()
+    HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
+    preds = HYBparsimony_model.predict(X_test)
+    print("RMSE test", mean_squared_error(y_test, preds))
+    print('15 particulas')
 
     ###############################################################
     #                       EJEMPLO OTRO SCORING                  #
@@ -43,10 +44,10 @@ if __name__ == "__main__":
     ###############################################################
     #                EJEMPLO OTRO SCORING Y OTRO CV               #
     ###############################################################
-    HYBparsimony_model = HYBparsimony(scoring="neg_mean_absolute_error", cv=RepeatedKFold(n_splits=10, n_repeats=5))
-    HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
-    preds = HYBparsimony_model.predict(X_test)
-    print("MAE test", mean_absolute_error(y_test, preds))
+    # HYBparsimony_model = HYBparsimony(scoring="neg_mean_absolute_error", cv=RepeatedKFold(n_splits=10, n_repeats=5))
+    # HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)
+    # preds = HYBparsimony_model.predict(X_test)
+    # print("MAE test", mean_absolute_error(y_test, preds))
 
 
     ###############################################################
@@ -55,7 +56,7 @@ if __name__ == "__main__":
 
     # def custom_fun(estimator, X, y): # CV con repeatedKfold.
     #     return cross_val_score(estimator, X, y, cv=RepeatedKFold(n_splits=10, n_repeats=5))
-    #
+    
     # # Este con paralelismo NO funciona (sí funciona si el custom_fun lo definimos fuera del if main)
     # HYBparsimony_model = HYBparsimony(n_jobs=1, custom_eval_fun=custom_fun)
     # HYBparsimony_model.fit(X_train, y_train, time_limit=0.2)

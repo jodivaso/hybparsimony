@@ -41,7 +41,7 @@ class HYBparsimony(object):
                  cv=None,
                  scoring=None,
                  type_ini_pop="improvedLHS",
-                 npart = 40,
+                 npart = 15,
                  maxiter=250,
                  early_stop=None,
                  Lambda=1.0,
@@ -55,7 +55,7 @@ class HYBparsimony(object):
                  #pcrossover = None,  # an array or a float (number between 0 and 1), % of worst individuals to substitute from crossover.
                  gamma_crossover = 0.5,
                  tol = 1e-4,
-                 rerank_error=0.005,
+                 rerank_error=1e-09,
                  keep_history = False,
                  feat_thres = 0.90,
                  best_global_thres = 1,
