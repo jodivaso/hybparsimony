@@ -13,6 +13,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolu
 from sklearn.model_selection import train_test_split, cross_val_score, RepeatedKFold, KFold
 from sklearn.metrics import make_scorer
 from sklearn.datasets import load_diabetes, load_iris
+from sklearn.linear_model import Ridge
 
 from HYBparsimony import Population, HYBparsimony, order
 from HYBparsimony.hybparsimony import default_cv_score_classification
@@ -27,9 +28,11 @@ from sklearn import __version__ as sk_version
 
 DIR_SALIDA = '../experiments_23abr2023/'
 NUM_RUNS = 5
+ESTIMATOR = Ridge
+PBOUNDS = dict(alpha=(-5, 5))
 
 tiempos = [['slice_norm_reduc.csv', 3, 2000, 378, 0.50], 
-           ['blog_norm.csv', 3, 2000, 276, 0.50], 
+        #    ['blog_norm.csv', 3, 2000, 276, 0.50], 
         #    ['crime_norm.csv', 3, 2000, 127, 0.50], 
         #    ['tecator_norm.csv', 3, 2000, 124, 0.50],
         #    ['ailerons_norm.csv', 3, 2000, 40, 0.50], 
@@ -57,6 +60,16 @@ def seed_everything(seed):
 def rmse_func(y_true, y_pred):
     return -np.sqrt(mean_squared_error(y_true, y_pred))
 
+# Optimize with BayesianOptimization
+def optimize_fun_bayes(alpha):
+    global X_train_val_bayes, y_train_val, ESTIMATOR
+    model = ESTIMATOR(alpha=10.0**alpha)
+    return np.mean(cross_val_score(model, X_train_val_bayes, y_train_val, cv=5, scoring="neg_mean_squared_error"))
+
+num_run = 0
+def custom_fun(estimator, X, y):
+    global num_run
+    return cross_val_score(estimator, X, y, cv=KFold(n_splits=10, shuffle=True, random_state=num_run), scoring="neg_mean_squared_error")
 
 
 if __name__ == "__main__":
@@ -69,6 +82,8 @@ if __name__ == "__main__":
         os.mkdir(DIR_SALIDA)
     
     # Datasets loop
+    out_res = []
+    res_bayes = []
     for names_tiempo in tiempos:
         ini_time = time.time()
 
@@ -105,17 +120,17 @@ if __name__ == "__main__":
         y_test = pd.DataFrame(scaler_y.transform(y_test.values.reshape(-1, 1)), columns=[target_name])
    
         # Main Loop
-        out_res = []
         probs_feats = []
         for num_run in range(NUM_RUNS):
             seed_everything(num_run)
-            HYBparsimony_model = HYBparsimony(algorithm='Ridge',
+            HYBparsimony_model = HYBparsimony(algorithm=ESTIMATOR.__name__,
                                             features=input_names,
                                             rerank_error=0.001,
+                                            custom_eval_fun=custom_fun,
                                             gamma_crossover=gamma_crossover,
                                             seed_ini=num_run,
-                                            verbose=0)
-            HYBparsimony_model.fit(X_train_val.values, y_train_val.values, time_limit=0.20)
+                                            verbose=1)
+            HYBparsimony_model.fit(X_train_val.values, y_train_val.values, time_limit=5)
             preds = HYBparsimony_model.predict(X_test.values)
             RMSE_test = mean_squared_error(y_test, preds, squared=False)
             print(f'{NAME_FILE} name_db={name_db} run={num_run} RMSE_test={RMSE_test}')
@@ -131,13 +146,48 @@ if __name__ == "__main__":
             probs_feats.append(best_model_probsfeats)
         probs_feats = pd.DataFrame(probs_feats, columns=input_names)
         probs_feats.to_csv(DIR_SALIDA + 'probs_' + name_db + '__' + NAME_FILE + '.csv', index=False)
-            
-    out_res = pd.DataFrame(out_res)
-    print(out_res.head())
-    out_res.to_csv(DIR_SALIDA + NAME_FILE + '.csv', index=False)
+        out_res_df = pd.DataFrame(out_res)
 
+        print(out_res_df.head())
+        out_res_df.to_csv(DIR_SALIDA + NAME_FILE + '.csv', index=False)
 
+        # probs_feats = pd.read_csv('../experiments_23abr2023/probs_slice__hyb_all_dbs2023_04_24_13_47_40_.csv')
 
+        # Bayesian Optimization
+        # ---------------------
+        probs_feats_mean = probs_feats.mean(axis=0).values
+        for thr_features in np.arange(0.00, 1.00, 0.10):
+            selec_feats_thr = input_names[probs_feats_mean>=thr_features]
+            if len(selec_feats_thr)==0:
+                break
+            X_train_val_bayes = X_train_val[selec_feats_thr].values
+
+            # Optimize with BayesianOptimization
+            tic = time.time()
+            optimizer = BayesianOptimization(f=optimize_fun_bayes,
+                                            pbounds=PBOUNDS,
+                                            random_state=1234,
+                                            allow_duplicate_points=True)
+            optimizer.maximize(init_points=10, n_iter=100)
+            tac = time.time()
+            elapsed_time = (tac - tic) / 60.0
+            print('Elapsed_time:', elapsed_time)
+            print('Best:', optimizer.max)
+            alpha=optimizer.max["params"]["alpha"]
+            model = ESTIMATOR(alpha=10.0**alpha)
+            model.fit(X_train_val_bayes, y_train_val)
+            preds = model.predict(X_test[selec_feats_thr].values)
+            FINAL_RMSE = mean_squared_error(y_test, preds, squared=False)
+            print(f'THR={thr_features} FINAL_RMSE={FINAL_RMSE}')
+            res_bayes.append(dict(name_db=name_db, 
+                            thr_features=thr_features,
+                            len_feats=len(selec_feats_thr),
+                            FINAL_RMSE=FINAL_RMSE,
+                            model = model,
+                            selec_feats_thr=selec_feats_thr))
+        res_bayes_df = pd.DataFrame(res_bayes)
+        res_bayes_df.to_csv(DIR_SALIDA + 'bayes_thr_' + NAME_FILE + '.csv')
+        print(res_bayes_df)
 
 
 

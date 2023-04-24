@@ -26,10 +26,10 @@ def check_classification(y):
     return np.issubdtype(y.dtype, np.integer)
 
 def default_cv_score_regression(estimator, X,y):
-    return cross_val_score(estimator,X,y,cv=5, scoring="neg_mean_squared_error")
+    return cross_val_score(estimator, X, y, cv=5, scoring="neg_mean_squared_error")
 
 def default_cv_score_classification(estimator, X,y):
-    return cross_val_score(estimator,X,y,cv=5, scoring="neg_log_loss")
+    return cross_val_score(estimator, X, y, cv=5, scoring="neg_log_loss")
 
 class HYBparsimony(object):
 
