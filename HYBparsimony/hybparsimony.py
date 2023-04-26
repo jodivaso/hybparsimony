@@ -63,7 +63,7 @@ class HYBparsimony(object):
                  seed_ini = 1234,
                  not_muted = 3,
                  feat_mut_thres = 0.1,
-                 n_jobs=-1,
+                 n_jobs=1,
                  verbose=0):
 
         self.type_ini_pop = type_ini_pop
