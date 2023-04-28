@@ -28,28 +28,28 @@ import warnings
 from sklearn.exceptions import ConvergenceWarning
 from sklearn import __version__ as sk_version
 
-DIR_SALIDA = '../experiments_23abr2023/'
+DIR_SALIDA = '../experiments_27abr2023/'
 NUM_RUNS = 25
 PBOUNDS = dict(alpha=(-5, 5), gamma=(-7,0))
 
 tiempos = [['slice_norm_reduc.csv', 3, 2000, 378, 0.50], 
-        #    ['blog_norm.csv', 3, 2000, 276, 0.50], 
-        #    ['crime_norm.csv', 3, 2000, 127, 0.50], 
-        #    ['tecator_norm.csv', 3, 2000, 124, 0.50],
-        #    ['ailerons_norm.csv', 3, 2000, 40, 0.50], 
-        #    ['puma_norm.csv', 3, 2000, 32, 0.50],
-        #    ['bank_norm.csv', 3, 2000, 32, 0.50], 
-        #    ['pol_norm.csv', 3, 2000, 26, 0.50],
-        #    ['cpu_act_norm.csv', 3, 2000, 21, 0.50],
-        #    ['elevators_norm.csv', 3, 2000, 18, 0.50],
-        #    ['meta_norm.csv', 3, 2000, 17, 0.50],
-        #    ['bodyfat_norm.csv', 3, 2000, 14, 0.50], 
-        #    ['boston_norm.csv', 3, 2000, 13, 0.50],
-        #    ['housing_norm.csv', 3, 2000, 13, 0.50],
-        #    ['concrete_norm.csv', 3, 2000, 8, 0.50],
-        #    ['no2_norm.csv', 3, 2000, 7, 0.50],
-        #    ['pm10_norm.csv', 3, 2000, 7, 0.50],
-        #    ['strike_norm.csv', 3, 2000, 6, 0.50]
+           ['blog_norm.csv', 3, 2000, 276, 0.50], 
+           ['crime_norm.csv', 3, 2000, 127, 0.50], 
+           ['tecator_norm.csv', 3, 2000, 124, 0.50],
+           ['ailerons_norm.csv', 3, 2000, 40, 0.50], 
+           ['puma_norm.csv', 3, 2000, 32, 0.50],
+           ['bank_norm.csv', 3, 2000, 32, 0.50], 
+           ['pol_norm.csv', 3, 2000, 26, 0.50],
+           ['cpu_act_norm.csv', 3, 2000, 21, 0.50],
+           ['elevators_norm.csv', 3, 2000, 18, 0.50],
+           ['meta_norm.csv', 3, 2000, 17, 0.50],
+           ['bodyfat_norm.csv', 3, 2000, 14, 0.50], 
+           ['boston_norm.csv', 3, 2000, 13, 0.50],
+           ['housing_norm.csv', 3, 2000, 13, 0.50],
+           ['concrete_norm.csv', 3, 2000, 8, 0.50],
+           ['no2_norm.csv', 3, 2000, 7, 0.50],
+           ['pm10_norm.csv', 3, 2000, 7, 0.50],
+           ['strike_norm.csv', 3, 2000, 6, 0.50]
           ]
 
 
@@ -138,7 +138,7 @@ if __name__ == "__main__":
         # res_forward.to_csv(DIR_SALIDA + 'fordward_' + name_db + '__' + NAME_FILE + '.csv', index=False)
         # # -----------
 
-        """ # Main Loop
+        # Main Loop
         probs_feats = []
         for num_run in range(NUM_RUNS):
             seed_everything(num_run)
@@ -196,9 +196,9 @@ if __name__ == "__main__":
         out_res_df = pd.DataFrame(out_res) 
 
         print(out_res_df.head())
-        out_res_df.to_csv(DIR_SALIDA + NAME_FILE + '.csv', index=False) """
+        out_res_df.to_csv(DIR_SALIDA + 'out_res_' + NAME_FILE + '.csv', index=False)
 
-        probs_feats = pd.read_csv('../experiments_23abr2023/probs_slice__hyb_all_dbs2023_04_26_09_23_50_.csv')
+        # probs_feats = pd.read_csv('../experiments_23abr2023/probs_slice__hyb_all_dbs2023_04_26_09_23_50_.csv')
 
         # Bayesian Optimization
         # ---------------------
