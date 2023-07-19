@@ -266,7 +266,7 @@ the lower sum of the squared network weights will determine the most
 parsimonious model (smaller weights reduce the propagation of disturbances).
 
 
-``` {.python}
+```python
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
@@ -297,11 +297,8 @@ HYBparsimony_model = HYBparsimony(algorithm=algo,
 # Search the best hyperparameters and features 
 # (increasing 'time_limit' to improve RMSE with high consuming algorithms)
 HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
-
 ```
 ```
-***output***
-
 Running iteration 0
 Current best score: -0.510785823535343
   MeanVal = -0.8827401 ,   ValBest = -0.5107858 , ComplexBest = 9017405352.49853,  Time(min) = 0.0079003  
@@ -329,18 +326,14 @@ Current best score: -0.4894573166502429
 Time limit reached. Stopped.
 ```
 
-``` {.python}
-
+```python
 # Check results with test dataset
 preds = HYBparsimony_model.predict(X_test)
 print(algo, "RMSE test", mean_squared_error(y_test, preds, squared=False))
 print('Selected features:',HYBparsimony_model.selected_features)
-
 ```
 
 ```
-***output***
-
 KernelRidge RMSE test 0.6819177762856623
 Selected features: ['age' 'sex' 'bmi' 'bp' 's1' 's4' 's5' 's6']
 ```
