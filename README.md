@@ -58,7 +58,7 @@ accuracy. For example, with *rerank\_error=0.01*, we can be interested
 in obtaining models with a smaller number of inputs with a *gamma* rounded
 to two decimals.
 
-``` {.Python}
+```python
 from sklearn.svm import SVC
 from sklearn.metrics import cohen_kappa_score
 from sklearn.preprocessing import StandardScaler
