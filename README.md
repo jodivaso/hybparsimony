@@ -293,6 +293,7 @@ HYBparsimony_model = HYBparsimony(algorithm=algo,
                                 features=diabetes.feature_names,
                                 rerank_error=0.001,
                                 verbose=1)
+
 # Search the best hyperparameters and features 
 # (increasing 'time_limit' to improve RMSE with high consuming algorithms)
 HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
