@@ -252,8 +252,8 @@ Percentage of appearance of each feature in elitists:
 
 ### Example 2: Regression
 
-This example shows how to search, for the *Boston* database, a parsimonious
-ANN model for regression and with **GAparsimony** package.
+This example shows how to search with **GAparsimony** package and for the *diabetes* dataset, a parsimonious
+*KernelRidge* model.
 
 In the next step, a fitness function is created using getFitness. This function return a fitness function for the `Lasso` model, the `mean_squared_error`(RMSE) metric and the predefined `linearModels` complexity function for SVC models. We set regression to `True` beacause is classification example.
 
@@ -277,164 +277,82 @@ parsimonious model (smaller weights reduce the propagation of disturbances).
 
 
 ``` {.python}
-from sklearn.linear_model import Lasso
-from sklearn.preprocessing import StandardScaler
+import pandas as pd
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
+from sklearn.datasets import load_diabetes
+from sklearn.preprocessing import StandardScaler
+from HYBparsimony import HYBparsimony
+# Load 'diabetes' dataset
+diabetes = load_diabetes()
+X, y = diabetes.data, diabetes.target
 
-from sklearn.datasets import load_boston
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state=1234)
 
-from GAparsimony import GAparsimony, Population, getFitness
-from GAparsimony.util import linearModels_complexity
+# Standarize X and y (some algorithms require that)
+scaler_X = StandardScaler()
+X_train = scaler_X.fit_transform(X_train)
+X_test = scaler_X.transform(X_test)
+scaler_y = StandardScaler()
+y_train = scaler_y.fit_transform(y_train.reshape(-1,1)).flatten()
+y_test = scaler_y.transform(y_test.reshape(-1,1)).flatten()
 
-boston = load_boston()
-X, y = boston.data, boston.target 
-X = StandardScaler().fit_transform(X)
-
-# ga_parsimony can be executed with a different set of 'rerank_error' values
-rerank_error = 0.01
-
-params = {"alpha":{"range": (1., 25.9), "type": Population.FLOAT}, 
-            "tol":{"range": (0.0001,0.9999), "type": Population.FLOAT}}
-
-fitness = getFitness(Lasso, mean_squared_error, linearModels_complexity, minimize=True, test_size=0.2, random_state=42, n_jobs=-1)
-
-
-GAparsimony_model = GAparsimony(fitness=fitness,
-                                params = params, 
-                                features = boston.feature_names,
-                                keep_history = True,
-                                rerank_error = rerank_error,
-                                popSize = 40,
-                                maxiter = 5, early_stop=3,
-                                feat_thres=0.90, # Perc selected features in first generation
-                                feat_mut_thres=0.10, # Prob of a feature to be one in mutation
-                                seed_ini = 1234)
 ```
 ``` {.python}
+algo = 'KernelRidge'
+HYBparsimony_model = HYBparsimony(algorithm=algo,
+                                features=diabetes.feature_names,
+                                rerank_error=0.001,
+                                verbose=1)
+HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
 GAparsimony_model.fit(X, y)
 ```
 ```
 #output
 
-GA-PARSIMONY | iter = 0
- MeanVal = -79.1715225 | ValBest = -30.3297649 | TstBest = -29.2466835 |ComplexBest = 13000000021.927263| Time(min) = 0.1092269  
+Running iteration 0
+Current best score: -0.510785823535343
+  MeanVal = -0.8827401 ,   ValBest = -0.5107858 , ComplexBest = 9017405352.49853,  Time(min) = 0.0079003  
 
-GA-PARSIMONY | iter = 1
- MeanVal = -55.1072918 | ValBest = -30.3251321 | TstBest = -29.2267507 |ComplexBest = 12000000022.088743| Time(min) = 0.0523999  
+Running iteration 1
+Current best score: -0.49900477446929087
+  MeanVal = -0.6599694 ,   ValBest = -0.4990048 , ComplexBest = 8000032783.879024,  Time(min) = 0.0061645  
 
-GA-PARSIMONY | iter = 2
- MeanVal = -34.9396425 | ValBest = -30.3166673 | TstBest = -28.8701544 |ComplexBest = 10000000021.774683| Time(min) = 0.0484501  
+Running iteration 2
+Current best score: -0.49869742061382516
+  MeanVal = -0.7842958 ,   ValBest = -0.4986974 , ComplexBest = 7000001419.9764595,  Time(min) = 0.0055429  
 
-GA-PARSIMONY | iter = 3
- MeanVal = -38.6590874 |  ValBest = -30.144799 |  TstBest = -29.321512 |ComplexBest = 11000000022.865057| Time(min) = 0.0440666 
+Running iteration 3
+Current best score: -0.49869742061382516
+  MeanVal = -0.7685741 ,   ValBest = -0.4986974 , ComplexBest = 7000001419.9764595,  Time(min) = 0.0054837  
 
 ...
 
-GA-PARSIMONY | iter = 21
- MeanVal = -40.5599677 | ValBest = -29.6343625 | TstBest = -29.3245345 |ComplexBest = 5000000023.114235| Time(min) = 0.0442333  
+Running iteration 34
+Current best score: -0.4894684971696733
+  MeanVal = -0.5273142 ,   ValBest = -0.4894685 , ComplexBest = 8000002255.683656,  Time(min) = 0.0054205  
 
-GA-PARSIMONY | iter = 22
- MeanVal = -36.0291598 | ValBest = -29.6343625 | TstBest = -29.3245345 |ComplexBest = 5000000023.114235| Time(min) = 0.0433499  
+Running iteration 35
+Current best score: -0.4894573166502429
+  MeanVal = -0.5262941 ,   ValBest = -0.4894573 , ComplexBest = 8000002199.115843,  Time(min) = 0.0049526  
 
-GA-PARSIMONY | iter = 23
- MeanVal = -36.6950374 | ValBest = -29.6343625 | TstBest = -29.3245345 |ComplexBest = 5000000023.114235|   Time(min) = 0.0441   
-
-GA-PARSIMONY | iter = 24
- MeanVal = -37.4263523 | ValBest = -29.6343625 | TstBest = -29.3245345 |ComplexBest = 5000000023.114235| Time(min) = 0.0420333  
+Time limit reached. Stopped.
 ```
-
-summary() shows the GA initial settings and two solutions: the solution with the best validation score in the whole GA optimization process, and finally, the best parsimonious individual at the last generation.
 
 ``` {.python}
-GAparsimony_model.summary()
-```
-``` 
-+------------------------------------+
-|             GA-PARSIMONY           |
-+------------------------------------+
-
-GA-PARSIMONY settings:
- Number of Parameters      = 2
- Number of Features        = 13
- Population size           = 40
- Maximum of generations    = 50
- Number of early-stop gen. = 10
- Elitism                   = 8
- Crossover probability     = 0.8
- Mutation probability      = 0.1
- Max diff(error) to ReRank = 0.01
- Perc. of 1s in first popu.= 0.9
- Prob. to be 1 in mutation = 0.1
-
- Search domain =
-           alpha     tol  CRIM   ZN  INDUS  CHAS  NOX   RM  AGE  DIS  RAD  \
-Min_param    1.0  0.0001   0.0  0.0    0.0   0.0  0.0  0.0  0.0  0.0  0.0
-Max_param   25.9  0.9999   1.0  1.0    1.0   1.0  1.0  1.0  1.0  1.0  1.0
-
-           TAX  PTRATIO    B  LSTAT
-Min_param  0.0      0.0  0.0    0.0
-Max_param  1.0      1.0  1.0    1.0
-
-
-GA-PARSIMONY results:
- Iterations                = 25
- Best validation score = -29.634144915265725
-
-
-Solution with the best validation score in the whole GA process =
-
-  fitnessVal fitnessTst complexity    alpha       tol CRIM ZN INDUS CHAS NOX  \
-0   -29.6341   -29.3465      6e+09  1.33747  0.523279    0  0     0    1   0
-
-  RM AGE DIS RAD TAX PTRATIO  B LSTAT
-0  1   1   0   0   0       1  1     1
-
-
-Results of the best individual at the last generation =
-
- Best indiv's validat.cost = -29.634362465548378
- Best indiv's testing cost = -29.324534451958808
- Best indiv's complexity   = 5000000023.114235
- Elapsed time in minutes   = 1.167609703540802
-
-
-BEST SOLUTION =
-
-  fitnessVal fitnessTst complexity    alpha       tol CRIM ZN INDUS CHAS NOX  \
-0   -29.6344   -29.3245      5e+09  1.33756  0.530282    0  0     0    0   0
-
-  RM AGE DIS RAD TAX PTRATIO  B LSTAT
-0  1   1   0   0   0       1  1     1
+# Check results with test dataset
+preds = HYBparsimony_model.predict(X_test)
+print(algo, "RMSE test", mean_squared_error(y_test, preds, squared=False))
+print('Selected features:',HYBparsimony_model.selected_features)
 ```
 
-Plot GA evolution.
-
-``` {.python}
-GAparsimony_model.plot()
 ```
-![GA-PARSIMONY Evolution](https://raw.githubusercontent.com/misantam/GAparsimony/main/docs/img/regression_readme.png)
-
-GA-PARSIMONY evolution
-
-Show percentage of appearance for each feature in elitists
-
-``` {.python}
-# Percentage of appearance for each feature in elitists
-GAparsimony_model.importance()
+KernelRidge RMSE test 0.6819177762856623
+Selected features: ['age' 'sex' 'bmi' 'bp' 's1' 's4' 's5' 's6']
 ```
-```
-+--------------------------------------------+
-|                  GA-PARSIMONY              |
-+--------------------------------------------+
 
-Percentage of appearance of each feature in elitists:
 
-  PTRATIO LSTAT   RM    B      AGE     CHAS      NOX   CRIM      ZN      DIS  \
-0     100   100  100  100  93.2292  48.9583  48.9583  43.75  28.125  26.5625
 
-       RAD    INDUS      TAX
-0  13.5417  13.0208  8.33333
-```
 
 
 
