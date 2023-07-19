@@ -252,25 +252,15 @@ Percentage of appearance of each feature in elitists:
 
 ### Example 2: Regression
 
-This example shows how to search with **GAparsimony** package and for the *diabetes* dataset, a parsimonious
+This example shows how to search with **HYBparsimony** package and for the *diabetes* dataset, a parsimonious
 *KernelRidge* model.
 
-In the next step, a fitness function is created using getFitness. This function return a fitness function for the `Lasso` model, the `mean_squared_error`(RMSE) metric and the predefined `linearModels` complexity function for SVC models. We set regression to `True` beacause is classification example.
+A best *KernelRidge* model with $rbf$ kernel is obtained with the best $alpha$ and $gamma$ hyperparameters and the best selected input
+features. Models are evaluated by default with a 5-fold CV mean squared error ($MSE$). Finally, root mean squared error ($RMSE*) is presented with the test database to check the model generalization capability.
 
-A Lasso model is trained with these parameters and the selected input
-features. Finally, *fitness()* returns a vector with three negatives values:
-the *RMSE* statistic obtained with the mean of 10 runs of a 10-fold
-cross-validation process, the *RMSE* measured with the test database to
-check the model generalization capability, and the model complexity. And the trained model.
-
-The GA-PARSIMONY process begins defining the range of the SVM parameters
-and their names. Also, *rerank\_error* can be tuned with different
-*ga\_parsimony* runs to improve the **model generalization capability**.
-In this example, *rerank\_error* has been fixed to 0.01 but other
+In this example, *rerank\_error* has been fixed to 0.001 but other
 values could improve the trade-off between model complexity and model
-accuracy.
-
-Therefore, PMS considers the most parsimonious model with the lower
+accuracy. Therefore, PMS considers the most parsimonious model with the lower
 number of features. Between two models with the same number of features,
 the lower sum of the squared network weights will determine the most
 parsimonious model (smaller weights reduce the propagation of disturbances).
@@ -283,13 +273,14 @@ from sklearn.metrics import mean_squared_error
 from sklearn.datasets import load_diabetes
 from sklearn.preprocessing import StandardScaler
 from HYBparsimony import HYBparsimony
+
 # Load 'diabetes' dataset
 diabetes = load_diabetes()
-X, y = diabetes.data, diabetes.target
 
+X, y = diabetes.data, diabetes.target
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state=1234)
 
-# Standarize X and y (some algorithms require that)
+# Standarize X and y
 scaler_X = StandardScaler()
 X_train = scaler_X.fit_transform(X_train)
 X_test = scaler_X.transform(X_test)
@@ -297,18 +288,17 @@ scaler_y = StandardScaler()
 y_train = scaler_y.fit_transform(y_train.reshape(-1,1)).flatten()
 y_test = scaler_y.transform(y_test.reshape(-1,1)).flatten()
 
-```
-``` {.python}
 algo = 'KernelRidge'
 HYBparsimony_model = HYBparsimony(algorithm=algo,
                                 features=diabetes.feature_names,
                                 rerank_error=0.001,
                                 verbose=1)
+# Search the best hyperparameters and features 
+# (increasing 'time_limit' to improve RMSE with high consuming algorithms)
 HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
-GAparsimony_model.fit(X, y)
 ```
 ```
-#output
+***output***
 
 Running iteration 0
 Current best score: -0.510785823535343
@@ -347,6 +337,7 @@ print('Selected features:',HYBparsimony_model.selected_features)
 ```
 
 ```
+***output***
 KernelRidge RMSE test 0.6819177762856623
 Selected features: ['age' 'sex' 'bmi' 'bp' 's1' 's4' 's5' 's6']
 ```
