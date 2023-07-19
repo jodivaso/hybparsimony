@@ -18,11 +18,7 @@ hyperparameter optimization (HO), and parsimonious model selection (PMS). PMS is
 of each neighborhood) is computed considering not only the goodness-of-fit, but also the principle of parsimony. 
 
 In HYBparsimony the percentage of variables to be replaced at each iteration, $t$, is selected by a decreasing exponential function:
-$pcrossover=max(0.80 \cdot e^{(-\Gamma \cdot t)}, 0.10)$
-that is adjusted by a $\Gamma$ parameter:
-
-
-Thus, in the first iterations parsimony is promoted by GA mechanisms, i.e., replacing by crossover a high percentage of particles at the beginning. Subsequently, optimization with PSO becomes more relevant for the improvement of model accuracy. This differs from other hybrid methods in which the crossover is applied between the best individual position of each particle or other approaches in which the worst particles are also replaced by new particles, but at extreme positions. Experiments show that, in general, and with a suitable $\Gamma$, the HYB-PARSIMONY methodology allows to obtain better, more parsimonious and more robust models compared to other methods. It also reduces the number of iterations and, consequently, the computational effort.
+ $pcrossover=max(0.80 \cdot e^{(-\Gamma \cdot t)}, 0.10)$, that is adjusted by a $\Gamma$ parameter. Thus, in the first iterations parsimony is promoted by GA mechanisms, i.e., replacing by crossover a high percentage of particles at the beginning. Subsequently, optimization with PSO becomes more relevant for the improvement of model accuracy. This differs from other hybrid methods in which the crossover is applied between the best individual position of each particle or other approaches in which the worst particles are also replaced by new particles, but at extreme positions. Experiments show that, in general, and with a suitable $\Gamma$, the HYB-PARSIMONY methodology allows to obtain better, more parsimonious and more robust models compared to other methods. It also reduces the number of iterations and, consequently, the computational effort.
 
 Installation
 ------------
