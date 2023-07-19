@@ -1,4 +1,4 @@
-# GAparsimony
+# HYBparsimony
 
 [![PyPI version](https://badge.fury.io/py/GAparsimony.svg)](https://badge.fury.io/py/GAparsimony)
 [![Documentation Status](https://readthedocs.org/projects/gaparsimony/badge/?version=latest)](https://gaparsimony.readthedocs.io/en/latest/?badge=latest)
@@ -8,28 +8,22 @@
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=GAparsimony&metric=code_smells)](https://sonarcloud.io/dashboard?id=GAparsimony)
 
 
-GAparsimony
+HYBparsimony
 ===========
 
 [Documentation](https://gaparsimony.readthedocs.io/en/latest/index.html)
 
-GAparsimony for Python is a package for searching with genetic algorithms (GA) 
-accurate parsimonious models by combining feature selection (FS), model
-hyperparameter optimization (HO), and parsimonious model selection
-(PMS). It has R implementation [R GAparsimony](https://github.com/jpison/GAparsimony)
+HYBparsimony for Python is a package for searching accurate parsimonious models by combining feature selection (FS), model
+hyperparameter optimization (HO), and parsimonious model selection (PMS). PMS is based on separate cost and complexity evaluations. To improve the parsimony search, it is proposed a hybrid method that combines GA mechanisms such as selection, crossover and mutation within a PSO-based optimization algorithm that includes a strategy where the best position of each particle (thus, also the best position
+of each neighborhood) is computed considering not only the goodness-of-fit, but also the principle of parsimony. 
 
-PMS is based on separate cost and complexity evaluations. The best
-individuals are initially sorted by an error fitness function, and
-afterwards, models with similar costs are rearranged according to model
-complexity measurement so as to foster models of lesser complexity. The
-algorithm can be run sequentially or in parallel.
-
+In HYBparsimony the percentage of variables to be replaced at each iteration is selected by a decreasing exponential function that is adjusted by a $\Gamma$ parameter. Thus, in the first iterations parsimony is promoted by GA mechanisms, i.e., replacing by crossover a high percentage of particles at the beginning. Subsequently, optimization with PSO becomes more relevant for the improvement of model accuracy. This differs from other hybrid methods in which the crossover is applied between the best individual position of each particle or other approaches in which the worst particles are also replaced by new particles, but at extreme positions. Experiments show that, in general, and with a suitable $\Gamma$, the HYB-PARSIMONY methodology allows to obtain better, more parsimonious and more robust models compared to other methods. It also reduces the number of iterations and, consequently, the computational effort.
 
 Installation
 ------------
-Install these packages, [pip](https://pypi.org/project/GAparsimony/):
+Install these packages, [pip](https://pypi.org/project/HYBparsimony/):
 ``` {.bash}
-pip install GAparsimony
+pip install HYBparsimony
 ```
 To install the current development version, you need to clone the repository and run :
 ``` {.bash}
