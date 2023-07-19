@@ -33,23 +33,23 @@ NUM_RUNS = 25
 PBOUNDS = dict(alpha=(-5, 5))
 
 tiempos = [['slice_norm_reduc.csv', 3, 2000, 378, 0.50], 
-        #    ['blog_norm.csv', 3, 2000, 276, 0.50], 
-        #    ['crime_norm.csv', 3, 2000, 127, 0.50], 
-        #    ['tecator_norm.csv', 3, 2000, 124, 0.50],
-        #    ['ailerons_norm.csv', 3, 2000, 40, 0.50], 
-        #    ['puma_norm.csv', 3, 2000, 32, 0.50],
-        #    ['bank_norm.csv', 3, 2000, 32, 0.50], 
-        #    ['pol_norm.csv', 3, 2000, 26, 0.50],
-        #    ['cpu_act_norm.csv', 3, 2000, 21, 0.50],
-        #    ['elevators_norm.csv', 3, 2000, 18, 0.50],
-        #    ['meta_norm.csv', 3, 2000, 17, 0.50],
-        #    ['bodyfat_norm.csv', 3, 2000, 14, 0.50], 
-        #    ['boston_norm.csv', 3, 2000, 13, 0.50],
-        #    ['housing_norm.csv', 3, 2000, 13, 0.50],
-        #    ['concrete_norm.csv', 3, 2000, 8, 0.50],
-        #    ['no2_norm.csv', 3, 2000, 7, 0.50],
-        #    ['pm10_norm.csv', 3, 2000, 7, 0.50],
-        #    ['strike_norm.csv', 3, 2000, 6, 0.50]
+           ['blog_norm.csv', 3, 2000, 276, 0.50], 
+           ['crime_norm.csv', 3, 2000, 127, 0.50], 
+           ['tecator_norm.csv', 3, 2000, 124, 0.50],
+           ['ailerons_norm.csv', 3, 2000, 40, 0.50], 
+           ['puma_norm.csv', 3, 2000, 32, 0.50],
+           ['bank_norm.csv', 3, 2000, 32, 0.50], 
+           ['pol_norm.csv', 3, 2000, 26, 0.50],
+           ['cpu_act_norm.csv', 3, 2000, 21, 0.50],
+           ['elevators_norm.csv', 3, 2000, 18, 0.50],
+           ['meta_norm.csv', 3, 2000, 17, 0.50],
+           ['bodyfat_norm.csv', 3, 2000, 14, 0.50], 
+           ['boston_norm.csv', 3, 2000, 13, 0.50],
+           ['housing_norm.csv', 3, 2000, 13, 0.50],
+           ['concrete_norm.csv', 3, 2000, 8, 0.50],
+           ['no2_norm.csv', 3, 2000, 7, 0.50],
+           ['pm10_norm.csv', 3, 2000, 7, 0.50],
+           ['strike_norm.csv', 3, 2000, 6, 0.50]
           ]
 
 
