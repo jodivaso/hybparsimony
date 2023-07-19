@@ -255,8 +255,8 @@ Percentage of appearance of each feature in elitists:
 This example shows how to search with **HYBparsimony** package and for the *diabetes* dataset, a parsimonious
 *KernelRidge* model.
 
-A best *KernelRidge* model with $rbf$ kernel is obtained with the best $alpha$ and $gamma$ hyperparameters and the best selected input
-features. Models are evaluated by default with a 5-fold CV mean squared error ($MSE$). Finally, root mean squared error ($RMSE*) is presented with the test database to check the model generalization capability.
+A best *KernelRidge* model with *rbf* kernel is obtained with the best $alpha$ and $gamma$ hyperparameters and the best selected input
+features. Models are evaluated by default with a 5-fold CV mean squared error (*MSE*). Finally, root mean squared error (*$RMSE*) is presented with the test database to check the model generalization capability.
 
 In this example, *rerank\_error* has been fixed to 0.001 but other
 values could improve the trade-off between model complexity and model
@@ -338,6 +338,7 @@ print('Selected features:',HYBparsimony_model.selected_features)
 
 ```
 ***output***
+
 KernelRidge RMSE test 0.6819177762856623
 Selected features: ['age' 'sex' 'bmi' 'bp' 's1' 's4' 's5' 's6']
 ```
