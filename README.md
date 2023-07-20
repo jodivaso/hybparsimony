@@ -298,7 +298,7 @@ HYBparsimony_model = HYBparsimony(algorithm=algo,
 # (increasing 'time_limit' to improve RMSE with high consuming algorithms)
 HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
 ```
-```
+`
 Running iteration 0
 Current best score: -0.510785823535343
   MeanVal = -0.8827401 ,   ValBest = -0.5107858 , ComplexBest = 9017405352.49853,  Time(min) = 0.0079003  
@@ -310,7 +310,6 @@ Current best score: -0.49900477446929087
 Running iteration 2
 Current best score: -0.49869742061382516
   MeanVal = -0.7842958 ,   ValBest = -0.4986974 , ComplexBest = 7000001419.9764595,  Time(min) = 0.0055429  
-
 
 ...
 ...
@@ -324,7 +323,7 @@ Current best score: -0.4894573166502429
   MeanVal = -0.5262941 ,   ValBest = -0.4894573 , ComplexBest = 8000002199.115843,  Time(min) = 0.0049526  
 
 Time limit reached. Stopped.
-```
+`
 
 ```python
 # Check results with test dataset
