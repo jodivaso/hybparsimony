@@ -157,7 +157,7 @@ print(res[['best_model', 'MSE_5CV', 'RMSE', 'NFS', 'selected_features']])
 
 We obtain the following results:
 
-
+```
                     algo   MSE_5CV      RMSE  NFS
 4           MLPRegressor  0.491437  0.673157    7
 2            KernelRidge  0.488908  0.679108    7
@@ -167,7 +167,7 @@ We obtain the following results:
 3    KNeighborsRegressor  0.523190  0.705371    6
 7  RandomForestRegressor  0.546012  0.761268    8
 6  DecisionTreeRegressor  0.630503  0.864194    3
-
+```
 
 
 ### Example 2: Classification
