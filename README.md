@@ -13,12 +13,11 @@ HYBparsimony
 
 [Documentation](https://gaparsimony.readthedocs.io/en/latest/index.html)
 
-HYBparsimony for Python is a package **for searching accurate parsimonious models by combining feature selection (FS), model
-hyperparameter optimization (HO), and parsimonious model selection (PMS) based on a separate cost and complexity evaluation**. To improve the parsimony search, it is proposed a hybrid method that combines GA mechanisms such as selection, crossover and mutation within a PSO-based optimization algorithm that includes a strategy where the best position of each particle (thus, also the best position
-of each neighborhood) is computed considering not only the goodness-of-fit, but also the principle of parsimony. 
+**HYBparsimony** for Python is a package **for searching accurate parsimonious models by combining feature selection (FS), model
+hyperparameter optimization (HO), and parsimonious model selection (PMS) based on a separate cost and complexity evaluation**. To improve the parsimony search, the hybrid method combines GA mechanisms such as selection, crossover and mutation within a PSO-based optimization algorithm that includes a strategy where the best position of each particle (thus, also the best position of each neighborhood) is computed considering not only the goodness-of-fit, but also the principle of parsimony. 
 
 In HYBparsimony, the percentage of variables to be replaced with GA at each iteration $t$ is selected by a decreasing exponential function:
- $pcrossover=max(0.80 \cdot e^{(-\Gamma \cdot t)}, 0.10)$, that is adjusted by a $\Gamma$ parameter. Thus, in the first iterations parsimony is promoted by GA mechanisms, i.e., replacing by crossover a high percentage of particles at the beginning. Subsequently, optimization with PSO becomes more relevant for the improvement of model accuracy. This differs from other hybrid methods in which the crossover is applied between the best individual position of each particle or other approaches in which the worst particles are also replaced by new particles, but at extreme positions.
+ $pcrossover=max(0.80 \cdot e^{(-\Gamma \cdot t)}, 0.10)$, that is adjusted by a $\Gamma$ parameter (by default $\Gamma$ is set to $0.50$). Thus, in the first iterations parsimony is promoted by GA mechanisms, i.e., replacing by crossover a high percentage of particles at the beginning. Subsequently, optimization with PSO becomes more relevant for the improvement of model accuracy. This differs from other hybrid methods in which the crossover is applied between the best individual position of each particle or other approaches in which the worst particles are also replaced by new particles, but at extreme positions.
 
 Experiments show that, in general, and with a suitable $\Gamma$, HYB-PARSIMONY methodology allows to obtain better, more parsimonious and more robust models compared to other methods. It also reduces the number of iterations and, consequently, the computational effort.
 
@@ -38,7 +37,7 @@ How to use this package
 
 ### Example 1: Regression
 
-This example shows how to search with **HYBparsimony** package for a parsimonious *KernelRidge* model (with low complexity) model, with *rbf* kernel, for the *diabetes* dataset. HYBparsimony searches for the best input features and *KernelRidge* hyperparameters: $alpha$ and $gamma$. Models are evaluated by default with a 5-fold CV mean squared error (*MSE*). Finally, root mean squared error (*$RMSE*) is showed with another test dataset to check the degree of generalization of the model.
+This example shows how to search with *HYBparsimony* package for a parsimonious *KernelRidge* model (with low complexity) model, with *rbf* kernel, for the *diabetes* dataset. *HYBparsimony* searches for the best input features and *KernelRidge* hyperparameters: $alpha$ and $gamma$. Models are evaluated by default with a 5-fold CV mean squared error (*MSE*). Finally, root mean squared error (*$RMSE*) is showed with another test dataset to check the degree of generalization of the model.
 
 In this example, *rerank\_error* is set to $0.001$, but other values could improve the balance between model complexity and accuracy. PMS considers the most parsimonious model with the fewest number of features. The default complexity is $M_c = 10^6{N_{FS}} + where ${N_{FS}}$$ is the number of selected input features and ${internal_comp}$ the internal measure of model complexity, which depends on the algorithm used for training. In this example, ${internal_comp}$ for *KernelRidge* is measured by the sum of the squared coefficients. Therefore, between two models with the same number of features, the smaller sum of the squared weights will determine the more parsimonious model (smaller weights reduce the propagation of perturbations).
 
