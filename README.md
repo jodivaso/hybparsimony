@@ -36,6 +36,87 @@ python -m pip install << path to cloned repository >>
 How to use this package
 -----------------------
 
+### Example 1: Regression
+
+This example shows how to search with **HYBparsimony** package for a parsimonious *KernelRidge* model (with low complexity) model, with *rbf* kernel, for the *diabetes* dataset. HYBparsimony searches for the best input features and *KernelRidge* hyperparameters: $alpha$ and $gamma$. Models are evaluated by default with a 5-fold CV mean squared error (*MSE*). Finally, root mean squared error (*$RMSE*) is showed with another test dataset to check the degree of generalization of the model.
+
+In this example, *rerank\_error* is set to $0.001$, but other values could improve the balance between model complexity and accuracy. PMS considers the most parsimonious model with the fewest number of features. The default complexity is $M_c = 10^6{N_{FS}} + where ${N_{FS}}$$ is the number of selected input features and ${internal_comp}$ the internal measure of model complexity, which depends on the algorithm used for training. In this example, ${internal_comp}$ for *KernelRidge* is measured by the sum of the squared coefficients. Therefore, between two models with the same number of features, the smaller sum of the squared weights will determine the more parsimonious model (smaller weights reduce the propagation of perturbations).
+
+
+```python
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+from sklearn.datasets import load_diabetes
+from sklearn.preprocessing import StandardScaler
+from HYBparsimony import HYBparsimony
+
+# Load 'diabetes' dataset
+diabetes = load_diabetes()
+
+X, y = diabetes.data, diabetes.target
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state=1234)
+
+# Standarize X and y
+scaler_X = StandardScaler()
+X_train = scaler_X.fit_transform(X_train)
+X_test = scaler_X.transform(X_test)
+scaler_y = StandardScaler()
+y_train = scaler_y.fit_transform(y_train.reshape(-1,1)).flatten()
+y_test = scaler_y.transform(y_test.reshape(-1,1)).flatten()
+
+algo = 'KernelRidge'
+HYBparsimony_model = HYBparsimony(algorithm=algo,
+                                features=diabetes.feature_names,
+                                rerank_error=0.001,
+                                verbose=1)
+
+# Search the best hyperparameters and features 
+# (increasing 'time_limit' to improve RMSE with high consuming algorithms)
+HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
+```
+And the output is:
+```
+Running iteration 0
+Current best score: -0.510785823535343
+  MeanVal = -0.8827401 ,   ValBest = -0.5107858 , ComplexBest = 9017405352.49853,  Time(min) = 0.0079003  
+
+Running iteration 1
+Current best score: -0.49900477446929087
+  MeanVal = -0.6599694 ,   ValBest = -0.4990048 , ComplexBest = 8000032783.879024,  Time(min) = 0.0061645  
+
+Running iteration 2
+Current best score: -0.49869742061382516
+  MeanVal = -0.7842958 ,   ValBest = -0.4986974 , ComplexBest = 7000001419.9764595,  Time(min) = 0.0055429  
+
+...
+...
+
+Running iteration 34
+Current best score: -0.4894684971696733
+  MeanVal = -0.5273142 ,   ValBest = -0.4894685 , ComplexBest = 8000002255.683656,  Time(min) = 0.0054205  
+
+Running iteration 35
+Current best score: -0.4894573166502429
+  MeanVal = -0.5262941 ,   ValBest = -0.4894573 , ComplexBest = 8000002199.115843,  Time(min) = 0.0049526  
+
+Time limit reached. Stopped.
+```
+Check RMSE with the test dataset:
+
+```python
+preds = HYBparsimony_model.predict(X_test)
+print(algo, "RMSE test", mean_squared_error(y_test, preds, squared=False))
+print('Selected features:',HYBparsimony_model.selected_features)
+```
+
+```
+KernelRidge RMSE test 0.6819177762856623
+Selected features: ['age' 'sex' 'bmi' 'bp' 's1' 's4' 's5' 's6']
+```
+
+
+
 ### Example 1: Classification
 
 This example shows how to search, for the *Sonar* database, a parsimony
@@ -250,92 +331,7 @@ Percentage of appearance of each feature in elitists:
 0         22.1774       2.41935   2.01613
 ```
 
-### Example 2: Regression
 
-This example shows how to search with **HYBparsimony** package and for the *diabetes* dataset, a parsimonious
-*KernelRidge* model.
-
-A best *KernelRidge* model with *rbf* kernel is obtained with the best $alpha$ and $gamma$ hyperparameters and the best selected input
-features. Models are evaluated by default with a 5-fold CV mean squared error (*MSE*). Finally, root mean squared error (*$RMSE*) is presented with the test database to check the model generalization capability.
-
-In this example, *rerank\_error* has been fixed to 0.001 but other
-values could improve the trade-off between model complexity and model
-accuracy. Therefore, PMS considers the most parsimonious model with the lower
-number of features. Between two models with the same number of features,
-the lower sum of the squared network weights will determine the most
-parsimonious model (smaller weights reduce the propagation of disturbances).
-
-
-```python
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
-from sklearn.datasets import load_diabetes
-from sklearn.preprocessing import StandardScaler
-from HYBparsimony import HYBparsimony
-
-# Load 'diabetes' dataset
-diabetes = load_diabetes()
-
-X, y = diabetes.data, diabetes.target
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state=1234)
-
-# Standarize X and y
-scaler_X = StandardScaler()
-X_train = scaler_X.fit_transform(X_train)
-X_test = scaler_X.transform(X_test)
-scaler_y = StandardScaler()
-y_train = scaler_y.fit_transform(y_train.reshape(-1,1)).flatten()
-y_test = scaler_y.transform(y_test.reshape(-1,1)).flatten()
-
-algo = 'KernelRidge'
-HYBparsimony_model = HYBparsimony(algorithm=algo,
-                                features=diabetes.feature_names,
-                                rerank_error=0.001,
-                                verbose=1)
-
-# Search the best hyperparameters and features 
-# (increasing 'time_limit' to improve RMSE with high consuming algorithms)
-HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
-```
-```
-Running iteration 0
-Current best score: -0.510785823535343
-  MeanVal = -0.8827401 ,   ValBest = -0.5107858 , ComplexBest = 9017405352.49853,  Time(min) = 0.0079003  
-
-Running iteration 1
-Current best score: -0.49900477446929087
-  MeanVal = -0.6599694 ,   ValBest = -0.4990048 , ComplexBest = 8000032783.879024,  Time(min) = 0.0061645  
-
-Running iteration 2
-Current best score: -0.49869742061382516
-  MeanVal = -0.7842958 ,   ValBest = -0.4986974 , ComplexBest = 7000001419.9764595,  Time(min) = 0.0055429  
-
-...
-...
-
-Running iteration 34
-Current best score: -0.4894684971696733
-  MeanVal = -0.5273142 ,   ValBest = -0.4894685 , ComplexBest = 8000002255.683656,  Time(min) = 0.0054205  
-
-Running iteration 35
-Current best score: -0.4894573166502429
-  MeanVal = -0.5262941 ,   ValBest = -0.4894573 , ComplexBest = 8000002199.115843,  Time(min) = 0.0049526  
-
-Time limit reached. Stopped.
-```
-
-```python
-# Check results with test dataset
-preds = HYBparsimony_model.predict(X_test)
-print(algo, "RMSE test", mean_squared_error(y_test, preds, squared=False))
-print('Selected features:',HYBparsimony_model.selected_features)
-```
-
-```
-KernelRidge RMSE test 0.6819177762856623
-Selected features: ['age' 'sex' 'bmi' 'bp' 's1' 's4' 's5' 's6']
-```
 
 
 
