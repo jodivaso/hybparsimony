@@ -119,10 +119,8 @@ RMSE test = 0.681918
 ```
 Compare with different algorithms.
 ```python
-algorithms_reg = ['Ridge', 'Lasso', 'KernelRidge', 'KNeighborsRegressor',
-                    'MLPRegressor', 'SVR',
-                    'DecisionTreeRegressor', 'RandomForestRegressor'
-                    ]
+algorithms_reg = ['Ridge', 'Lasso', 'KernelRidge', 'KNeighborsRegressor', 'MLPRegressor', 'SVR',
+'DecisionTreeRegressor', 'RandomForestRegressor']
 res = []
 for algo in algorithms_reg:
     print('#######################')
