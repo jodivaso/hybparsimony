@@ -77,46 +77,54 @@ HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
 For each 
 ```
 Running iteration 0
-Current best score: -0.510785823535343
-  MeanVal = -0.8827401 ,   ValBest = -0.5107858 , ComplexBest = 9017405352.49853,  Time(min) = 0.0079003  
+Best model -> Score = -0.510786 Complexity = 9,017,405,352.5 
+Iter = 0 -> MeanVal = -0.88274  ValBest = -0.510786   ComplexBest = 9,017,405,352.5 Time(min) = 0.005858
 
 Running iteration 1
-Current best score: -0.49900477446929087
-  MeanVal = -0.6599694 ,   ValBest = -0.4990048 , ComplexBest = 8000032783.879024,  Time(min) = 0.0061645  
+Best model -> Score = -0.499005 Complexity = 8,000,032,783.88 
+Iter = 1 -> MeanVal = -0.659969  ValBest = -0.499005   ComplexBest = 8,000,032,783.88 Time(min) = 0.004452
 
 Running iteration 2
-Current best score: -0.49869742061382516
-  MeanVal = -0.7842958 ,   ValBest = -0.4986974 , ComplexBest = 7000001419.9764595,  Time(min) = 0.0055429  
+Best model -> Score = -0.498697 Complexity = 7,000,001,419.98 
+Iter = 2 -> MeanVal = -0.784296  ValBest = -0.498697   ComplexBest = 7,000,001,419.98 Time(min) = 0.004568
 
+...
 ...
 ...
 
 Running iteration 34
-Current best score: -0.4894684971696733
-  MeanVal = -0.5273142 ,   ValBest = -0.4894685 , ComplexBest = 8000002255.683656,  Time(min) = 0.0054205  
+Best model -> Score = -0.489468 Complexity = 8,000,002,255.68 
+Iter = 34 -> MeanVal = -0.527314  ValBest = -0.489468   ComplexBest = 8,000,002,255.68 Time(min) = 0.007533
 
 Running iteration 35
-Current best score: -0.4894573166502429
-  MeanVal = -0.5262941 ,   ValBest = -0.4894573 , ComplexBest = 8000002199.115843,  Time(min) = 0.0049526  
+Best model -> Score = -0.489457 Complexity = 8,000,002,199.12 
+Iter = 35 -> MeanVal = -0.526294  ValBest = -0.489457   ComplexBest = 8,000,002,199.12 Time(min) = 0.006522
 
 Time limit reached. Stopped.
 ```
-Check RMSE with the test dataset:
+
+Show final results:
 
 ```python
 preds = HYBparsimony_model.predict(X_test)
-print(algo, "RMSE test", mean_squared_error(y_test, preds, squared=False))
-print('Selected features:',HYBparsimony_model.selected_features)
+print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
+print(f'Selected features:{HYBparsimony_model.selected_features}')
+print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
+print(f'5-CV MAE = {-round(HYBparsimony_model.best_score,6)}')
+print(f'RMSE test = {round(mean_squared_error(y_test, preds, squared=False),6)}')
 ```
 
 ```
-KernelRidge RMSE test 0.6819177762856623
-Selected features: ['age' 'sex' 'bmi' 'bp' 's1' 's4' 's5' 's6']
+Best Model = KernelRidge(alpha=0.26747155972470016, gamma=0.010478997542788611, kernel='rbf')
+Selected features:['age' 'sex' 'bmi' 'bp' 's1' 's4' 's5' 's6']
+Complexity = 8,000,002,199.12
+5-CV MAE = 0.489457
+RMSE test = 0.681918
 ```
 
 
 
-### Example 1: Classification
+### Example 2: Classification
 
 This example shows how to search, for the *Sonar* database, a parsimony
 SVM classificator with **GAparsimony** package.
