@@ -106,7 +106,7 @@ preds = HYBparsimony_model.predict(X_test)
 print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
 print(f'Selected features:{HYBparsimony_model.selected_features}')
 print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
-print(f'5-CV MAE = {-round(HYBparsimony_model.best_score,6)}')
+print(f'5-CV MSE = {-round(HYBparsimony_model.best_score,6)}')
 print(f'RMSE test = {round(mean_squared_error(y_test, preds, squared=False),6)}')
 ```
 
@@ -114,7 +114,7 @@ print(f'RMSE test = {round(mean_squared_error(y_test, preds, squared=False),6)}'
 Best Model = KernelRidge(alpha=0.26747155972470016, gamma=0.010478997542788611, kernel='rbf')
 Selected features:['age' 'sex' 'bmi' 'bp' 's1' 's4' 's5' 's6']
 Complexity = 8,000,002,199.12
-5-CV MAE = 0.489457
+5-CV MSE = 0.489457
 RMSE test = 0.681918
 ```
 
