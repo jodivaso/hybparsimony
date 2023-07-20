@@ -84,10 +84,6 @@ Running iteration 1
 Best model -> Score = -0.499005 Complexity = 8,000,032,783.88 
 Iter = 1 -> MeanVal = -0.659969  ValBest = -0.499005   ComplexBest = 8,000,032,783.88 Time(min) = 0.004452
 
-Running iteration 2
-Best model -> Score = -0.498697 Complexity = 7,000,001,419.98 
-Iter = 2 -> MeanVal = -0.784296  ValBest = -0.498697   ComplexBest = 7,000,001,419.98 Time(min) = 0.004568
-
 ...
 ...
 ...
