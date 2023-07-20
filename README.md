@@ -74,7 +74,7 @@ HYBparsimony_model = HYBparsimony(algorithm=algo,
 # (increasing 'time_limit' to improve RMSE with high consuming algorithms)
 HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
 ```
-In each iteration, the first row shows the score and complexity of the best model. The second row shows the average score, and the score and complexity of the best model obtained in the same iteration.
+In each iteration, the first row shows the score and complexity of the best model. The second row shows the average score, and the score and complexity of the best model obtained in the same iteration. The values to the left of the first comma of the complexity correspond to the number of features (${N_{FS}}$).
 ```
 Running iteration 0
 Best model -> Score = -0.510786 Complexity = 9,017,405,352.5 
