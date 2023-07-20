@@ -14,12 +14,14 @@ HYBparsimony
 [Documentation](https://gaparsimony.readthedocs.io/en/latest/index.html)
 
 **HYBparsimony** for Python is a package **for searching accurate parsimonious models by combining feature selection (FS), model
-hyperparameter optimization (HO), and parsimonious model selection (PMS) based on a separate cost and complexity evaluation**. To improve the parsimony search, the hybrid method combines GA mechanisms such as selection, crossover and mutation within a PSO-based optimization algorithm that includes a strategy where the best position of each particle (thus, also the best position of each neighborhood) is computed considering not only the goodness-of-fit, but also the principle of parsimony. 
+hyperparameter optimization (HO), and parsimonious model selection (PMS) based on a separate cost and complexity evaluation**.
+
+To improve the search for parsimony, the hybrid method combines GA mechanisms such as selection, crossover and mutation within a PSO-based optimization algorithm that includes a strategy in which the best position of each particle (thus also the best position of each neighborhood) is calculated taking into account not only the goodness-of-fit, but also the parsimony principle. 
 
 In HYBparsimony, the percentage of variables to be replaced with GA at each iteration $t$ is selected by a decreasing exponential function:
  $pcrossover=max(0.80 \cdot e^{(-\Gamma \cdot t)}, 0.10)$, that is adjusted by a $\Gamma$ parameter (by default $\Gamma$ is set to $0.50$). Thus, in the first iterations parsimony is promoted by GA mechanisms, i.e., replacing by crossover a high percentage of particles at the beginning. Subsequently, optimization with PSO becomes more relevant for the improvement of model accuracy. This differs from other hybrid methods in which the crossover is applied between the best individual position of each particle or other approaches in which the worst particles are also replaced by new particles, but at extreme positions.
 
-Experiments show that, in general, and with a suitable $\Gamma$, HYB-PARSIMONY methodology allows to obtain better, more parsimonious and more robust models compared to other methods. It also reduces the number of iterations and, consequently, the computational effort.
+Experiments show that, in general, and with a suitable $\Gamma$, HYBparsimony allows to obtain better, more parsimonious and more robust models compared to other methods. It also reduces the number of iterations and, consequently, the computational effort.
 
 Installation
 ------------
@@ -37,7 +39,7 @@ How to use this package
 
 ### Example 1: Regression
 
-This example shows how to search with *HYBparsimony* package for a parsimonious *KernelRidge* model (with low complexity) model, with *rbf* kernel, for the *diabetes* dataset. *HYBparsimony* searches for the best input features and *KernelRidge* hyperparameters: $alpha$ and $gamma$. Models are evaluated by default with a 5-fold CV mean squared error (*MSE*). Finally, root mean squared error (*$RMSE*) is showed with another test dataset to check the degree of generalization of the model.
+This example shows how to search with *HYBparsimony* package for a parsimonious (with low complexity) *KernelRidge* with *rbf* kernel model and for the *diabetes* dataset. *HYBparsimony* searches for the best input features and *KernelRidge* hyperparameters: $alpha$ and $gamma$. Models are evaluated by default with a 5-fold CV mean squared error (*MSE*). Finally, root mean squared error (*$RMSE*) is calculated with another test dataset to check the degree of model generalization.
 
 In this example, *rerank\_error* is set to $0.001$, but other values could improve the balance between model complexity and accuracy. PMS considers the most parsimonious model with the fewest number of features. The default complexity is $M_c = 10^9{N_{FS}} + int_{comp}$  where ${N_{FS}}$ is the number of selected input features and $int_{comp}$ is the internal measure of model complexity, which depends on the algorithm used for training. In this example, $int_{comp}$ for *KernelRidge* is measured by the sum of the squared coefficients. Therefore, between two models with the same number of features, the smaller sum of the squared weights will determine the more parsimonious model (smaller weights reduce the propagation of perturbations).
 
@@ -156,7 +158,15 @@ print(res[['best_model', 'MSE_5CV', 'RMSE', 'NFS', 'selected_features']])
 We obtain the following results:
 
 
-
+                    algo   MSE_5CV      RMSE  NFS
+4           MLPRegressor  0.491437  0.673157    7
+2            KernelRidge  0.488908  0.679108    7
+1                  Lasso  0.495795  0.694631    8
+0                  Ridge  0.495662  0.694885    8
+5                    SVR  0.487899  0.696137    7
+3    KNeighborsRegressor  0.523190  0.705371    6
+7  RandomForestRegressor  0.546012  0.761268    8
+6  DecisionTreeRegressor  0.630503  0.864194    3
 
 
 
