@@ -144,7 +144,7 @@ for algo in algorithms_reg:
     res.append(dict(algo=algo,
                     MSE_5CV= -round(HYBparsimony_model.best_score,6),
                     RMSE=round(mean_squared_error(y_test, preds, squared=False),6),
-                    NFS=HYBparsimony_model.best_complexity//10e9,
+                    NFS=HYBparsimony_model.best_complexity//1e9,
                     selected_features = HYBparsimony_model.selected_features,
                     best_model=HYBparsimony_model.best_model))
 res = pd.DataFrame(res).sort_values('RMSE')
