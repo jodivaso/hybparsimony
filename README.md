@@ -151,6 +151,16 @@ res.to_csv('res_models.csv')
 print(res)
 ```
 
+algo &   MSE\_5CV &      RMSE &  NFS &                            selected\_features &                                         
+MLPRegressor &  0.491437 &  0.673157 &  0.0 &       ['sex' 'bmi' 'bp' 's1' 's4' 's5' 's6'] &  MLPRegressor(activation='logistic', alpha=1.57... \\
+KernelRidge &  0.488908 &  0.679108 &  0.0 &      ['age' 'sex' 'bmi' 'bp' 's3' 's5' 's6'] &  KernelRidge(alpha=0.6609814498727162, gamma=0.... \\
+Lasso &  0.495795 &  0.694631 &  0.0 &  ['sex' 'bmi' 'bp' 's1' 's2' 's4' 's5' 's6'] &                 Lasso(alpha=0.0006817557210173395) \\
+Ridge &  0.495662 &  0.694885 &  0.0 &  ['sex' 'bmi' 'bp' 's1' 's2' 's4' 's5' 's6'] &                    Ridge(alpha=1.5634995944999972) \\
+SVR &  0.487899 &  0.696137 &  0.0 &       ['sex' 'bmi' 'bp' 's1' 's4' 's5' 's6'] &  SVR(C=1.224671923669024, gamma=0.0119517431314... \\
+KNeighborsRegressor &  0.523190 &  0.705371 &  0.0 &            ['sex' 'bmi' 'bp' 's3' 's5' 's6'] &           KNeighborsRegressor(n\_neighbors=12, p=3) \\
+RandomForestRegressor &  0.547095 &  0.761705 &  0.0 &            ['sex' 'bmi' 's1' 's4' 's5' 's6'] &  RandomForestRegressor(max\_depth=18, min\_sample... \\
+DecisionTreeRegressor &  0.630503 &  0.864194 &  0.0 &                            ['bmi' 's4' 's6'] &  DecisionTreeRegressor(max\_depth=2, min\_samples... \\
+
 
 ### Example 2: Classification
 
