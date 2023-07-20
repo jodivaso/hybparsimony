@@ -117,7 +117,41 @@ Complexity = 8,000,002,199.12
 5-CV MSE = 0.489457
 RMSE test = 0.681918
 ```
-
+Compare with different algorithms.
+```python
+algorithms_reg = ['Ridge', 'Lasso', 'KernelRidge', 'KNeighborsRegressor',
+                    'MLPRegressor', 'SVR',
+                    'DecisionTreeRegressor', 'RandomForestRegressor'
+                    ]
+res = []
+for algo in algorithms_reg:
+    print('#######################')
+    print('Searching best: ', algo)
+    HYBparsimony_model = HYBparsimony(algorithm=algo,
+                                      features=diabetes.feature_names,
+                                      rerank_error=0.001,
+                                      verbose=1)
+    # Search the best hyperparameters and features 
+    # (increasing 'time_limit' to improve RMSE with high consuming algorithms)
+    HYBparsimony_model.fit(X_train, y_train, time_limit=5)
+    # Check results with test dataset
+    preds = HYBparsimony_model.predict(X_test)
+    print(algo, "RMSE test", mean_squared_error(y_test, preds, squared=False))
+    print('Selected features:',HYBparsimony_model.selected_features)
+    print(HYBparsimony_model.best_model)
+    print('#######################')
+    # Append results
+    res.append(dict(algo=algo,
+                    MSE_5CV= -round(HYBparsimony_model.best_score,6),
+                    RMSE=round(mean_squared_error(y_test, preds, squared=False),6),
+                    NFS=HYBparsimony_model.best_complexity//10e9,
+                    selected_features = HYBparsimony_model.selected_features,
+                    best_model=HYBparsimony_model.best_model))
+res = pd.DataFrame(res).sort_values('RMSE')
+res.to_csv('res_models.csv')
+# Visualize results
+print(res)
+```
 
 
 ### Example 2: Classification
@@ -333,7 +367,6 @@ Percentage of appearance of each feature in elitists:
   color_intensity total_phenols magnesium
 0         22.1774       2.41935   2.01613
 ```
-
 
 
 
