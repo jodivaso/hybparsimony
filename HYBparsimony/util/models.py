@@ -1,10 +1,10 @@
 from sklearn.kernel_ridge import KernelRidge
 from sklearn.linear_model import Ridge, RidgeClassifier, LogisticRegression, Lasso
-from sklearn.neural_network import MLPRegressor
-from sklearn.svm import SVR
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.neighbors import KNeighborsRegressor
+from sklearn.neural_network import MLPRegressor, MLPClassifier
+from sklearn.svm import SVR, SVC
+from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.neighbors import KNeighborsRegressor, KNeighborsClassifier
 from HYBparsimony import Population
 from HYBparsimony.util.complexity import * 
 import warnings
@@ -97,13 +97,54 @@ algorithms_dict = dict(
     #########################
     # CLASSIFICATION MODELS
     # #######################
-    RidgeClassifier = {"estimator": RidgeClassifier,
-                   "complexity": linearModels_complexity,
-                   "alpha": {"range": (-5, 3), "type": Population.POWER}
-                   },
+    # RidgeClassifier = {"estimator": RidgeClassifier,
+    #                "complexity": linearModels_complexity,
+    #                "alpha": {"range": (-5, 3), "type": Population.POWER}
+    #                },
 
     LogisticRegression = {"estimator": LogisticRegression,
                      "complexity": linearModels_complexity,
                      "C": {"range": (-5, 3), "type": Population.POWER}
-                     }
+                     },
+    
+    MLPClassifier = {"estimator": MLPClassifier, # The estimator
+                  "complexity": mlp_complexity, # The complexity
+                  "hidden_layer_sizes": {"range": (1, 25), "type": Population.INTEGER},
+                  "alpha": {"range": (-5, 5), "type": Population.POWER},
+                  "solver": {"value": "lbfgs", "type": Population.CONSTANT},
+                  "activation": {"value": "logistic", "type": Population.CONSTANT},
+                  "n_iter_no_change": {"value": 20, "type": Population.CONSTANT},
+                  "tol": {"value": 1e-5, "type": Population.CONSTANT},
+                  "random_state": {"value": 1234, "type": Population.CONSTANT},
+                  "max_iter": {"value": 5000, "type": Population.CONSTANT}
+                   },
+    
+    SVC = {"estimator": SVC,
+                    "complexity":svm_complexity,
+                    "C": {"range": (-5, 3), "type": Population.POWER},
+                    "gamma": {"range": (-5, 0), "type": Population.POWER},
+                    "kernel": {"value": "rbf", "type": Population.CONSTANT},
+                    "probability": {"value": True, "type": Population.CONSTANT}
+                  },
+
+    DecisionTreeClassifier = {"estimator": DecisionTreeClassifier,
+                    "complexity":decision_tree_complexity,
+                    "max_depth":{"range": (2, 30), "type": Population.INTEGER},
+                    "min_samples_split":{"range": (2,25), "type": Population.INTEGER},
+                    # "min_weight_fraction_leaf":{"range": (0.0,0.50), "type": Population.FLOAT},
+                  },
+
+    RandomForestClassifier = {"estimator": RandomForestClassifier,
+                    "complexity":randomForest_complexity,
+                    "n_estimators":{"range": (10,500), "type": 0},
+                    "max_depth":{"range": (2, 20), "type": Population.INTEGER},
+                    "min_samples_split":{"range": (2,25), "type": Population.INTEGER},
+                    # "min_weight_fraction_leaf":{"range": (0.0,0.50), "type": Population.FLOAT},
+                  },
+
+    KNeighborsClassifier = {"estimator": KNeighborsClassifier,
+                    "complexity":knn_complexity,
+                    "n_neighbors":{"range": (1,50), "type": Population.INTEGER}, 
+                    "p":{"range": (1, 3), "type": Population.INTEGER},
+                  },
 )
