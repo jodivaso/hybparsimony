@@ -172,14 +172,14 @@ However, if we increase the time limit to 60 minutes and use a more robust valir
 
 |alg|MSE\_5CV|RMSE|NFS|selected\_features|best\_model|
 |-|-|-|-|-|-|
-|MLPRegressor|0.493201|0.671856|6|['sex' 'bmi' 'bp' 's1' 's2' 's5']|MLPRegressor(activation='logistic', alpha=0.010...|\
-|KernelRidge|0.483465|0.679036|7|['age' 'sex' 'bmi' 'bp' 's3' 's5' 's6']|KernelRidge(alpha=0.3664462701238023, gamma=0.0...|\
-|SVR|0.487392|0.682699|8|['age' 'sex' 'bmi' 'bp' 's1' 's4' 's5' 's6']|SVR(C=0.8476135773996406, gamma=0.0232416920986...|\
+|MLPRegressor|0.493201|0.671856|6|['sex' 'bmi' 'bp' 's1' 's2' 's5']|MLPRegressor(activation='logistic', alpha=0.010729877296924203, hidden_layer_sizes=1, max_iter=5000, n_iter_no_change=20, random_state=1234, solver='lbfgs', tol=1e-05)|\
+|KernelRidge|0.483465|0.679036|7|['age' 'sex' 'bmi' 'bp' 's3' 's5' 's6']|KernelRidge(alpha=0.3664462701238023, gamma=0.01808883688516421, kernel='rbf')|\
+|SVR|0.487392|0.682699|8|['age' 'sex' 'bmi' 'bp' 's1' 's4' 's5' 's6']|SVR(C=0.8476135773996406, gamma=0.02324169209860404)|\
 |KNeighborsRegressor|0.521326|0.687740|6|['sex' 'bmi' 'bp' 's3' 's5' 's6']|KNeighborsRegressor(n\_neighbors=11)|\
 |Lasso|0.493825|0.696194|7|['sex' 'bmi' 'bp' 's1' 's2' 's5' 's6']|Lasso(alpha=0.0002735058905983914)|\
 |Ridge|0.492570|0.696273|7|['sex' 'bmi' 'bp' 's1' 's2' 's5' 's6']|Ridge(alpha=0.1321381563140431)|\
-|RandomForestRegressor|0.552005|0.703769|9|['age' 'sex' 'bmi' 'bp' 's2' 's3' 's4' 's5' 's6']|RandomForestRegressor(max\_depth=17, min\_samples...|\
-|DecisionTreeRegressor|0.628316|0.864194|5|['age' 'sex' 'bmi' 's4' 's6']|DecisionTreeRegressor(max\_depth=2, min\_samples\_...|\
+|RandomForestRegressor|0.552005|0.703769|9|['age' 'sex' 'bmi' 'bp' 's2' 's3' 's4' 's5' 's6']|RandomForestRegressor(max_depth=17, min_samples_split=25, n_estimators=473)|\
+|DecisionTreeRegressor|0.628316|0.864194|5|['age' 'sex' 'bmi' 's4' 's6']|DecisionTreeRegressor(max_depth=2, min_samples_split=20)|\
 
 
 ### Example 2: Classification
