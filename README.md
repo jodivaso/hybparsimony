@@ -179,7 +179,7 @@ However, if we increase the time limit to 60 minutes, the maximum number of iter
                                    verbose=1)
 HYBparsimony_model.fit(X_train, y_train, time_limit=60)
 ```
-We can improve the results.
+We can improve results in RMSE and parsimony.
 
 |Algorithm|MSE\_5CV|RMSE|NFS|selected\_features|best\_model|
 |-|-|-|-|-|-|
