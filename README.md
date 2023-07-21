@@ -181,7 +181,7 @@ HYBparsimony_model.fit(X_train, y_train, time_limit=60)
 ```
 We can improve results in RMSE and parsimony.
 
-|Algorithm|MSE\_10R5CV|RMSE|NFS|selected\_features|best\_model|
+|Algorithm|MSE\_10R5CV|RMSEtst|NFS|selected\_features|best\_model|
 |-|-|-|-|-|-|
 |MLPRegressor|0.493201|0.671856|6|['sex' 'bmi' 'bp' 's1' 's2' 's5']|MLPRegressor(activation='logistic', alpha=0.010729877296924203, hidden_layer_sizes=1, max_iter=5000, n_iter_no_change=20, random_state=1234, solver='lbfgs', tol=1e-05)|\
 |KernelRidge|0.483465|0.679036|7|['age' 'sex' 'bmi' 'bp' 's3' 's5' 's6']|KernelRidge(alpha=0.3664462701238023, gamma=0.01808883688516421, kernel='rbf')|\
