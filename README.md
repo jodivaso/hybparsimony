@@ -195,7 +195,7 @@ We can improve results in RMSE and parsimony.
 
 ### Example 2: Binary Classification
 
-This example shows how to use *HYBparsimony* in a binary classification problem with *breast_cancer* dataset. By default, 'LogisticRegression' algorithm and 'neg_log_loss' scoring is selected.
+This example shows how to use *HYBparsimony* in a binary classification problem with *breast_cancer* dataset. By default, *LogisticRegression* algorithm and *neg_log_loss* scoring is selected.
 
 ```python
  import pandas as pd
@@ -217,9 +217,6 @@ This example shows how to use *HYBparsimony* in a binary classification problem 
  X_train = scaler_X.fit_transform(X_train)
  X_test = scaler_X.transform(X_test)
 
- ##############################################################
- #                      BINARY CLASSIFICATION                 #
- ##############################################################
  HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
                                    rerank_error=0.005,
                                    verbose=1)
