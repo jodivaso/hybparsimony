@@ -13,14 +13,15 @@ HYBparsimony
 
 [Documentation](https://gaparsimony.readthedocs.io/en/latest/index.html)
 
-HYBparsimony for Python is a package **for searching accurate parsimonious models by combining feature selection (FS), model
-hyperparameter optimization (HO), and parsimonious model selection (PMS) based on a separate cost and complexity evaluation**. To improve the parsimony search, it is proposed a hybrid method that combines GA mechanisms such as selection, crossover and mutation within a PSO-based optimization algorithm that includes a strategy where the best position of each particle (thus, also the best position
-of each neighborhood) is computed considering not only the goodness-of-fit, but also the principle of parsimony. 
+**HYBparsimony** for Python is a package **for searching accurate parsimonious models by combining feature selection (FS), model
+hyperparameter optimization (HO), and parsimonious model selection (PMS) based on a separate cost and complexity evaluation**.
+
+To improve the search for parsimony, the hybrid method combines GA mechanisms such as selection, crossover and mutation within a PSO-based optimization algorithm that includes a strategy in which the best position of each particle (thus also the best position of each neighborhood) is calculated taking into account not only the goodness-of-fit, but also the parsimony principle. 
 
 In HYBparsimony, the percentage of variables to be replaced with GA at each iteration $t$ is selected by a decreasing exponential function:
- $pcrossover=max(0.80 \cdot e^{(-\Gamma \cdot t)}, 0.10)$, that is adjusted by a $\Gamma$ parameter. Thus, in the first iterations parsimony is promoted by GA mechanisms, i.e., replacing by crossover a high percentage of particles at the beginning. Subsequently, optimization with PSO becomes more relevant for the improvement of model accuracy. This differs from other hybrid methods in which the crossover is applied between the best individual position of each particle or other approaches in which the worst particles are also replaced by new particles, but at extreme positions.
+ $pcrossover=max(0.80 \cdot e^{(-\Gamma \cdot t)}, 0.10)$, that is adjusted by a $\Gamma$ parameter (by default $\Gamma$ is set to $0.50$). Thus, in the first iterations parsimony is promoted by GA mechanisms, i.e., replacing by crossover a high percentage of particles at the beginning. Subsequently, optimization with PSO becomes more relevant for the improvement of model accuracy. This differs from other hybrid methods in which the crossover is applied between the best individual position of each particle or other approaches in which the worst particles are also replaced by new particles, but at extreme positions.
 
-Experiments show that, in general, and with a suitable $\Gamma$, HYB-PARSIMONY methodology allows to obtain better, more parsimonious and more robust models compared to other methods. It also reduces the number of iterations and, consequently, the computational effort.
+Experiments show that, in general, and with a suitable $\Gamma$, HYBparsimony allows to obtain better, more parsimonious and more robust models compared to other methods. It also reduces the number of iterations and, consequently, the computational effort.
 
 Installation
 ------------
@@ -36,7 +37,163 @@ python -m pip install << path to cloned repository >>
 How to use this package
 -----------------------
 
-### Example 1: Classification
+### Example 1: Regression
+
+This example shows how to search with *HYBparsimony* package for a parsimonious (with low complexity) *KernelRidge* with *rbf* kernel model and for the *diabetes* dataset. *HYBparsimony* searches for the best input features and *KernelRidge* hyperparameters: $alpha$ and $gamma$. Models are evaluated by default with a 5-fold CV negative mean squared error (*Neg MSE*). Finally, root mean squared error (*$RMSE*) is calculated with another test dataset to check the degree of model generalization.
+
+In this example, *rerank\_error* is set to $0.001$, but other values could improve the balance between model complexity and accuracy. PMS considers the most parsimonious model with the fewest number of features. The default complexity is $M_c = 10^9{N_{FS}} + int_{comp}$  where ${N_{FS}}$ is the number of selected input features and $int_{comp}$ is the internal measure of model complexity, which depends on the algorithm used for training. In this example, $int_{comp}$ for *KernelRidge* is measured by the sum of the squared coefficients. Therefore, between two models with the same number of features, the smaller sum of the squared weights will determine the more parsimonious model (smaller weights reduce the propagation of perturbations and improve robustness).
+
+
+```python
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+from sklearn.datasets import load_diabetes
+from sklearn.preprocessing import StandardScaler
+from HYBparsimony import HYBparsimony
+
+# Load 'diabetes' dataset
+diabetes = load_diabetes()
+
+X, y = diabetes.data, diabetes.target
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state=1234)
+
+# Standarize X and y
+scaler_X = StandardScaler()
+X_train = scaler_X.fit_transform(X_train)
+X_test = scaler_X.transform(X_test)
+scaler_y = StandardScaler()
+y_train = scaler_y.fit_transform(y_train.reshape(-1,1)).flatten()
+y_test = scaler_y.transform(y_test.reshape(-1,1)).flatten()
+
+algo = 'KernelRidge'
+HYBparsimony_model = HYBparsimony(algorithm=algo,
+                                features=diabetes.feature_names,
+                                rerank_error=0.001,
+                                verbose=1)
+
+# Search the best hyperparameters and features 
+# (increasing 'time_limit' to improve RMSE with high consuming algorithms)
+HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
+```
+In each iteration, the first row shows the score and complexity of the best model. The second row shows the average score, and the score and complexity of the best model obtained in the same iteration. The values to the left of the first comma of the complexity correspond to the number of features (${N_{FS}}$).
+```
+Running iteration 0
+Best model -> Score = -0.510786 Complexity = 9,017,405,352.5 
+Iter = 0 -> MeanVal = -0.88274  ValBest = -0.510786   ComplexBest = 9,017,405,352.5 Time(min) = 0.005858
+
+Running iteration 1
+Best model -> Score = -0.499005 Complexity = 8,000,032,783.88 
+Iter = 1 -> MeanVal = -0.659969  ValBest = -0.499005   ComplexBest = 8,000,032,783.88 Time(min) = 0.004452
+
+...
+...
+...
+
+Running iteration 34
+Best model -> Score = -0.489468 Complexity = 8,000,002,255.68 
+Iter = 34 -> MeanVal = -0.527314  ValBest = -0.489468   ComplexBest = 8,000,002,255.68 Time(min) = 0.007533
+
+Running iteration 35
+Best model -> Score = -0.489457 Complexity = 8,000,002,199.12 
+Iter = 35 -> MeanVal = -0.526294  ValBest = -0.489457   ComplexBest = 8,000,002,199.12 Time(min) = 0.006522
+
+Time limit reached. Stopped.
+```
+
+Show final results:
+
+```python
+preds = HYBparsimony_model.predict(X_test)
+print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
+print(f'Selected features:{HYBparsimony_model.selected_features}')
+print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
+print(f'5-CV MSE = {-round(HYBparsimony_model.best_score,6)}')
+print(f'RMSE test = {round(mean_squared_error(y_test, preds, squared=False),6)}')
+```
+
+```
+Best Model = KernelRidge(alpha=0.26747155972470016, gamma=0.010478997542788611, kernel='rbf')
+Selected features:['age' 'sex' 'bmi' 'bp' 's1' 's4' 's5' 's6']
+Complexity = 8,000,002,199.12
+5-CV MSE = 0.489457
+RMSE test = 0.681918
+```
+
+Compare with different algorithms:
+
+```python
+algorithms_reg = ['Ridge', 'Lasso', 'KernelRidge', 'KNeighborsRegressor', 'MLPRegressor', 'SVR',
+'DecisionTreeRegressor', 'RandomForestRegressor']
+res = []
+for algo in algorithms_reg:
+    print('#######################')
+    print('Searching best: ', algo)
+    HYBparsimony_model = HYBparsimony(algorithm=algo,
+                                      features=diabetes.feature_names,
+                                      rerank_error=0.001,
+                                      verbose=1)
+    # Search the best hyperparameters and features 
+    # (increasing 'time_limit' to improve RMSE with high consuming algorithms)
+    HYBparsimony_model.fit(X_train, y_train, time_limit=5)
+    # Check results with test dataset
+    preds = HYBparsimony_model.predict(X_test)
+    print(algo, "RMSE test", mean_squared_error(y_test, preds, squared=False))
+    print('Selected features:',HYBparsimony_model.selected_features)
+    print(HYBparsimony_model.best_model)
+    print('#######################')
+    # Append results
+    res.append(dict(algo=algo,
+                    MSE_5CV= -round(HYBparsimony_model.best_score,6),
+                    RMSE=round(mean_squared_error(y_test, preds, squared=False),6),
+                    NFS=HYBparsimony_model.best_complexity//1e9,
+                    selected_features = HYBparsimony_model.selected_features,
+                    best_model=HYBparsimony_model.best_model))
+res = pd.DataFrame(res).sort_values('RMSE')
+res.to_csv('res_models.csv')
+# Visualize results
+print(res[['best_model', 'MSE_5CV', 'RMSE', 'NFS', 'selected_features']])
+```
+
+We obtain the following results:
+
+```
+                    algo   MSE_5CV      RMSE  NFS
+4           MLPRegressor  0.491437  0.673157    7
+2            KernelRidge  0.488908  0.679108    7
+1                  Lasso  0.495795  0.694631    8
+0                  Ridge  0.495662  0.694885    8
+5                    SVR  0.487899  0.696137    7
+3    KNeighborsRegressor  0.523190  0.705371    6
+7  RandomForestRegressor  0.546012  0.761268    8
+6  DecisionTreeRegressor  0.630503  0.864194    3
+```
+However, if we increase the time limit to 60 minutes, the maximum number of iterations and use a more robust validation with a 10-repeated 5-fold crossvalidation.
+
+```python
+ HYBparsimony_model = HYBparsimony(algorithm=algo,
+                                   features=diabetes.feature_names,
+                                   rerank_error=0.001,
+                                   cv=RepeatedKFold(n_repeats=10, n_splits=5),
+                                   maxiter=1000,
+                                   verbose=1)
+HYBparsimony_model.fit(X_train, y_train, time_limit=60)
+```
+We can improve results in RMSE and parsimony.
+
+|Algorithm|MSE\_10R5CV|RMSEtst|NFS|selected\_features|best\_model|
+|-|-|-|-|-|-|
+|**MLPRegressor**|0.493201|**0.671856**|**6**|['sex' 'bmi' 'bp' 's1' 's2' 's5']|MLPRegressor(activation='logistic', alpha=0.010729877296924203, hidden_layer_sizes=1, max_iter=5000, n_iter_no_change=20, random_state=1234, solver='lbfgs', tol=1e-05)|\
+|KernelRidge|0.483465|0.679036|7|['age' 'sex' 'bmi' 'bp' 's3' 's5' 's6']|KernelRidge(alpha=0.3664462701238023, gamma=0.01808883688516421, kernel='rbf')|\
+|SVR|0.487392|0.682699|8|['age' 'sex' 'bmi' 'bp' 's1' 's4' 's5' 's6']|SVR(C=0.8476135773996406, gamma=0.02324169209860404)|\
+|KNeighborsRegressor|0.521326|0.687740|6|['sex' 'bmi' 'bp' 's3' 's5' 's6']|KNeighborsRegressor(n\_neighbors=11)|\
+|Lasso|0.493825|0.696194|7|['sex' 'bmi' 'bp' 's1' 's2' 's5' 's6']|Lasso(alpha=0.0002735058905983914)|\
+|Ridge|0.492570|0.696273|7|['sex' 'bmi' 'bp' 's1' 's2' 's5' 's6']|Ridge(alpha=0.1321381563140431)|\
+|RandomForestRegressor|0.552005|0.703769|9|['age' 'sex' 'bmi' 'bp' 's2' 's3' 's4' 's5' 's6']|RandomForestRegressor(max_depth=17, min_samples_split=25, n_estimators=473)|\
+|DecisionTreeRegressor|0.628316|0.864194|5|['age' 'sex' 'bmi' 's4' 's6']|DecisionTreeRegressor(max_depth=2, min_samples_split=20)|\
+
+
+### Example 2: Classification
 
 This example shows how to search, for the *Sonar* database, a parsimony
 SVM classificator with **GAparsimony** package.
@@ -58,7 +215,7 @@ accuracy. For example, with *rerank\_error=0.01*, we can be interested
 in obtaining models with a smaller number of inputs with a *gamma* rounded
 to two decimals.
 
-``` {.Python}
+```python
 from sklearn.svm import SVC
 from sklearn.metrics import cohen_kappa_score
 from sklearn.preprocessing import StandardScaler
@@ -250,191 +407,9 @@ Percentage of appearance of each feature in elitists:
 0         22.1774       2.41935   2.01613
 ```
 
-### Example 2: Regression
-
-This example shows how to search, for the *Boston* database, a parsimonious
-ANN model for regression and with **GAparsimony** package.
-
-In the next step, a fitness function is created using getFitness. This function return a fitness function for the `Lasso` model, the `mean_squared_error`(RMSE) metric and the predefined `linearModels` complexity function for SVC models. We set regression to `True` beacause is classification example.
-
-A Lasso model is trained with these parameters and the selected input
-features. Finally, *fitness()* returns a vector with three negatives values:
-the *RMSE* statistic obtained with the mean of 10 runs of a 10-fold
-cross-validation process, the *RMSE* measured with the test database to
-check the model generalization capability, and the model complexity. And the trained model.
-
-The GA-PARSIMONY process begins defining the range of the SVM parameters
-and their names. Also, *rerank\_error* can be tuned with different
-*ga\_parsimony* runs to improve the **model generalization capability**.
-In this example, *rerank\_error* has been fixed to 0.01 but other
-values could improve the trade-off between model complexity and model
-accuracy.
-
-Therefore, PMS considers the most parsimonious model with the lower
-number of features. Between two models with the same number of features,
-the lower sum of the squared network weights will determine the most
-parsimonious model (smaller weights reduce the propagation of disturbances).
 
 
-``` {.python}
-from sklearn.linear_model import Lasso
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import mean_squared_error
 
-from sklearn.datasets import load_boston
-
-from GAparsimony import GAparsimony, Population, getFitness
-from GAparsimony.util import linearModels_complexity
-
-boston = load_boston()
-X, y = boston.data, boston.target 
-X = StandardScaler().fit_transform(X)
-
-# ga_parsimony can be executed with a different set of 'rerank_error' values
-rerank_error = 0.01
-
-params = {"alpha":{"range": (1., 25.9), "type": Population.FLOAT}, 
-            "tol":{"range": (0.0001,0.9999), "type": Population.FLOAT}}
-
-fitness = getFitness(Lasso, mean_squared_error, linearModels_complexity, minimize=True, test_size=0.2, random_state=42, n_jobs=-1)
-
-
-GAparsimony_model = GAparsimony(fitness=fitness,
-                                params = params, 
-                                features = boston.feature_names,
-                                keep_history = True,
-                                rerank_error = rerank_error,
-                                popSize = 40,
-                                maxiter = 5, early_stop=3,
-                                feat_thres=0.90, # Perc selected features in first generation
-                                feat_mut_thres=0.10, # Prob of a feature to be one in mutation
-                                seed_ini = 1234)
-```
-``` {.python}
-GAparsimony_model.fit(X, y)
-```
-```
-#output
-
-GA-PARSIMONY | iter = 0
- MeanVal = -79.1715225 | ValBest = -30.3297649 | TstBest = -29.2466835 |ComplexBest = 13000000021.927263| Time(min) = 0.1092269  
-
-GA-PARSIMONY | iter = 1
- MeanVal = -55.1072918 | ValBest = -30.3251321 | TstBest = -29.2267507 |ComplexBest = 12000000022.088743| Time(min) = 0.0523999  
-
-GA-PARSIMONY | iter = 2
- MeanVal = -34.9396425 | ValBest = -30.3166673 | TstBest = -28.8701544 |ComplexBest = 10000000021.774683| Time(min) = 0.0484501  
-
-GA-PARSIMONY | iter = 3
- MeanVal = -38.6590874 |  ValBest = -30.144799 |  TstBest = -29.321512 |ComplexBest = 11000000022.865057| Time(min) = 0.0440666 
-
-...
-
-GA-PARSIMONY | iter = 21
- MeanVal = -40.5599677 | ValBest = -29.6343625 | TstBest = -29.3245345 |ComplexBest = 5000000023.114235| Time(min) = 0.0442333  
-
-GA-PARSIMONY | iter = 22
- MeanVal = -36.0291598 | ValBest = -29.6343625 | TstBest = -29.3245345 |ComplexBest = 5000000023.114235| Time(min) = 0.0433499  
-
-GA-PARSIMONY | iter = 23
- MeanVal = -36.6950374 | ValBest = -29.6343625 | TstBest = -29.3245345 |ComplexBest = 5000000023.114235|   Time(min) = 0.0441   
-
-GA-PARSIMONY | iter = 24
- MeanVal = -37.4263523 | ValBest = -29.6343625 | TstBest = -29.3245345 |ComplexBest = 5000000023.114235| Time(min) = 0.0420333  
-```
-
-summary() shows the GA initial settings and two solutions: the solution with the best validation score in the whole GA optimization process, and finally, the best parsimonious individual at the last generation.
-
-``` {.python}
-GAparsimony_model.summary()
-```
-``` 
-+------------------------------------+
-|             GA-PARSIMONY           |
-+------------------------------------+
-
-GA-PARSIMONY settings:
- Number of Parameters      = 2
- Number of Features        = 13
- Population size           = 40
- Maximum of generations    = 50
- Number of early-stop gen. = 10
- Elitism                   = 8
- Crossover probability     = 0.8
- Mutation probability      = 0.1
- Max diff(error) to ReRank = 0.01
- Perc. of 1s in first popu.= 0.9
- Prob. to be 1 in mutation = 0.1
-
- Search domain =
-           alpha     tol  CRIM   ZN  INDUS  CHAS  NOX   RM  AGE  DIS  RAD  \
-Min_param    1.0  0.0001   0.0  0.0    0.0   0.0  0.0  0.0  0.0  0.0  0.0
-Max_param   25.9  0.9999   1.0  1.0    1.0   1.0  1.0  1.0  1.0  1.0  1.0
-
-           TAX  PTRATIO    B  LSTAT
-Min_param  0.0      0.0  0.0    0.0
-Max_param  1.0      1.0  1.0    1.0
-
-
-GA-PARSIMONY results:
- Iterations                = 25
- Best validation score = -29.634144915265725
-
-
-Solution with the best validation score in the whole GA process =
-
-  fitnessVal fitnessTst complexity    alpha       tol CRIM ZN INDUS CHAS NOX  \
-0   -29.6341   -29.3465      6e+09  1.33747  0.523279    0  0     0    1   0
-
-  RM AGE DIS RAD TAX PTRATIO  B LSTAT
-0  1   1   0   0   0       1  1     1
-
-
-Results of the best individual at the last generation =
-
- Best indiv's validat.cost = -29.634362465548378
- Best indiv's testing cost = -29.324534451958808
- Best indiv's complexity   = 5000000023.114235
- Elapsed time in minutes   = 1.167609703540802
-
-
-BEST SOLUTION =
-
-  fitnessVal fitnessTst complexity    alpha       tol CRIM ZN INDUS CHAS NOX  \
-0   -29.6344   -29.3245      5e+09  1.33756  0.530282    0  0     0    0   0
-
-  RM AGE DIS RAD TAX PTRATIO  B LSTAT
-0  1   1   0   0   0       1  1     1
-```
-
-Plot GA evolution.
-
-``` {.python}
-GAparsimony_model.plot()
-```
-![GA-PARSIMONY Evolution](https://raw.githubusercontent.com/misantam/GAparsimony/main/docs/img/regression_readme.png)
-
-GA-PARSIMONY evolution
-
-Show percentage of appearance for each feature in elitists
-
-``` {.python}
-# Percentage of appearance for each feature in elitists
-GAparsimony_model.importance()
-```
-```
-+--------------------------------------------+
-|                  GA-PARSIMONY              |
-+--------------------------------------------+
-
-Percentage of appearance of each feature in elitists:
-
-  PTRATIO LSTAT   RM    B      AGE     CHAS      NOX   CRIM      ZN      DIS  \
-0     100   100  100  100  93.2292  48.9583  48.9583  43.75  28.125  26.5625
-
-       RAD    INDUS      TAX
-0  13.5417  13.0208  8.33333
-```
 
 
 
