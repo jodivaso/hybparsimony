@@ -177,6 +177,7 @@ However, if we increase the time limit to 60 minutes, the maximum number of iter
                                    cv=RepeatedKFold(n_splits=5, n_repeats=10),
                                    maxiter=1000,
                                    verbose=1)
+HYBparsimony_model.fit(X_train, y_train, time_limit=60)
 ```
 We can improve the results.
 
