@@ -193,220 +193,80 @@ We can improve results in RMSE and parsimony.
 |DecisionTreeRegressor|0.628316|0.864194|5|['age' 'sex' 'bmi' 's4' 's6']|DecisionTreeRegressor(max_depth=2, min_samples_split=20)|\
 
 
-### Example 2: Classification
+### Example 2: Binary Classification
 
-This example shows how to search, for the *Sonar* database, a parsimony
-SVM classificator with **GAparsimony** package.
-
-In the next step, a fitness function is created using getFitness. This function return a fitness function for the `SVC` model, the `cohen_kappa_score` metric and the predefined `svm` complexity function for SVC models. We set regression to `False` beacause is classification example.
-
-A SVM model is trained with these parameters and the selected input
-features. Finally, *fitness()* returns a vector with three values:
-the *kappa* statistic obtained with the mean of 10 runs of a 10-fold
-cross-validation process, the *kappa* measured with the test database to
-check the model generalization capability, and the model complexity. And the trained model.
-
-The GA-PARSIMONY process begins defining the range of the SVM parameters
-and their names. Also, *rerank\_error* can be tuned with different
-*ga\_parsimony* runs to improve the **model generalization capability**.
-In this example, *rerank\_error* has been fixed to 0.001 but other
-values could improve the trade-off between model complexity and model
-accuracy. For example, with *rerank\_error=0.01*, we can be interested 
-in obtaining models with a smaller number of inputs with a *gamma* rounded
-to two decimals.
+This example shows how to use *HYBparsimony* in a binary classification problem with *breast_cancer* dataset. By default, *LogisticRegression* algorithm and *neg_log_loss* scoring is selected.
 
 ```python
-from sklearn.svm import SVC
-from sklearn.metrics import cohen_kappa_score
-from sklearn.preprocessing import StandardScaler
-from sklearn.datasets import load_wine
+ import pandas as pd
+ from sklearn.model_selection import train_test_split
+ from sklearn.preprocessing import StandardScaler
+ from sklearn.datasets import load_breast_cancer
+ from sklearn.metrics import log_loss
+ from HYBparsimony import HYBparsimony
+ 
+ # load 'breast_cancer' dataset
+ breast_cancer = load_breast_cancer()
+ X, y = breast_cancer.data, breast_cancer.target 
+ print(X.shape)
 
-from GAparsimony import GAparsimony, Population, getFitness
-from GAparsimony.util import svm_complexity
+ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
+ 
+ # Standarize X and y (some algorithms require that)
+ scaler_X = StandardScaler()
+ X_train = scaler_X.fit_transform(X_train)
+ X_test = scaler_X.transform(X_test)
 
-wine = load_wine()
-X, y = wine.data, wine.target 
-X = StandardScaler().fit_transform(X)
-
-
-rerank_error = 0.001
-params = {"C":{"range": (00.0001, 99.9999), "type": Population.FLOAT}, 
-            "gamma":{"range": (0.00001,0.99999), "type": Population.FLOAT}, 
-            "kernel": {"value": "poly", "type": Population.CONSTANT}}
-
-
-fitness = getFitness(SVC, cohen_kappa_score, svm_complexity, minimize=False, test_size=0.2, random_state=42, n_jobs=-1)
-
-
-GAparsimony_model = GAparsimony(fitness=fitness,
-                                  params=params,
-                                  features=wine.feature_names,
-                                  keep_history = True,
-                                  rerank_error = rerank_error,
-                                  popSize = 40,
-                                  maxiter = 50, early_stop=10,
-                                  feat_thres=0.90, # Perc selected features in first generation
-                                  feat_mut_thres=0.10, # Prob of a feature to be one in mutation
-                                  seed_ini = 1234)
+ HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+                                   rerank_error=0.005,
+                                   verbose=1)
+ HYBparsimony_model.fit(X_train, y_train, time_limit=0.50)
+ # Extract probs of class==1
+ preds = HYBparsimony_model.predict_proba(X_test)[:,1]
+ print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
+ print(f'Selected features:{HYBparsimony_model.selected_features}')
+ print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
+ print(f'5-CV logloss = {-round(HYBparsimony_model.best_score,6)}')
+ print(f'logloss test = {round(log_loss(y_test, preds),6)}')
 ```
 
-With small databases, it is highly recommended to execute
-**GAparsimony** with different seeds in order to find
-the most important input features and model parameters.
+In this example, best model is obtained with 11 features from the 30 original inputs. 
 
-In this example, one GA optimization is presented with a training database 
-composed of 60 input features and 167 instances, and a test database with only 41 instances.
-Hence, a robust validation metric is necessary. Thus, a repeated cross-validation is performed.
-
-Starts the GA optimizaton process with 40 individuals per generation and
-a maximum number of 5 iterations with an early stopping when
-validation measure does not increase significantly in 3 generations.
-Parallel is activated. In addition, history of each iteration is saved
-in order to use *plot* and *parsimony\_importance* methods.
-
-``` {.python}
-GAparsimony_model.fit(X, y)
 ```
-```
-#output
+(569, 30)
+Detected a binary-class problem. Using 'neg_log_loss' as default scoring function.
+Running iteration 0
+Best model -> Score = -0.091519 Complexity = 29,000,000,005.11 
+Iter = 0 -> MeanVal = -0.297448  ValBest = -0.091519   ComplexBest = 29,000,000,005.11 Time(min) = 0.006501
 
-GA-PARSIMONY | iter = 0
-  MeanVal = 0.8797661  |  ValBest = 0.9410622  |  TstBest = 0.9574468  |ComplexBest = 10000000045.0| Time(min) = 0.1504835  
-
-GA-PARSIMONY | iter = 1
-  MeanVal = 0.9049894  |  ValBest = 0.9456775  |     TstBest = 1.0     |ComplexBest = 11000000044.0| Time(min) = 0.0590165  
-
-GA-PARSIMONY | iter = 2
-  MeanVal = 0.9189347  |  ValBest = 0.9456775  |     TstBest = 1.0     |ComplexBest = 11000000044.0| Time(min) = 0.0520666  
-
-GA-PARSIMONY | iter = 3
-  MeanVal = 0.9270711  |   ValBest = 0.952701  |  TstBest = 0.9568345  |ComplexBest = 10000000043.0| Time(min) = 0.0494999
+Running iteration 1
+Best model -> Score = -0.085673 Complexity = 27,000,000,009.97 
+Iter = 1 -> MeanVal = -0.117216  ValBest = -0.085673   ComplexBest = 27,000,000,009.97 Time(min) = 0.004273
 
 ...
+...
 
-GA-PARSIMONY | iter = 28
-  MeanVal = 0.9370426  |  ValBest = 0.9840488  |  TstBest = 0.9574468  |ComplexBest = 9000000052.0| Time(min) = 0.0497332  
+Running iteration 102
+Best model -> Score = -0.064557 Complexity = 11,000,000,039.47 
+Iter = 102 -> MeanVal = -0.076314  ValBest = -0.066261   ComplexBest = 9,000,000,047.25 Time(min) = 0.004769
 
-GA-PARSIMONY | iter = 29
-  MeanVal = 0.9363377  |  ValBest = 0.9840488  |  TstBest = 0.9574468  |ComplexBest = 9000000052.0| Time(min) = 0.0467499  
+Running iteration 103
+Best model -> Score = -0.064557 Complexity = 11,000,000,039.47 
+Iter = 103 -> MeanVal = -0.086243  ValBest = -0.064995   ComplexBest = 11,000,000,031.2 Time(min) = 0.004591
 
-GA-PARSIMONY | iter = 30
-  MeanVal = 0.9204895  |  ValBest = 0.9840488  |  TstBest = 0.9574468  |ComplexBest = 9000000052.0| Time(min) = 0.0500166  
+Time limit reached. Stopped.
 
-GA-PARSIMONY | iter = 31
-  MeanVal = 0.9466802  |  ValBest = 0.9840488  |  TstBest = 0.9574468  |ComplexBest = 9000000052.0| Time(min) = 0.0481334
+Best Model = LogisticRegression(C=5.92705799354935)
+Selected features:['mean texture' 'mean concave points' 'radius error' 'area error'
+ 'compactness error' 'worst radius' 'worst perimeter' 'worst area'
+ 'worst smoothness' 'worst concavity' 'worst symmetry']
+Complexity = 11,000,000,039.47
+5-CV logloss = 0.064557
+logloss test = 0.076254
 ```
 
-summary() shows the GA initial settings and two solutions: the solution with the best validation score in the whole GA optimization process, and finally, the best parsimonious individual at the last generation.
-
-``` {.python}
-GAparsimony_model.summary()
-```
-``` 
-+------------------------------------+
-|             GA-PARSIMONY           |
-+------------------------------------+
-
-GA-PARSIMONY settings:
- Number of Parameters      = 2
- Number of Features        = 13
- Population size           = 40
- Maximum of generations    = 50
- Number of early-stop gen. = 10
- Elitism                   = 8
- Crossover probability     = 0.8
- Mutation probability      = 0.1
- Max diff(error) to ReRank = 0.001
- Perc. of 1s in first popu.= 0.9
- Prob. to be 1 in mutation = 0.1
-
- Search domain =
-                 C    gamma  alcohol  malic_acid  ash  alcalinity_of_ash  \
-Min_param   0.0001  0.00001      0.0         0.0  0.0                0.0
-Max_param  99.9999  0.99999      1.0         1.0  1.0                1.0
-
-           magnesium  total_phenols  flavanoids  nonflavanoid_phenols  \
-Min_param        0.0            0.0         0.0                   0.0
-Max_param        1.0            1.0         1.0                   1.0
-
-           proanthocyanins  color_intensity  hue  \
-Min_param              0.0              0.0  0.0
-Max_param              1.0              1.0  1.0
-
-           od280/od315_of_diluted_wines  proline
-Min_param                           0.0      0.0
-Max_param                           1.0      1.0
-
-
-GA-PARSIMONY results:
- Iterations                = 32
- Best validation score = 0.9840488232315704
-
-
-Solution with the best validation score in the whole GA process =
-
-  fitnessVal fitnessTst complexity         C     gamma alcohol malic_acid ash  \
-0   0.984049   0.957447      9e+09  0.527497  0.225906       1          1   1
-
-  alcalinity_of_ash magnesium total_phenols flavanoids nonflavanoid_phenols  \
-0                 1         0             0          1                    0
-
-  proanthocyanins color_intensity hue od280/od315_of_diluted_wines proline
-0               1               0   1                            1       1
-
-
-Results of the best individual at the last generation =
-
- Best indiv's validat.cost = 0.9840488232315704
- Best indiv's testing cost = 0.9574468085106383
- Best indiv's complexity   = 9000000052.0
- Elapsed time in minutes   = 1.705049173037211
-
-
-BEST SOLUTION =
-
-  fitnessVal fitnessTst complexity         C     gamma alcohol malic_acid ash  \
-0   0.984049   0.957447      9e+09  0.527497  0.225906       1          1   1
-
-  alcalinity_of_ash magnesium total_phenols flavanoids nonflavanoid_phenols  \
-0                 1         0             0          1                    0
-
-  proanthocyanins color_intensity hue od280/od315_of_diluted_wines proline
-0               1               0   1                            1       1
-```
-
-Plot GA evolution.
-
-``` {.python}
-GAparsimony_model.plot()
-```
-![GA-PARSIMONY Evolution](https://raw.githubusercontent.com/misantam/GAparsimony/main/docs/img/classification_readme.png)
-
-GA-PARSIMONY evolution
-
-Show percentage of appearance for each feature in elitists
-
-``` {.python}
-# Percentage of appearance for each feature in elitists
-GAparsimony_model.importance()
-```
-```
-+--------------------------------------------+
-|                  GA-PARSIMONY              |
-+--------------------------------------------+
-
-Percentage of appearance of each feature in elitists:
-
-  alcohol  ash proline flavanoids alcalinity_of_ash malic_acid  \
-0     100  100     100        100           99.5968    98.7903
-
-  od280/od315_of_diluted_wines proanthocyanins      hue nonflavanoid_phenols  \
-0                      98.3871         92.7419  86.6935               28.629
-
-  color_intensity total_phenols magnesium
-0         22.1774       2.41935   2.01613
-```
-
+However, with small databases like *breast_cancer*, it is highly recommended to use a repeated cross-validation and execute
+*HYBparsimony** with different seeds in order to find the most important input features and best model hyper-parameters.
 
 
 
