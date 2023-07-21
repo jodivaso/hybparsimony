@@ -364,8 +364,9 @@ class HYBparsimony(object):
                 #     print("MODELS", _modelsSorted)
                 #     print("POPSORTED", PopSorted)
                 #     print("fitnessvalsorted", FitnessValSorted)
-            if self.verbose > 0:
-                print("Current best score:", self.best_score)
+            # if self.verbose > 0:
+            #     print("Current best score:", self.best_score)
+                
 
             # Update global best positions, fitness and complexity of each particle (with NO rerank)
             for i in range(self.npart):
@@ -393,7 +394,8 @@ class HYBparsimony(object):
             # Call to 'monitor' function
             # --------------------------
             if self.verbose > 0:
-                parsimony_monitor(iter, fitnessval, bestfitnessVal, bestcomplexity, elapsed_gen)
+                parsimony_monitor(iter, self.best_score, self.best_complexity, 
+                                  fitnessval, bestfitnessVal, bestcomplexity, elapsed_gen)
 
             if self.verbose == 2:
                 print("\nStep 3. Fitness results")

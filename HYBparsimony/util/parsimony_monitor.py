@@ -4,7 +4,7 @@ import numpy  as np
 
 
 # new function for monitoring
-def parsimony_monitor(iter, fitnessval, bestfitnessVal, bestcomplexity, minutes_gen, digits=7, *args):
+def parsimony_monitor(iter, current_best_score, current_best_complexity, fitnessval, bestfitnessVal, bestcomplexity, minutes_gen, digits=6, *args):
     r"""Functions for monitoring GA-PARSIMONY algorithm evolution
 
     Functions to print summary statistics of fitness values at each iteration of a GA search.
@@ -21,12 +21,13 @@ def parsimony_monitor(iter, fitnessval, bestfitnessVal, bestcomplexity, minutes_
 
     fitnessval = fitnessval[~np.isnan(fitnessval)]
 
-    # print(f"HYBparsimony | iter = {iter}")
-    print(", ".join([f"MeanVal = {round(np.mean(fitnessval), digits)}".center(16 + digits),
+    print(" ".join([f"Best model -> Score = {round(current_best_score, digits)}".center(16 + digits),
+                     f"Complexity = {round(current_best_complexity, 2):,}".center(12),
+                    f"\nIter = {iter} -> MeanVal = {round(np.mean(fitnessval), digits)}".center(16 + digits),
                     f"ValBest = {round(bestfitnessVal, digits)}".center(16 + digits),
                     # f"TstBest = {round(bestfitnessTst, digits)}".center(16 + digits),
-                    f"ComplexBest = {round(bestcomplexity, digits)}".center(19 + digits),
-                    f"Time(min) = {round(minutes_gen, digits)}".center(17 + digits)]) + "\n")
+                    f"ComplexBest = {round(bestcomplexity, 2):,}".center(12),
+                    f"Time(min) = {round(minutes_gen, digits)}".center(7)]) + "\n")
  
 
 
