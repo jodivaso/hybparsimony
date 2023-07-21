@@ -16,20 +16,8 @@ from numpy.random import multinomial
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import make_scorer
-
-# Para comprobar si es clasificación o regresión
-# TODO: Seguro que hay alguna forma mejor. De hecho, ¿esto funciona si y no es np array? ¿Y si es multioutput?
 from HYBparsimony.util.models import check_algorithm
 
-
-def check_classification(y):
-    return np.issubdtype(y.dtype, np.integer)
-
-def default_cv_score_regression(estimator, X,y):
-    return cross_val_score(estimator, X, y, cv=5, scoring="neg_mean_squared_error")
-
-def default_cv_score_classification(estimator, X,y):
-    return cross_val_score(estimator, X, y, cv=5, scoring="neg_log_loss")
 
 class HYBparsimony(object):
 
@@ -156,28 +144,48 @@ class HYBparsimony(object):
         #  SOME LOGIC ON PARAMETERS' INITIALIZATION
         #############################################
 
-        if self._cv is not None and self.custom_eval_fun is None: # Si hay CV y no hay custom_eval, pongo la de por defecto con el cv que nos pasan.
-            # Si hay scoring hago una cosa y si no, pongo lo de por defecto
+        # Detect type of problem and define default scoring function.
+        def check_classification(y):
+           return np.issubdtype(y.dtype, np.integer)
+
+        if check_classification(y):
+            if len(np.unique(y))==2:
+                default_scoring = 'neg_log_loss'
+                if self.verbose > 0:
+                    print("Detected a binary-class problem. Using 'neg_log_loss' as default scoring function.")
+            else:
+                default_scoring = 'f1_macro'
+                if self.verbose > 0:
+                    print("Detected a multi-class problem. Using 'f1_macro' as default scoring function.")
+        else:
+            default_scoring = 'neg_mean_squared_error'
+            if self.verbose > 0:
+                print("Detected a regression problem. Using 'neg_mean_squared_error' as default scoring function.")
+
+        def default_cv_score(estimator, X, y):
+            return cross_val_score(estimator, X, y, cv=5, scoring=default_scoring)
+
+        # Create custom_eval_fun 
+        if self._cv is not None and self.custom_eval_fun is None:
             if self._scoring is not None:
                 self.custom_eval_fun = partial(cross_val_score, cv=self._cv, scoring= self._scoring)
             else: # Por defecto:
-                self.custom_eval_fun = partial(cross_val_score, cv = self._cv, scoring="neg_log_loss") \
-                    if check_classification(y) else partial(cross_val_score, cv = self._cv, scoring="neg_mean_squared_error")
-        elif self.custom_eval_fun is None: # Si CV es None y custom_eval también es None, entonces depende de si hay scoring
-            if self._scoring is not None: # si hay scoring, entonces se lo pongo
+                self.custom_eval_fun = partial(cross_val_score, cv=self._cv, scoring=default_scoring)
+        elif self.custom_eval_fun is None: 
+            if self._scoring is not None: 
                 self.custom_eval_fun = partial(cross_val_score, scoring=self._scoring)
-            else: # Si no hay ni custom_eval_fun, ni scoring, ni cv, pongo el de por defecto
-                self.custom_eval_fun = default_cv_score_classification if check_classification(y) else default_cv_score_regression
+            else:
+                self.custom_eval_fun = default_cv_score
 
-        # Select and check algorithm dictionary
+        # Select and check algorithm from dictionary
         self.algorithm = check_algorithm(self.algorithm, check_classification(y))
         self.params = {k: self.algorithm[k] for k in self.algorithm.keys() if k not in ["estimator", "complexity"]}
 
-        # Fitness function (for regression)
+        # Fitness function
         if self.n_jobs == 1:
             self.fitness = getFitness(self.algorithm['estimator'], self.algorithm['complexity'],
                                       self.custom_eval_fun)
-        else: # Hacemos paralelismo
+        else: # Parallelization
             self.fitness = partial(fitness_for_parallel, self.algorithm['estimator'],
                                    self.algorithm['complexity'], self.custom_eval_fun)
 
@@ -190,8 +198,6 @@ class HYBparsimony(object):
             else: # SI no, entonces es un numpy array y pongo números del 0 al número de columnas
                 num_rows, num_cols = X.shape
                 self.features = list(range(num_cols))
-
-
 
         #############################################
         #               THE HYBRID METHOD
@@ -209,7 +215,6 @@ class HYBparsimony(object):
 
         # Update population to satisfy the feat_thres
         population.update_to_feat_thres(self.npart, self.feat_thres)
-
 
         nfs = len(population.colsnames)
         nparams = len(population._params)
@@ -241,7 +246,6 @@ class HYBparsimony(object):
         self.bestSolList = list()
         self.best_models_list = list()
         self.best_models_conf_list = list()
-
 
         # Variables to store the best global positions, fitnessval and complexity of each particle
         bestGlobalPopulation = copy.deepcopy(population._pop)
@@ -719,6 +723,5 @@ class HYBparsimony(object):
             else: #Si es un Numpy, entonces tengo que quedarme con las columnas apropiadas
                 X_selected_features = X[:,self.selected_features_boolean] # Cojo todas las filas pero solo las columnas apropiadas.
             preds = self.best_model.predict_proba(X_selected_features)
-
         return preds
 
