@@ -168,7 +168,17 @@ We obtain the following results:
 7  RandomForestRegressor  0.546012  0.761268    8
 6  DecisionTreeRegressor  0.630503  0.864194    3
 ```
-However, if we increase the time limit to 60 minutes and use a more robust valiradtion (10-repeated 5-fold crossvalidation).
+However, if we increase the time limit to 60 minutes, the maximum number of iterations and use a more robust validation with a 10-repeated 5-fold crossvalidation.
+
+```python
+ HYBparsimony_model = HYBparsimony(algorithm=algo,
+                                   features=diabetes.feature_names,
+                                   rerank_error=0.001,
+                                   cv=RepeatedKFold(n_splits=5, n_repeats=10),
+                                   maxiter=1000,
+                                   verbose=1)
+```
+We can improve the results.
 
 |Algorithm|MSE\_5CV|RMSE|NFS|selected\_features|best\_model|
 |-|-|-|-|-|-|
