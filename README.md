@@ -236,16 +236,10 @@ In this example, best model is obtained with 11 features from the 30 original in
 (569, 30)
 Detected a binary-class problem. Using 'neg_log_loss' as default scoring function.
 Running iteration 0
-[-0.09151869 -0.0931798  -0.10940429 -0.12165382 -0.12788104 -0.15675583
- -0.18072648 -0.25191326 -0.29107907 -0.33065816 -0.40109293 -0.47393533
- -0.58786614 -0.59382422 -0.65023723]
 Best model -> Score = -0.091519 Complexity = 29,000,000,005.11 
 Iter = 0 -> MeanVal = -0.297448  ValBest = -0.091519   ComplexBest = 29,000,000,005.11 Time(min) = 0.006501
 
 Running iteration 1
-[-0.08567311 -0.08586769 -0.09113336 -0.08641527 -0.09546672 -0.09261952
- -0.09537149 -0.09484532 -0.10503856 -0.10012752 -0.12531245 -0.12149682
- -0.13272579 -0.15364833 -0.29249535]
 Best model -> Score = -0.085673 Complexity = 27,000,000,009.97 
 Iter = 1 -> MeanVal = -0.117216  ValBest = -0.085673   ComplexBest = 27,000,000,009.97 Time(min) = 0.004273
 
@@ -253,22 +247,14 @@ Iter = 1 -> MeanVal = -0.117216  ValBest = -0.085673   ComplexBest = 27,000,000,
 ...
 
 Running iteration 102
-[-0.06626091 -0.06790246 -0.07178167 -0.07208832 -0.06709924 -0.06845112
- -0.07704699 -0.07743325 -0.07440587 -0.07346869 -0.08000084 -0.08113266
- -0.0777841  -0.09278793 -0.09706025]
 Best model -> Score = -0.064557 Complexity = 11,000,000,039.47 
 Iter = 102 -> MeanVal = -0.076314  ValBest = -0.066261   ComplexBest = 9,000,000,047.25 Time(min) = 0.004769
 
 Running iteration 103
-[-0.06499505 -0.07063876 -0.06897292 -0.07561641 -0.07826003 -0.07958591
- -0.07678156 -0.07663363 -0.08991647 -0.10020997 -0.09623556 -0.09613714
- -0.10156552 -0.10115189 -0.11693745]
 Best model -> Score = -0.064557 Complexity = 11,000,000,039.47 
 Iter = 103 -> MeanVal = -0.086243  ValBest = -0.064995   ComplexBest = 11,000,000,031.2 Time(min) = 0.004591
 
 Time limit reached. Stopped.
-es array
-
 
 Best Model = LogisticRegression(C=5.92705799354935)
 Selected features:['mean texture' 'mean concave points' 'radius error' 'area error'
@@ -280,7 +266,7 @@ logloss test = 0.076254
 ```
 
 However, with small databases like *breast_cancer*, it is highly recommended to use a repeated cross-validation and execute
-*HYBparsimony** with different seeds in order to find the most important input features and model hyper-parameters.
+*HYBparsimony** with different seeds in order to find the most important input features and best model hyper-parameters.
 
 
 
