@@ -192,7 +192,7 @@ HYBparsimony_model.fit(X_train, y_train, time_limit=60)
 
 ### Example 2: Binary Classification
 
-This example shows how to use *HYBparsimony* in a binary classification problem with *breast_cancer* dataset. By default, *LogisticRegression* algorithm and *neg_log_loss* scoring is selected.
+This example shows how to use *HYBparsimony* in a binary classification problem with *breast_cancer* dataset. By default, method uses *LogisticRegression* algorithm and *neg_log_loss* as scoring metric.
 
 ```python
  import pandas as pd
@@ -265,7 +265,7 @@ logloss test = 0.076254
 However, with small databases like *breast_cancer*, it is highly recommended to use a repeated cross-validation and execute
 *HYBparsimony** with different seeds in order to find the most important input features and best model hyper-parameters.
 
-We also can compare with other algorithms with a more robust cross-validation and more time.
+We also can compare with other algorithms using a robust cross-validation and more time.
 
 ```python
 
@@ -317,7 +317,7 @@ In this example, the best model is also obtained with *LogisticRegression* but w
 
 ### Example 3: Multiclass Classification
 
-If the number of classes is greather than 2, *HYBparsimony* select *f1_macro* scoring. In this example, we increase the number of particles to 20 $npart=20$ and the $time_limit$ to 5 minutes. However, we include an early stopping if best individual does not change in 20 iterations $early_stop=20$.
+If the number of classes is greather than 2, *HYBparsimony* selects *f1_macro* as scoring metric. In this example, we increase the number of particles to 20 $npart=20$ and the $time_limit$ to 5 minutes. However, we also include an early stopping if best individual does not change in 20 iterations $early_stop=20$.
 
 ```python
 import pandas as pd
