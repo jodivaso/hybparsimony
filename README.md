@@ -311,12 +311,12 @@ In this example, the best model is also obtained with *LogisticRegression* but w
 
 |algo|Logloss\_10R5CV|Logloss\_Test|NFS|selected\_features|best\_model|
 |-|-|-|-|-|-|
-|**LogisticRegression**|0.066868|**0.079512**|**10**|'radius error','smoothness error','compactness error','worst radius','worst texture','worst perimeter','worst area','worst concavity','worst concave points','worst symmetry'|LogisticRegression(C=2.5457613022710692)|
-|SVC|0.061924|0.093283|9|'mean texture','radius error','smoothness error','compactness error','symmetry error','worst perimeter','worst concavity','worst concave points','worst fractal dimension'|SVC(C=10.017400170851333, gamma=0.030271440833644657, probability=True)|
-|MLPClassifier|0.055662|0.100951|14|'mean smoothness','mean compactness','mean concavity','texture error','area error','smoothness error','concave points error','fractal dimension error','worst radius','worst texture','worst perimeter','worst area','worst compactness','worst fractal dimension'|MLPClassifier(activation='logistic', alpha=0.08468913411920591, hidden\_layer\_sizes=8, max\_iter=5000, n\_iter\_no\_change=20, random\_state=1234, solver='lbfgs', tol=1e-05)|
-|DecisionTreeClassifier|0.214163|0.304484|7|'mean radius','mean compactness','mean concave points','worst texture','worst smoothness','worst symmetry','worst fractal dimension'|DecisionTreeClassifier(max\_depth=2, min\_samples\_split=19)|
-|RandomForestClassifier|0.098342|0.4229|12|'mean texture','mean smoothness','mean concave points','area error','smoothness error','compactness error','worst texture','worst area','worst smoothness','worst concave points','worst symmetry','worst fractal dimension'|RandomForestClassifier(max\_depth=20, n\_estimators=126)|
-|KNeighborsClassifier|0.079658|0.714111|17|'mean radius','mean texture','mean smoothness','mean compactness','mean concavity','mean concave points','mean symmetry','radius error','perimeter error','area error','smoothness error','compactness error','symmetry error','worst radius','worst texture','worst compactness','worst concave points'|KNeighborsClassifier(n\_neighbors=7, p=1)|
+|**LogisticRegression**|0.066868|**0.079512**|**10**|['radius error','smoothness error','compactness error','worst radius','worst texture','worst perimeter','worst area','worst concavity','worst concave points','worst symmetry]'|LogisticRegression(C=2.5457613022710692)|
+|SVC|0.061924|0.093283|9|['mean texture','radius error','smoothness error','compactness error','symmetry error','worst perimeter','worst concavity','worst concave points','worst fractal dimension]'|SVC(C=10.017400170851333, gamma=0.030271440833644657, probability=True)|
+|MLPClassifier|0.055662|0.100951|14|['mean smoothness','mean compactness','mean concavity','texture error','area error','smoothness error','concave points error','fractal dimension error','worst radius','worst texture','worst perimeter','worst area','worst compactness','worst fractal dimension]'|MLPClassifier(activation='logistic', alpha=0.08468913411920591, hidden\_layer\_sizes=8, max\_iter=5000, n\_iter\_no\_change=20, random\_state=1234, solver='lbfgs', tol=1e-05)|
+|DecisionTreeClassifier|0.214163|0.304484|7|['mean radius','mean compactness','mean concave points','worst texture','worst smoothness','worst symmetry','worst fractal dimension]'|DecisionTreeClassifier(max\_depth=2, min\_samples\_split=19)|
+|RandomForestClassifier|0.098342|0.4229|12|['mean texture','mean smoothness','mean concave points','area error','smoothness error','compactness error','worst texture','worst area','worst smoothness','worst concave points','worst symmetry','worst fractal dimension]'|RandomForestClassifier(max\_depth=20, n\_estimators=126)|
+|KNeighborsClassifier|0.079658|0.714111|17|['mean radius','mean texture','mean smoothness','mean compactness','mean concavity','mean concave points','mean symmetry','radius error','perimeter error','area error','smoothness error','compactness error','symmetry error','worst radius','worst texture','worst compactness','worst concave points]'|KNeighborsClassifier(n\_neighbors=7, p=1)|
 
 ### Example 3: Multiclass Classification
 
@@ -324,42 +324,40 @@ If the number of classes is greather than 2, *HYBparsimony* select *f1_macro* sc
 
 ```python
 import pandas as pd
-    from sklearn.model_selection import train_test_split
-    from sklearn.preprocessing import StandardScaler
-    from sklearn.datasets import load_wine
-    from sklearn.metrics import f1_score
-    from HYBparsimony import HYBparsimony
-    
-    # load 'wine' dataset 
-    wine = load_wine()
-    X, y = wine.data, wine.target 
-    print(X.shape)
-    # 3 classes
-    print(len(np.unique(y)))
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.datasets import load_wine
+from sklearn.metrics import f1_score
+from HYBparsimony import HYBparsimony
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
-    
-    # Standarize X and y (some algorithms require that)
-    scaler_X = StandardScaler()
-    X_train = scaler_X.fit_transform(X_train)
-    X_test = scaler_X.transform(X_test)
+# load 'wine' dataset 
+wine = load_wine()
+X, y = wine.data, wine.target 
+print(X.shape)
+# 3 classes
+print(len(np.unique(y)))
 
-    HYBparsimony_model = HYBparsimony(features=wine.feature_names,
-                                    cv=RepeatedKFold(n_splits=5, n_repeats=10),
-                                    npart = 20,
-                                    early_stop=20,
-                                    rerank_error=0.001,
-                                    verbose=1)
-    HYBparsimony_model.fit(X_train, y_train, time_limit=5.0)
-    preds = HYBparsimony_model.predict(X_test)
-    print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
-    print(f'Selected features:{HYBparsimony_model.selected_features}')
-    print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
-    print(f'10R5-CV f1_macro = {round(HYBparsimony_model.best_score,6)}')
-    print(f'f1_macro test = {round(f1_score(y_test, preds, average="macro"),6)}')
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
+
+# Standarize X and y (some algorithms require that)
+scaler_X = StandardScaler()
+X_train = scaler_X.fit_transform(X_train)
+X_test = scaler_X.transform(X_test)
+
+HYBparsimony_model = HYBparsimony(features=wine.feature_names,
+                                cv=RepeatedKFold(n_splits=5, n_repeats=10),
+                                npart = 20,
+                                early_stop=20,
+                                rerank_error=0.001,
+                                verbose=1)
+HYBparsimony_model.fit(X_train, y_train, time_limit=5.0)
+preds = HYBparsimony_model.predict(X_test)
+print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
+print(f'Selected features:{HYBparsimony_model.selected_features}')
+print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
+print(f'10R5-CV f1_macro = {round(HYBparsimony_model.best_score,6)}')
+print(f'f1_macro test = {round(f1_score(y_test, preds, average="macro"),6)}')
 ```
-
-
 ```
 (178, 13)
 3
