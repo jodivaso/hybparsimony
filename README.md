@@ -392,18 +392,18 @@ f1_macro test = 1.0
 
 References
 ----------
-F.J. Martinez-de-Pison, J. Ferreiro, E. Fraile, A. Pernia-Espinoza, A comparative study of six model complexity 
-metrics to search for parsimonious models with GAparsimony R Package, Neurocomputing,
-Volume 452, 2021, Pages 317-332, ISSN 0925-2312, [https://doi.org/10.1016/j.neucom.2020.02.135](https://doi.org/10.1016/j.neucom.2020.02.135).
+Divasón, J., Pernia-Espinoza, A., Martinez-de-Pison, F.J. (2022). New Hybrid Methodology Based on Particle Swarm Optimization with Genetic Algorithms to Improve the Search of Parsimonious Models in High-Dimensional Databases. In: García Bringas, P., et al. Hybrid Artificial Intelligent Systems. HAIS 2022. Lecture Notes in Computer Science(), vol 13469. Springer, Cham. [https://doi.org/10.1007/978-3-031-15471-3_29](https://doi.org/10.1007/978-3-031-15471-3_29)
 
-Martinez-de-Pison, F.J., Gonzalez-Sendino, R., Aldama, A., Ferreiro-Cabello, J., Fraile-Garcia, E. Hybrid methodology 
-based on Bayesian optimization and GA-PARSIMONY to search for parsimony models by combining hyperparameter optimization 
-and feature selection (2019) Neurocomputing, 354, pp. 20-26. [https://doi.org/10.1016/j.neucom.2018.05.136](https://doi.org/10.1016/j.neucom.2018.05.136).
+**Bibtex**
 
-Urraca R., Sodupe-Ortega E., Antonanzas E., Antonanzas-Torres F., Martinez-de-Pison, F.J. (2017). Evaluation of a 
-novel GA-based methodology for model structure selection: The GA-PARSIMONY. Neurocomputing, Online July 2017. [https://doi.org/10.1016/j.neucom.2016.08.154](https://doi.org/10.1016/j.neucom.2016.08.154).
-
-Martinez-De-Pison, F.J., Gonzalez-Sendino, R., Ferreiro, J., Fraile, E., Pernia-Espinoza, A. GAparsimony: An R 
-package for searching parsimonious models by combining hyperparameter optimization and feature selection (2018) Lecture 
-Notes in Computer Science (including subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics), 
-10870 LNAI, pp. 62-73. [https://doi.org/10.1007/978-3-319-92639-1_6](https://doi.org/10.1007/978-3-319-92639-1_6).
+```
+@InProceedings{10.1007/978-3-031-15471-3_29, author="Divas{\'o}n, Jose and Pernia-Espinoza, Alpha and Martinez-de-Pison, Francisco Javier", editor="Garc{\'i}a Bringas, Pablo and P{\'e}rez Garc{\'i}a, Hilde and Mart{\'i}nez de Pis{\'o}n, Francisco Javier and Villar Flecha, Jos{\'e} Ram{\'o}n and Troncoso Lora, Alicia and de la Cal, Enrique A. and Herrero, {\'A}lvaro and Mart{\'i}nez {\'A}lvarez, Francisco and Psaila, Giuseppe and Quinti{\'a}n, H{\'e}ctor and Corchado, Emilio",
+title="New Hybrid Methodology Based on Particle Swarm Optimization with Genetic Algorithms to Improve the Search of Parsimonious Models in High-Dimensional Databases",
+booktitle="Hybrid Artificial Intelligent Systems",
+year="2022",
+publisher="Springer International Publishing",
+address="Cham",
+pages="335--347",
+isbn="978-3-031-15471-3"
+}
+```
