@@ -397,7 +397,9 @@ Divasón, J., Pernia-Espinoza, A., Martinez-de-Pison, F.J. (2022). New Hybrid Me
 **Bibtex**
 
 ```
-@InProceedings{10.1007/978-3-031-15471-3_29, author="Divas{\'o}n, Jose and Pernia-Espinoza, Alpha and Martinez-de-Pison, Francisco Javier", editor="Garc{\'i}a Bringas, Pablo and P{\'e}rez Garc{\'i}a, Hilde and Mart{\'i}nez de Pis{\'o}n, Francisco Javier and Villar Flecha, Jos{\'e} Ram{\'o}n and Troncoso Lora, Alicia and de la Cal, Enrique A. and Herrero, {\'A}lvaro and Mart{\'i}nez {\'A}lvarez, Francisco and Psaila, Giuseppe and Quinti{\'a}n, H{\'e}ctor and Corchado, Emilio",
+@InProceedings{10.1007/978-3-031-15471-3_29,
+author="Divas{\'o}n, Jose and Pernia-Espinoza, Alpha and Martinez-de-Pison, Francisco Javier",
+editor="Garc{\'i}a Bringas, Pablo and P{\'e}rez Garc{\'i}a, Hilde and Mart{\'i}nez de Pis{\'o}n, Francisco Javier and Villar Flecha, Jos{\'e} Ram{\'o}n and Troncoso Lora, Alicia and de la Cal, Enrique A. and Herrero, {\'A}lvaro and Mart{\'i}nez {\'A}lvarez, Francisco and Psaila, Giuseppe and Quinti{\'a}n, H{\'e}ctor and Corchado, Emilio",
 title="New Hybrid Methodology Based on Particle Swarm Optimization with Genetic Algorithms to Improve the Search of Parsimonious Models in High-Dimensional Databases",
 booktitle="Hybrid Artificial Intelligent Systems",
 year="2022",
