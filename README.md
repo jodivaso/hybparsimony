@@ -168,7 +168,7 @@ We obtain the following results:
 7  RandomForestRegressor  0.546012  0.761268    8
 6  DecisionTreeRegressor  0.630503  0.864194    3
 ```
-However, if we increase the time limit to 60 minutes, the maximum number of iterations and use a more robust validation with a 10-repeated 5-fold crossvalidation.
+However, we can improve results in RMSE and parsimony if we increase the time limit to 60 minutes, the maximum number of iterations to 1000, and use a more robust validation with a 10-repeated 5-fold crossvalidation.
 
 ```python
  HYBparsimony_model = HYBparsimony(algorithm=algo,
@@ -179,8 +179,6 @@ However, if we increase the time limit to 60 minutes, the maximum number of iter
                                    verbose=1)
 HYBparsimony_model.fit(X_train, y_train, time_limit=60)
 ```
-We can improve results in RMSE and parsimony.
-
 |Algorithm|MSE\_10R5CV|RMSEtst|NFS|selected\_features|best\_model|
 |-|-|-|-|-|-|
 |**MLPRegressor**|0.493201|**0.671856**|**6**|['sex','bmi','bp','s1','s2','s5']|MLPRegressor(activation='logistic', alpha=0.010729877296924203, hidden_layer_sizes=1, max_iter=5000, n_iter_no_change=20, random_state=1234, solver='lbfgs', tol=1e-05)|\
