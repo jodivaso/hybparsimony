@@ -317,7 +317,7 @@ In this example, the best model is also obtained with *LogisticRegression* but w
 
 ### Example 3: Multiclass Classification
 
-If the number of classes is greather than 2, *HYBparsimony* selects *f1\_macro* as scoring metric. In this example, we increase the number of particles to 20 $npart=20$ and the $time\_limit$ to 5 minutes. However, we also include an early stopping if best individual does not change in 20 iterations $early\_stop=20$.
+If the number of classes is greather than 2, *HYBparsimony* selects *f1\_macro* as scoring metric. In this example, we increase the number of particles to 20 $npart=20$ and the $time\\_limit$ to 5 minutes. However, we also include an early stopping if best individual does not change in 20 iterations $early\_stop=20$.
 
 ```python
 import pandas as pd
