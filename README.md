@@ -275,36 +275,36 @@ algorithms_clas = ['LogisticRegression', 'MLPClassifier',
                     'SVC', 'DecisionTreeClassifier',
                     'RandomForestClassifier', 'KNeighborsClassifier',
                     ]
-    res = []
-    for algo in algorithms_clas:
-        print('#######################')
-        print('Searching best: ', algo)
-        HYBparsimony_model = HYBparsimony(algorithm=algo,
-                                          features=breast_cancer.feature_names,
-                                          rerank_error=0.005,
-                                          cv=RepeatedKFold(n_splits=5, n_repeats=10),
-                                          maxiter=1000,
-                                          verbose=1)
-        # Search the best hyperparameters and features 
-        # (increasing 'time_limit' to improve neg_log_loss with high consuming algorithms)
-        HYBparsimony_model.fit(X_train, y_train, time_limit=60.0)
-        # Check results with test dataset
-        preds = HYBparsimony_model.predict_proba(X_test)[:,1]
-        print(algo, "Logloss_Test=", round(log_loss(y_test, preds),6))
-        print('Selected features:',HYBparsimony_model.selected_features)
-        print(HYBparsimony_model.best_model)
-        print('#######################')
-        # Append results
-        res.append(dict(algo=algo,
-                        Logloss_10R5CV= -round(HYBparsimony_model.best_score,6),
-                        Logloss_Test = round(log_loss(y_test, preds),6),
-                        NFS=int(HYBparsimony_model.best_complexity//1e9),
-                        selected_features = HYBparsimony_model.selected_features,
-                        best_model=HYBparsimony_model.best_model))
-    res = pd.DataFrame(res).sort_values('Logloss_Test')
-    res.to_csv('res_models_class.csv')
-    # Visualize results
-    print(res[['algo', 'Logloss_10R5CV', 'Logloss_Test', 'NFS']])
+res = []
+for algo in algorithms_clas:
+    print('#######################')
+    print('Searching best: ', algo)
+    HYBparsimony_model = HYBparsimony(algorithm=algo,
+                                      features=breast_cancer.feature_names,
+                                      rerank_error=0.005,
+                                      cv=RepeatedKFold(n_splits=5, n_repeats=10),
+                                      maxiter=1000,
+                                      verbose=1)
+    # Search the best hyperparameters and features 
+    # (increasing 'time_limit' to improve neg_log_loss with high consuming algorithms)
+    HYBparsimony_model.fit(X_train, y_train, time_limit=60.0)
+    # Check results with test dataset
+    preds = HYBparsimony_model.predict_proba(X_test)[:,1]
+    print(algo, "Logloss_Test=", round(log_loss(y_test, preds),6))
+    print('Selected features:',HYBparsimony_model.selected_features)
+    print(HYBparsimony_model.best_model)
+    print('#######################')
+    # Append results
+    res.append(dict(algo=algo,
+                    Logloss_10R5CV= -round(HYBparsimony_model.best_score,6),
+                    Logloss_Test = round(log_loss(y_test, preds),6),
+                    NFS=int(HYBparsimony_model.best_complexity//1e9),
+                    selected_features = HYBparsimony_model.selected_features,
+                    best_model=HYBparsimony_model.best_model))
+res = pd.DataFrame(res).sort_values('Logloss_Test')
+res.to_csv('res_models_class.csv')
+# Visualize results
+print(res[['algo', 'Logloss_10R5CV', 'Logloss_Test', 'NFS']])
 ```
 In this example, the best model is also obtained with *LogisticRegression* but with $10$ features.
 
