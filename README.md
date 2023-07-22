@@ -268,7 +268,7 @@ logloss test = 0.076254
 However, with small databases like *breast_cancer*, it is highly recommended to use a repeated cross-validation and execute
 *HYBparsimony** with different seeds in order to find the most important input features and best model hyper-parameters.
 
-We also can compare with other algorithms.
+We also can compare with other algorithms with a more robust cross-validation and more time.
 
 ```python
 
@@ -307,6 +307,7 @@ algorithms_clas = ['LogisticRegression', 'MLPClassifier',
     # Visualize results
     print(res[['algo', 'Logloss_10R5CV', 'Logloss_Test', 'NFS']])
 ```
+In this example, the best model is also obtained with *LogisticRegression* but with $10$ features.
 
 |algo|Logloss\_10R5CV|Logloss\_Test|NFS|selected\_features|best\_model|
 |-|-|-|-|-|-|
@@ -317,6 +318,81 @@ algorithms_clas = ['LogisticRegression', 'MLPClassifier',
 |RandomForestClassifier|0.098342|0.4229|12|'mean texture','mean smoothness','mean concave points','area error','smoothness error','compactness error','worst texture','worst area','worst smoothness','worst concave points','worst symmetry','worst fractal dimension'|RandomForestClassifier(max\_depth=20, n\_estimators=126)|
 |KNeighborsClassifier|0.079658|0.714111|17|'mean radius','mean texture','mean smoothness','mean compactness','mean concavity','mean concave points','mean symmetry','radius error','perimeter error','area error','smoothness error','compactness error','symmetry error','worst radius','worst texture','worst compactness','worst concave points'|KNeighborsClassifier(n\_neighbors=7, p=1)|
 
+### Example 3: Multiclass Classification
+
+If the number of classes is greather than 2, *HYBparsimony* select *f1_macro* scoring. In this example, we increase the number of particles to 20 $npart=20$ and the $time_limit$ to 5 minutes. However, we include an early stopping if best individual does not change in 20 iterations $early_stop=20$.
+
+```python
+import pandas as pd
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.datasets import load_wine
+    from sklearn.metrics import f1_score
+    from HYBparsimony import HYBparsimony
+    
+    # load 'wine' dataset 
+    wine = load_wine()
+    X, y = wine.data, wine.target 
+    print(X.shape)
+    # 3 classes
+    print(len(np.unique(y)))
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
+    
+    # Standarize X and y (some algorithms require that)
+    scaler_X = StandardScaler()
+    X_train = scaler_X.fit_transform(X_train)
+    X_test = scaler_X.transform(X_test)
+
+    HYBparsimony_model = HYBparsimony(features=wine.feature_names,
+                                    cv=RepeatedKFold(n_splits=5, n_repeats=10),
+                                    npart = 20,
+                                    early_stop=20,
+                                    rerank_error=0.001,
+                                    verbose=1)
+    HYBparsimony_model.fit(X_train, y_train, time_limit=5.0)
+    preds = HYBparsimony_model.predict(X_test)
+    print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
+    print(f'Selected features:{HYBparsimony_model.selected_features}')
+    print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
+    print(f'10R5-CV f1_macro = {round(HYBparsimony_model.best_score,6)}')
+    print(f'f1_macro test = {round(f1_score(y_test, preds, average="macro"),6)}')
+```
+
+
+```
+(178, 13)
+3
+Detected a multi-class problem. Using 'f1_macro' as default scoring function.
+Running iteration 0
+Best model -> Score = 0.981068 Complexity = 13,000,000,001.38 
+Iter = 0 -> MeanVal = 0.759953   ValBest = 0.981068   ComplexBest = 13,000,000,001.38 Time(min) = 0.06835
+
+Running iteration 1
+Best model -> Score = 0.985503 Complexity = 11,000,000,036.33 
+Iter = 1 -> MeanVal = 0.938299   ValBest = 0.985503   ComplexBest = 11,000,000,036.33 Time(min) = 0.071658
+
+...
+...
+
+Running iteration 45
+Best model -> Score = 0.99615 Complexity = 8,000,000,014.48 
+Iter = 45 -> MeanVal = 0.984447   ValBest = 0.992284   ComplexBest = 8,000,000,009.54 Time(min) = 0.059787
+
+Running iteration 46
+Best model -> Score = 0.99615 Complexity = 8,000,000,014.48 
+Iter = 46 -> MeanVal = 0.979013   ValBest = 0.992943   ComplexBest = 8,000,000,007.89 Time(min) = 0.056873
+
+Early stopping reached. Stopped.
+
+
+Best Model = LogisticRegression(C=1.1242464804883552)
+Selected features:['alcohol' 'ash' 'alcalinity_of_ash' 'flavanoids' 'nonflavanoid_phenols'
+ 'color_intensity' 'hue' 'proline']
+Complexity = 8,000,000,014.48
+10R5-CV f1_macro = 0.99615
+f1_macro test = 1.0
+```
 
 
 References
