@@ -268,9 +268,53 @@ logloss test = 0.076254
 However, with small databases like *breast_cancer*, it is highly recommended to use a repeated cross-validation and execute
 *HYBparsimony** with different seeds in order to find the most important input features and best model hyper-parameters.
 
+We also can compare with other algorithms.
 
+```python
 
+algorithms_clas = ['LogisticRegression', 'MLPClassifier', 
+                    'SVC', 'DecisionTreeClassifier',
+                    'RandomForestClassifier', 'KNeighborsClassifier',
+                    ]
+    res = []
+    for algo in algorithms_clas:
+        print('#######################')
+        print('Searching best: ', algo)
+        HYBparsimony_model = HYBparsimony(algorithm=algo,
+                                          features=breast_cancer.feature_names,
+                                          rerank_error=0.005,
+                                          cv=RepeatedKFold(n_splits=5, n_repeats=10),
+                                          maxiter=1000,
+                                          verbose=1)
+        # Search the best hyperparameters and features 
+        # (increasing 'time_limit' to improve neg_log_loss with high consuming algorithms)
+        HYBparsimony_model.fit(X_train, y_train, time_limit=60.0)
+        # Check results with test dataset
+        preds = HYBparsimony_model.predict_proba(X_test)[:,1]
+        print(algo, "Logloss_Test=", round(log_loss(y_test, preds),6))
+        print('Selected features:',HYBparsimony_model.selected_features)
+        print(HYBparsimony_model.best_model)
+        print('#######################')
+        # Append results
+        res.append(dict(algo=algo,
+                        Logloss_10R5CV= -round(HYBparsimony_model.best_score,6),
+                        Logloss_Test = round(log_loss(y_test, preds),6),
+                        NFS=int(HYBparsimony_model.best_complexity//1e9),
+                        selected_features = HYBparsimony_model.selected_features,
+                        best_model=HYBparsimony_model.best_model))
+    res = pd.DataFrame(res).sort_values('Logloss_Test')
+    res.to_csv('res_models_class.csv')
+    # Visualize results
+    print(res[['algo', 'Logloss_10R5CV', 'Logloss_Test', 'NFS']])
+```
 
+|algo|Logloss\_10R5CV|Logloss\_Test|NFS|selected\_features|best\_model|
+|LogisticRegression|0.066868|0.079512|10|{[}'radius error' 'smoothness error' 'compactness error' 'worst radius' 'worst texture' 'worst perimeter' 'worst area' 'worst concavity' 'worst concave points' 'worst symmetry'{]}|LogisticRegression(C=2.5457613022710692)|
+|SVC|0.061924|0.093283|9|{[}'mean texture' 'radius error' 'smoothness error' 'compactness error' 'symmetry error' 'worst perimeter' 'worst concavity' 'worst concave points' 'worst fractal dimension'{]}|SVC(C=10.017400170851333, gamma=0.030271440833644657, probability=True)|
+|MLPClassifier|0.055662|0.100951|14|{[}'mean smoothness' 'mean compactness' 'mean concavity' 'texture error' 'area error' 'smoothness error' 'concave points error' 'fractal dimension error' 'worst radius' 'worst texture' 'worst perimeter' 'worst area' 'worst compactness' 'worst fractal dimension'{]}|MLPClassifier(activation='logistic', alpha=0.08468913411920591, hidden\_layer\_sizes=8, max\_iter=5000, n\_iter\_no\_change=20, random\_state=1234, solver='lbfgs', tol=1e-05)|
+|DecisionTreeClassifier|0.214163|0.304484|7|{[}'mean radius' 'mean compactness' 'mean concave points' 'worst texture' 'worst smoothness' 'worst symmetry' 'worst fractal dimension'{]}|DecisionTreeClassifier(max\_depth=2, min\_samples\_split=19)|
+|RandomForestClassifier|0.098342|0.4229|12|{[}'mean texture' 'mean smoothness' 'mean concave points' 'area error' 'smoothness error' 'compactness error' 'worst texture' 'worst area' 'worst smoothness' 'worst concave points' 'worst symmetry' 'worst fractal dimension'{]}|RandomForestClassifier(max\_depth=20, n\_estimators=126)|
+|KNeighborsClassifier|0.079658|0.714111|17|{[}'mean radius' 'mean texture' 'mean smoothness' 'mean compactness' 'mean concavity' 'mean concave points' 'mean symmetry' 'radius error' 'perimeter error' 'area error' 'smoothness error' 'compactness error' 'symmetry error' 'worst radius' 'worst texture' 'worst compactness' 'worst concave points'{]}|KNeighborsClassifier(n\_neighbors=7, p=1)|
 
 
 References
