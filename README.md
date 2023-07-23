@@ -395,7 +395,7 @@ HYBparsimony uses by default sklearn's [*cross_val_score*](https://scikit-learn.
 
 ```python
 def default_cv_score(estimator, X, y):
-            return cross_val_score(estimator, X, y, cv=self.cv, scoring=self.scoring)
+  return cross_val_score(estimator, X, y, cv=self.cv, scoring=self.scoring)
 ```
 
 By default $cv=5$, and $scoring$ is defined as *MSE* for regression problems, *log_loss* for binary classification problems, and *f1_macro* for multiclass problems. However, it is possible to choose [another scoring metric](https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter) defined in *scikit-learn* library or design [your own](https://scikit-learn.org/stable/modules/model_evaluation.html#scoring). 
@@ -418,12 +418,13 @@ HYBparsimony_model = HYBparsimony(features=wine.feature_names,
                                   verbose=1)
 
 #Example C: Using a weighted 'log_loss'
-# We assign weigth=2.0 to class one
+from sklearn.metrics import cohen_kappa_score, make_scorer
+# Assign a double weight to class one
 def my_custom_loss_func(y_true, y_pred):
     sample_weight = np.ones_like(y_true)
     sample_weight[y_true==1] = 2.0
     return log_loss(y_true, y_pred, sample_weight=sample_weight)
-# Lower is better and log_loss needs probabilities
+# Lower is better. 'log_loss' needs probabilities
 custom_score = make_scorer(my_custom_loss_func, greater_is_better=False, needs_proba=True)
 HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
                                 scoring=custom_score,
