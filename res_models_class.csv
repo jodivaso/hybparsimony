@@ -1,47 +1,25 @@
 ,algo,Logloss_10R5CV,Logloss_Test,NFS,selected_features,best_model
-0,LogisticRegression,0.082243,0.067304,21,"['mean radius' 'mean texture' 'mean perimeter' 'mean area'
- 'mean smoothness' 'mean compactness' 'mean concave points'
- 'mean fractal dimension' 'radius error' 'texture error' 'area error'
- 'symmetry error' 'worst radius' 'worst texture' 'worst perimeter'
- 'worst smoothness' 'worst compactness' 'worst concavity'
- 'worst concave points' 'worst symmetry' 'worst fractal dimension']",LogisticRegression(C=1.5662490160429934)
-1,MLPClassifier,0.077769,0.084818,27,"['mean radius' 'mean texture' 'mean perimeter' 'mean area'
- 'mean smoothness' 'mean compactness' 'mean concavity'
- 'mean concave points' 'mean symmetry' 'mean fractal dimension'
- 'radius error' 'perimeter error' 'area error' 'smoothness error'
- 'compactness error' 'concavity error' 'concave points error'
- 'symmetry error' 'fractal dimension error' 'worst radius' 'worst texture'
- 'worst area' 'worst smoothness' 'worst concavity' 'worst concave points'
- 'worst symmetry' 'worst fractal dimension']","MLPClassifier(activation='logistic', alpha=0.4822706855542665,
-              hidden_layer_sizes=16, max_iter=5000, n_iter_no_change=20,
+0,LogisticRegression,0.066868,0.079512,10,"['radius error' 'smoothness error' 'compactness error' 'worst radius'
+ 'worst texture' 'worst perimeter' 'worst area' 'worst concavity'
+ 'worst concave points' 'worst symmetry']",LogisticRegression(C=2.5457613022710692)
+2,SVC,0.061924,0.093283,9,"['mean texture' 'radius error' 'smoothness error' 'compactness error'
+ 'symmetry error' 'worst perimeter' 'worst concavity'
+ 'worst concave points' 'worst fractal dimension']","SVC(C=10.017400170851333, gamma=0.030271440833644657, probability=True)"
+1,MLPClassifier,0.055662,0.100951,14,"['mean smoothness' 'mean compactness' 'mean concavity' 'texture error'
+ 'area error' 'smoothness error' 'concave points error'
+ 'fractal dimension error' 'worst radius' 'worst texture'
+ 'worst perimeter' 'worst area' 'worst compactness'
+ 'worst fractal dimension']","MLPClassifier(activation='logistic', alpha=0.08468913411920591,
+              hidden_layer_sizes=8, max_iter=5000, n_iter_no_change=20,
               random_state=1234, solver='lbfgs', tol=1e-05)"
-2,SVC,0.099431,0.091808,27,"['mean radius' 'mean texture' 'mean perimeter' 'mean area'
- 'mean smoothness' 'mean compactness' 'mean concavity'
- 'mean concave points' 'mean symmetry' 'mean fractal dimension'
- 'radius error' 'texture error' 'perimeter error' 'area error'
- 'smoothness error' 'compactness error' 'concavity error' 'symmetry error'
- 'worst radius' 'worst texture' 'worst perimeter' 'worst area'
- 'worst smoothness' 'worst compactness' 'worst concavity' 'worst symmetry'
- 'worst fractal dimension']","SVC(C=5.639336936196288, gamma=0.001641394774704971, probability=True)"
-5,KNeighborsClassifier,0.148627,0.174221,24,"['mean radius' 'mean texture' 'mean perimeter' 'mean area'
- 'mean smoothness' 'mean compactness' 'mean concave points'
- 'mean symmetry' 'mean fractal dimension' 'texture error'
+3,DecisionTreeClassifier,0.214163,0.304484,7,"['mean radius' 'mean compactness' 'mean concave points' 'worst texture'
+ 'worst smoothness' 'worst symmetry' 'worst fractal dimension']","DecisionTreeClassifier(max_depth=2, min_samples_split=19)"
+4,RandomForestClassifier,0.098342,0.4229,12,"['mean texture' 'mean smoothness' 'mean concave points' 'area error'
+ 'smoothness error' 'compactness error' 'worst texture' 'worst area'
+ 'worst smoothness' 'worst concave points' 'worst symmetry'
+ 'worst fractal dimension']","RandomForestClassifier(max_depth=20, n_estimators=126)"
+5,KNeighborsClassifier,0.079658,0.714111,17,"['mean radius' 'mean texture' 'mean smoothness' 'mean compactness'
+ 'mean concavity' 'mean concave points' 'mean symmetry' 'radius error'
  'perimeter error' 'area error' 'smoothness error' 'compactness error'
- 'concave points error' 'fractal dimension error' 'worst radius'
- 'worst texture' 'worst area' 'worst compactness' 'worst concavity'
- 'worst concave points' 'worst symmetry' 'worst fractal dimension']",KNeighborsClassifier(n_neighbors=41)
-3,DecisionTreeClassifier,0.37432,0.357856,24,"['mean radius' 'mean texture' 'mean perimeter' 'mean smoothness'
- 'mean concavity' 'mean symmetry' 'mean fractal dimension' 'radius error'
- 'texture error' 'area error' 'smoothness error' 'compactness error'
- 'concave points error' 'fractal dimension error' 'worst radius'
- 'worst texture' 'worst perimeter' 'worst area' 'worst smoothness'
- 'worst compactness' 'worst concavity' 'worst concave points'
- 'worst symmetry' 'worst fractal dimension']","DecisionTreeClassifier(max_depth=2, min_samples_split=21)"
-4,RandomForestClassifier,0.111374,0.436299,27,"['mean radius' 'mean texture' 'mean perimeter' 'mean area'
- 'mean smoothness' 'mean compactness' 'mean concavity'
- 'mean concave points' 'mean symmetry' 'texture error' 'perimeter error'
- 'area error' 'smoothness error' 'compactness error' 'concavity error'
- 'concave points error' 'symmetry error' 'worst radius' 'worst texture'
- 'worst perimeter' 'worst area' 'worst smoothness' 'worst compactness'
- 'worst concavity' 'worst concave points' 'worst symmetry'
- 'worst fractal dimension']","RandomForestClassifier(max_depth=19, min_samples_split=8, n_estimators=289)"
+ 'symmetry error' 'worst radius' 'worst texture' 'worst compactness'
+ 'worst concave points']","KNeighborsClassifier(n_neighbors=7, p=1)"

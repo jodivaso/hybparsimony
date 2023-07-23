@@ -418,6 +418,8 @@ class HYBparsimony(object):
             if iter == self.maxiter:
                 break
             if (len(best_val_cost) - (np.min(np.arange(len(best_val_cost))[best_val_cost >= (np.max(best_val_cost) - self.tol)]))) >= self.early_stop:
+                if self.verbose > 0:
+                    print("Early stopping reached. Stopped.")
                 break
             if time_limit is not None and time_limit < (time.time() - start_time)/60:
                 if self.verbose > 0:
