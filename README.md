@@ -397,10 +397,26 @@ HYBparsimony uses by default sklearn's [*cross_val_score*](https://scikit-learn.
 def default_cv_score(estimator, X, y):
             return cross_val_score(estimator, X, y, cv=self.cv, scoring=self.scoring)
 ```
+
 By default $cv=5$, and $scoring$ is defined as *MSE* for regression problems, *log_loss* for binary classification problems, and *f1_macro* for multiclass problems. However, it is possible to choose [another scoring metric](https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter) defined in *scikit-learn* library or design [your own](https://scikit-learn.org/stable/modules/model_evaluation.html#scoring). 
 
+```python
+#Example A: Using 10 folds and 'accuracy'
+HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+                                   scoring='accuracy',
+                                   cv=5,
+                                   rerank_error=0.001,
+                                   verbose=1)
 
-
+#Example B: Using 10-repeated 5-CV folds and 'kappa' score
+from sklearn.metrics import cohen_kappa_score, make_scorer
+metric_kappa = make_scorer(cohen_kappa_score)
+HYBparsimony_model = HYBparsimony(features=wine.feature_names,
+                                  scoring=metric_kappa,
+                                  cv=RepeatedKFold(n_splits=5, n_repeats=10),
+                                  rerank_error=0.001,
+                                  verbose=1)
+```
 
 
 References
