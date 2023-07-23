@@ -147,8 +147,12 @@ class HYBparsimony(object):
         # Detect type of problem and define default scoring function.
         def check_classification(y):
            return np.issubdtype(y.dtype, np.integer)
-
-        if check_classification(y):
+        
+        if self._scoring is not None:
+            default_scoring = self._scoring
+            if self.verbose > 0:
+                print(f"Using '{default_scoring}' as scoring function.")
+        elif check_classification(y):
             if len(np.unique(y))==2:
                 default_scoring = 'neg_log_loss'
                 if self.verbose > 0:
@@ -168,7 +172,7 @@ class HYBparsimony(object):
         # Create custom_eval_fun 
         if self._cv is not None and self.custom_eval_fun is None:
             if self._scoring is not None:
-                self.custom_eval_fun = partial(cross_val_score, cv=self._cv, scoring= self._scoring)
+                self.custom_eval_fun = partial(cross_val_score, cv=self._cv, scoring=self._scoring)
             else: # Por defecto:
                 self.custom_eval_fun = partial(cross_val_score, cv=self._cv, scoring=default_scoring)
         elif self.custom_eval_fun is None: 

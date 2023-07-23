@@ -168,20 +168,59 @@ if __name__ == "__main__":
     #                   MULTICLASS CLASSIFICATION                 #
     ###############################################################
 
+    # import pandas as pd
+    # from sklearn.model_selection import train_test_split
+    # from sklearn.preprocessing import StandardScaler
+    # from sklearn.datasets import load_wine
+    # from sklearn.metrics import f1_score
+    # from HYBparsimony import HYBparsimony
+    
+    # # load 'wine' dataset 
+    # wine = load_wine()
+    # X, y = wine.data, wine.target 
+    # print(X.shape)
+    # # 3 classes
+    # print(len(np.unique(y)))
+
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
+    
+    # # Standarize X and y (some algorithms require that)
+    # scaler_X = StandardScaler()
+    # X_train = scaler_X.fit_transform(X_train)
+    # X_test = scaler_X.transform(X_test)
+
+    # HYBparsimony_model = HYBparsimony(features=wine.feature_names,
+    #                                 cv=RepeatedKFold(n_splits=5, n_repeats=10),
+    #                                 npart = 20, # population=20
+    #                                 early_stop=20,
+    #                                 rerank_error=0.001,
+    #                                 verbose=1)
+    # HYBparsimony_model.fit(X_train, y_train, time_limit=5.0)
+    # preds = HYBparsimony_model.predict(X_test)
+    # print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
+    # print(f'Selected features:{HYBparsimony_model.selected_features}')
+    # print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
+    # print(f'10R5-CV f1_macro = {round(HYBparsimony_model.best_score,6)}')
+    # print(f'f1_macro test = {round(f1_score(y_test, preds, average="macro"),6)}')
+    
+
+    ###################################################
+    #                   CUSTOM SEARCH                 #
+    ###################################################
+
     import pandas as pd
     from sklearn.model_selection import train_test_split
     from sklearn.preprocessing import StandardScaler
-    from sklearn.datasets import load_wine
-    from sklearn.metrics import f1_score
+    from sklearn.datasets import load_breast_cancer
+    from sklearn.metrics import log_loss, accuracy_score
     from HYBparsimony import HYBparsimony
+    from sklearn.metrics import fbeta_score, make_scorer, cohen_kappa_score
     
-    # load 'wine' dataset 
-    wine = load_wine()
-    X, y = wine.data, wine.target 
-    print(X.shape)
-    # 3 classes
-    print(len(np.unique(y)))
 
+    # load 'breast_cancer' dataset
+    breast_cancer = load_breast_cancer()
+    X, y = breast_cancer.data, breast_cancer.target 
+    print(X.shape)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
     
     # Standarize X and y (some algorithms require that)
@@ -189,17 +228,24 @@ if __name__ == "__main__":
     X_train = scaler_X.fit_transform(X_train)
     X_test = scaler_X.transform(X_test)
 
-    HYBparsimony_model = HYBparsimony(features=wine.feature_names,
-                                    cv=RepeatedKFold(n_splits=5, n_repeats=10),
-                                    npart = 20, # population=20
-                                    early_stop=20,
+    # Weighted log_loss. We assign weigth=2.0 to class one
+    def my_custom_loss_func(y_true, y_pred):
+        sample_weight = np.ones_like(y_true)
+        sample_weight[y_true==1] = 2.0
+        return log_loss(y_true, y_pred, sample_weight=sample_weight)
+    # lower is better and log_loss needs probabilities
+    custom_score = make_scorer(my_custom_loss_func, greater_is_better=False, needs_proba=True)
+    # metric_kappa = make_scorer(cohen_kappa_score)
+    HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+                                    scoring=custom_score,
+                                    cv=5,
                                     rerank_error=0.001,
                                     verbose=1)
-    HYBparsimony_model.fit(X_train, y_train, time_limit=5.0)
+    
+    HYBparsimony_model.fit(X_train, y_train, time_limit=0.1)
     preds = HYBparsimony_model.predict(X_test)
     print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
     print(f'Selected features:{HYBparsimony_model.selected_features}')
-    print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
-    print(f'10R5-CV f1_macro = {round(HYBparsimony_model.best_score,6)}')
-    print(f'f1_macro test = {round(f1_score(y_test, preds, average="macro"),6)}')
-    
+    # print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
+    # print(f'10R5-CV Accuracy = {round(HYBparsimony_model.best_score,6)}')
+    # print(f'Accuracy test = {round(cohen_kappa_score(y_test, preds),6)}')
