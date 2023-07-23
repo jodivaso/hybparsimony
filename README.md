@@ -389,12 +389,12 @@ Complexity = 8,000,000,014.48
 f1_macro test = 1.0
 ```
 
-### Custom Evaluation Examples
+### Custom Evaluation
 
-HYBparsimony uses by default sklearn's [https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html](*cross_val_score*) function as follows:
+HYBparsimony uses by default sklearn's [*cross_val_score*](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html) function as follows:
 
 ```python
-partial(cross_val_score, cv=cv, scoring=scoring)
+partial(cross_val_score, cv=5, scoring=default_scoring)
 ```
 
 
