@@ -404,7 +404,7 @@ By default $cv=5$, and $scoring$ is defined as *MSE* for regression problems, *l
 #Example A: Using 10 folds and 'accuracy'
 HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
                                    scoring='accuracy',
-                                   cv=5,
+                                   cv=10,
                                    rerank_error=0.001,
                                    verbose=1)
 
@@ -416,6 +416,19 @@ HYBparsimony_model = HYBparsimony(features=wine.feature_names,
                                   cv=RepeatedKFold(n_splits=5, n_repeats=10),
                                   rerank_error=0.001,
                                   verbose=1)
+
+#Example C: Using a weighted 'log_loss'
+# We assign weigth=2.0 to class one
+def my_custom_loss_func(y_true, y_pred):
+    sample_weight = np.ones_like(y_true)
+    sample_weight[y_true==1] = 2.0
+    return log_loss(y_true, y_pred, sample_weight=sample_weight)
+# Lower is better and log_loss needs probabilities
+custom_score = make_scorer(my_custom_loss_func, greater_is_better=False, needs_proba=True)
+HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+                                scoring=custom_score,
+                                rerank_error=0.001,
+                                verbose=1)
 ```
 
 
