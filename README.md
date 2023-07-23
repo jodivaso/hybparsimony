@@ -410,7 +410,7 @@ HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
 
 #Example B: Using 10-repeated 5-CV folds and 'kappa' score
 from sklearn.metrics import cohen_kappa_score, make_scorer
-metric_kappa = make_scorer(cohen_kappa_score)
+metric_kappa = make_scorer(cohen_kappa_score, greater_is_better=True)
 HYBparsimony_model = HYBparsimony(features=wine.feature_names,
                                   scoring=metric_kappa,
                                   cv=RepeatedKFold(n_splits=5, n_repeats=10),
