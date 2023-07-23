@@ -408,7 +408,7 @@ HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
                                    rerank_error=0.001,
                                    verbose=1)
 
-#Example B: Using 10-repeated 5-CV folds and 'kappa' score
+#Example B: Using 10-repeated 5-fold CV and 'Kappa' score
 from sklearn.metrics import cohen_kappa_score, make_scorer
 metric_kappa = make_scorer(cohen_kappa_score, greater_is_better=True)
 HYBparsimony_model = HYBparsimony(features=wine.feature_names,
@@ -424,7 +424,7 @@ def my_custom_loss_func(y_true, y_pred):
     sample_weight = np.ones_like(y_true)
     sample_weight[y_true==1] = 2.0
     return log_loss(y_true, y_pred, sample_weight=sample_weight)
-# Lower is better. 'log_loss' needs probabilities
+# Lower is better and 'log_loss' needs probabilities
 custom_score = make_scorer(my_custom_loss_func, greater_is_better=False, needs_proba=True)
 HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
                                 scoring=custom_score,
