@@ -39,7 +39,7 @@ How to use this package
 
 ### Example 1: Regression
 
-This example shows how to search with *HYBparsimony* package for a parsimonious (with low complexity) *KernelRidge* with *rbf* kernel model and for the *diabetes* dataset. *HYBparsimony* searches for the best input features and *KernelRidge* hyperparameters: $alpha$ and $gamma$. Models are evaluated by default with a 5-fold CV negative mean squared error (*Neg MSE*). Finally, root mean squared error (*$RMSE*) is calculated with another test dataset to check the degree of model generalization.
+This example shows how to search with *HYBparsimony* package for a parsimonious (with low complexity) *KernelRidge* with *rbf* kernel model and for the *diabetes* dataset. *HYBparsimony* searches for the best input features and *KernelRidge* hyperparameters: $alpha$ and $gamma$. Models are evaluated by default with a 5-fold CV negative mean squared error (*Neg MSE*). Finally, root mean squared error (*RMSE*) is calculated with another test dataset to check the degree of model generalization.
 
 In this example, *rerank\_error* is set to $0.001$, but other values could improve the balance between model complexity and accuracy. PMS considers the most parsimonious model with the fewest number of features. The default complexity is $M_c = 10^9{N_{FS}} + int_{comp}$  where ${N_{FS}}$ is the number of selected input features and $int_{comp}$ is the internal measure of model complexity, which depends on the algorithm used for training. In this example, $int_{comp}$ for *KernelRidge* is measured by the sum of the squared coefficients. Therefore, between two models with the same number of features, the smaller sum of the squared weights will determine the more parsimonious model (smaller weights reduce the propagation of perturbations and improve robustness).
 
@@ -394,8 +394,12 @@ f1_macro test = 1.0
 HYBparsimony uses by default sklearn's [*cross_val_score*](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html) function as follows:
 
 ```python
-partial(cross_val_score, cv=5, scoring=default_scoring)
+def default_cv_score(estimator, X, y):
+            return cross_val_score(estimator, X, y, cv=self.cv, scoring=self.scoring)
 ```
+By default $cv=5$, and $scoring$ is defined as *MSE* for regression problems, *log_loss* for binary classification problems, and *f1_macro* for multiclass problems. However, it is possible to choose [another scoring metric](https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter) defined in *scikit-learn* library or design [your own](https://scikit-learn.org/stable/modules/model_evaluation.html#scoring). 
+
+
 
 
 
