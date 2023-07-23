@@ -168,7 +168,7 @@ We obtain the following results:
 7  RandomForestRegressor  0.546012  0.761268    8
 6  DecisionTreeRegressor  0.630503  0.864194    3
 ```
-However, if we increase the time limit to 60 minutes, the maximum number of iterations and use a more robust validation with a 10-repeated 5-fold crossvalidation.
+However, we can improve results in RMSE and parsimony if we increase the time limit to 60 minutes, the maximum number of iterations to 1000, and use a more robust validation with a 10-repeated 5-fold crossvalidation.
 
 ```python
  HYBparsimony_model = HYBparsimony(algorithm=algo,
@@ -179,23 +179,20 @@ However, if we increase the time limit to 60 minutes, the maximum number of iter
                                    verbose=1)
 HYBparsimony_model.fit(X_train, y_train, time_limit=60)
 ```
-We can improve results in RMSE and parsimony.
-
 |Algorithm|MSE\_10R5CV|RMSEtst|NFS|selected\_features|best\_model|
 |-|-|-|-|-|-|
-|**MLPRegressor**|0.493201|**0.671856**|**6**|['sex' 'bmi' 'bp' 's1' 's2' 's5']|MLPRegressor(activation='logistic', alpha=0.010729877296924203, hidden_layer_sizes=1, max_iter=5000, n_iter_no_change=20, random_state=1234, solver='lbfgs', tol=1e-05)|\
-|KernelRidge|0.483465|0.679036|7|['age' 'sex' 'bmi' 'bp' 's3' 's5' 's6']|KernelRidge(alpha=0.3664462701238023, gamma=0.01808883688516421, kernel='rbf')|\
-|SVR|0.487392|0.682699|8|['age' 'sex' 'bmi' 'bp' 's1' 's4' 's5' 's6']|SVR(C=0.8476135773996406, gamma=0.02324169209860404)|\
-|KNeighborsRegressor|0.521326|0.687740|6|['sex' 'bmi' 'bp' 's3' 's5' 's6']|KNeighborsRegressor(n\_neighbors=11)|\
-|Lasso|0.493825|0.696194|7|['sex' 'bmi' 'bp' 's1' 's2' 's5' 's6']|Lasso(alpha=0.0002735058905983914)|\
-|Ridge|0.492570|0.696273|7|['sex' 'bmi' 'bp' 's1' 's2' 's5' 's6']|Ridge(alpha=0.1321381563140431)|\
-|RandomForestRegressor|0.552005|0.703769|9|['age' 'sex' 'bmi' 'bp' 's2' 's3' 's4' 's5' 's6']|RandomForestRegressor(max_depth=17, min_samples_split=25, n_estimators=473)|\
-|DecisionTreeRegressor|0.628316|0.864194|5|['age' 'sex' 'bmi' 's4' 's6']|DecisionTreeRegressor(max_depth=2, min_samples_split=20)|\
-
+|**MLPRegressor**|0.493201|**0.671856**|**6**|['sex','bmi','bp','s1','s2','s5']|MLPRegressor(activation='logistic', alpha=0.010729877296924203, hidden_layer_sizes=1, max_iter=5000, n_iter_no_change=20, random_state=1234, solver='lbfgs', tol=1e-05)|\
+|KernelRidge|0.483465|0.679036|7|['age','sex','bmi','bp','s3','s5','s6']|KernelRidge(alpha=0.3664462701238023, gamma=0.01808883688516421, kernel='rbf')|\
+|SVR|0.487392|0.682699|8|['age','sex','bmi','bp','s1','s4','s5','s6']|SVR(C=0.8476135773996406, gamma=0.02324169209860404)|\
+|KNeighborsRegressor|0.521326|0.687740|6|['sex','bmi','bp','s3','s5','s6']|KNeighborsRegressor(n\_neighbors=11)|\
+|Lasso|0.493825|0.696194|7|['sex','bmi','bp','s1','s2','s5','s6']|Lasso(alpha=0.0002735058905983914)|\
+|Ridge|0.492570|0.696273|7|['sex','bmi','bp','s1','s2','s5','s6']|Ridge(alpha=0.1321381563140431)|\
+|RandomForestRegressor|0.552005|0.703769|9|['age','sex','bmi','bp','s2','s3','s4','s5','s6']|RandomForestRegressor(max_depth=17, min_samples_split=25, n_estimators=473)|\
+|DecisionTreeRegressor|0.628316|0.864194|5|['age','sex','bmi','s4','s6']|DecisionTreeRegressor(max_depth=2, min_samples_split=20)|\
 
 ### Example 2: Binary Classification
 
-This example shows how to use *HYBparsimony* in a binary classification problem with *breast_cancer* dataset. By default, *LogisticRegression* algorithm and *neg_log_loss* scoring is selected.
+This example shows how to use *HYBparsimony* in a binary classification problem with *breast_cancer* dataset. By default, method uses *LogisticRegression* algorithm and *neg_log_loss* as scoring metric.
 
 ```python
  import pandas as pd
@@ -268,25 +265,147 @@ logloss test = 0.076254
 However, with small databases like *breast_cancer*, it is highly recommended to use a repeated cross-validation and execute
 *HYBparsimony** with different seeds in order to find the most important input features and best model hyper-parameters.
 
+We also can compare with other algorithms using a robust cross-validation and more time.
+
+```python
+
+algorithms_clas = ['LogisticRegression', 'MLPClassifier', 
+                    'SVC', 'DecisionTreeClassifier',
+                    'RandomForestClassifier', 'KNeighborsClassifier',
+                    ]
+res = []
+for algo in algorithms_clas:
+    print('#######################')
+    print('Searching best: ', algo)
+    HYBparsimony_model = HYBparsimony(algorithm=algo,
+                                      features=breast_cancer.feature_names,
+                                      rerank_error=0.005,
+                                      cv=RepeatedKFold(n_splits=5, n_repeats=10),
+                                      maxiter=1000,
+                                      verbose=1)
+    # Search the best hyperparameters and features 
+    # (increasing 'time_limit' to improve neg_log_loss with high consuming algorithms)
+    HYBparsimony_model.fit(X_train, y_train, time_limit=60.0)
+    # Check results with test dataset
+    preds = HYBparsimony_model.predict_proba(X_test)[:,1]
+    print(algo, "Logloss_Test=", round(log_loss(y_test, preds),6))
+    print('Selected features:',HYBparsimony_model.selected_features)
+    print(HYBparsimony_model.best_model)
+    print('#######################')
+    # Append results
+    res.append(dict(algo=algo,
+                    Logloss_10R5CV= -round(HYBparsimony_model.best_score,6),
+                    Logloss_Test = round(log_loss(y_test, preds),6),
+                    NFS=int(HYBparsimony_model.best_complexity//1e9),
+                    selected_features = HYBparsimony_model.selected_features,
+                    best_model=HYBparsimony_model.best_model))
+res = pd.DataFrame(res).sort_values('Logloss_Test')
+res.to_csv('res_models_class.csv')
+# Visualize results
+print(res[['algo', 'Logloss_10R5CV', 'Logloss_Test', 'NFS']])
+```
+In this example, the best model is also obtained with *LogisticRegression* but with $10$ features.
+
+|algo|Logloss\_10R5CV|Logloss\_Test|NFS|selected\_features|best\_model|
+|-|-|-|-|-|-|
+|**LogisticRegression**|0.066868|**0.079512**|**10**|['radius error','smoothness error','compactness error','worst radius','worst texture','worst perimeter','worst area','worst concavity','worst concave points','worst symmetry]'|LogisticRegression(C=2.5457613022710692)|
+|SVC|0.061924|0.093283|9|['mean texture','radius error','smoothness error','compactness error','symmetry error','worst perimeter','worst concavity','worst concave points','worst fractal dimension]'|SVC(C=10.017400170851333, gamma=0.030271440833644657, probability=True)|
+|MLPClassifier|0.055662|0.100951|14|['mean smoothness','mean compactness','mean concavity','texture error','area error','smoothness error','concave points error','fractal dimension error','worst radius','worst texture','worst perimeter','worst area','worst compactness','worst fractal dimension]'|MLPClassifier(activation='logistic', alpha=0.08468913411920591, hidden\_layer\_sizes=8, max\_iter=5000, n\_iter\_no\_change=20, random\_state=1234, solver='lbfgs', tol=1e-05)|
+|DecisionTreeClassifier|0.214163|0.304484|7|['mean radius','mean compactness','mean concave points','worst texture','worst smoothness','worst symmetry','worst fractal dimension]'|DecisionTreeClassifier(max\_depth=2, min\_samples\_split=19)|
+|RandomForestClassifier|0.098342|0.4229|12|['mean texture','mean smoothness','mean concave points','area error','smoothness error','compactness error','worst texture','worst area','worst smoothness','worst concave points','worst symmetry','worst fractal dimension]'|RandomForestClassifier(max\_depth=20, n\_estimators=126)|
+|KNeighborsClassifier|0.079658|0.714111|17|['mean radius','mean texture','mean smoothness','mean compactness','mean concavity','mean concave points','mean symmetry','radius error','perimeter error','area error','smoothness error','compactness error','symmetry error','worst radius','worst texture','worst compactness','worst concave points]'|KNeighborsClassifier(n\_neighbors=7, p=1)|
+
+### Example 3: Multiclass Classification
+
+If the number of classes is greather than 2, *HYBparsimony* selects *f1\_macro* as scoring metric. In this example, we increase the number of particles to 20 with $npart=20$ and the $time\\_limit$ to 5 minutes. However, we also include an early stopping if best individual does not change in 20 iterations $early\\_stop=20$.
+
+```python
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.datasets import load_wine
+from sklearn.metrics import f1_score
+from HYBparsimony import HYBparsimony
+
+# load 'wine' dataset 
+wine = load_wine()
+X, y = wine.data, wine.target 
+print(X.shape)
+# 3 classes
+print(len(np.unique(y)))
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
+
+# Standarize X and y (some algorithms require that)
+scaler_X = StandardScaler()
+X_train = scaler_X.fit_transform(X_train)
+X_test = scaler_X.transform(X_test)
+
+HYBparsimony_model = HYBparsimony(features=wine.feature_names,
+                                cv=RepeatedKFold(n_splits=5, n_repeats=10),
+                                npart = 20,
+                                early_stop=20,
+                                rerank_error=0.001,
+                                verbose=1)
+HYBparsimony_model.fit(X_train, y_train, time_limit=5.0)
+preds = HYBparsimony_model.predict(X_test)
+print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
+print(f'Selected features:{HYBparsimony_model.selected_features}')
+print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
+print(f'10R5-CV f1_macro = {round(HYBparsimony_model.best_score,6)}')
+print(f'f1_macro test = {round(f1_score(y_test, preds, average="macro"),6)}')
+```
+```
+(178, 13)
+3
+Detected a multi-class problem. Using 'f1_macro' as default scoring function.
+Running iteration 0
+Best model -> Score = 0.981068 Complexity = 13,000,000,001.38 
+Iter = 0 -> MeanVal = 0.759953   ValBest = 0.981068   ComplexBest = 13,000,000,001.38 Time(min) = 0.06835
+
+Running iteration 1
+Best model -> Score = 0.985503 Complexity = 11,000,000,036.33 
+Iter = 1 -> MeanVal = 0.938299   ValBest = 0.985503   ComplexBest = 11,000,000,036.33 Time(min) = 0.071658
+
+...
+...
+
+Running iteration 45
+Best model -> Score = 0.99615 Complexity = 8,000,000,014.48 
+Iter = 45 -> MeanVal = 0.984447   ValBest = 0.992284   ComplexBest = 8,000,000,009.54 Time(min) = 0.059787
+
+Running iteration 46
+Best model -> Score = 0.99615 Complexity = 8,000,000,014.48 
+Iter = 46 -> MeanVal = 0.979013   ValBest = 0.992943   ComplexBest = 8,000,000,007.89 Time(min) = 0.056873
+
+Early stopping reached. Stopped.
 
 
-
+Best Model = LogisticRegression(C=1.1242464804883552)
+Selected features:['alcohol' 'ash' 'alcalinity_of_ash' 'flavanoids' 'nonflavanoid_phenols'
+ 'color_intensity' 'hue' 'proline']
+Complexity = 8,000,000,014.48
+10R5-CV f1_macro = 0.99615
+f1_macro test = 1.0
+```
 
 
 References
 ----------
-F.J. Martinez-de-Pison, J. Ferreiro, E. Fraile, A. Pernia-Espinoza, A comparative study of six model complexity 
-metrics to search for parsimonious models with GAparsimony R Package, Neurocomputing,
-Volume 452, 2021, Pages 317-332, ISSN 0925-2312, [https://doi.org/10.1016/j.neucom.2020.02.135](https://doi.org/10.1016/j.neucom.2020.02.135).
+Divasón, J., Pernia-Espinoza, A., Martinez-de-Pison, F.J. (2022). New Hybrid Methodology Based on Particle Swarm Optimization with Genetic Algorithms to Improve the Search of Parsimonious Models in High-Dimensional Databases. In: García Bringas, P., et al. Hybrid Artificial Intelligent Systems. HAIS 2022. Lecture Notes in Computer Science(), vol 13469. Springer, Cham. [https://doi.org/10.1007/978-3-031-15471-3_29](https://doi.org/10.1007/978-3-031-15471-3_29)
 
-Martinez-de-Pison, F.J., Gonzalez-Sendino, R., Aldama, A., Ferreiro-Cabello, J., Fraile-Garcia, E. Hybrid methodology 
-based on Bayesian optimization and GA-PARSIMONY to search for parsimony models by combining hyperparameter optimization 
-and feature selection (2019) Neurocomputing, 354, pp. 20-26. [https://doi.org/10.1016/j.neucom.2018.05.136](https://doi.org/10.1016/j.neucom.2018.05.136).
+**Bibtex**
 
-Urraca R., Sodupe-Ortega E., Antonanzas E., Antonanzas-Torres F., Martinez-de-Pison, F.J. (2017). Evaluation of a 
-novel GA-based methodology for model structure selection: The GA-PARSIMONY. Neurocomputing, Online July 2017. [https://doi.org/10.1016/j.neucom.2016.08.154](https://doi.org/10.1016/j.neucom.2016.08.154).
-
-Martinez-De-Pison, F.J., Gonzalez-Sendino, R., Ferreiro, J., Fraile, E., Pernia-Espinoza, A. GAparsimony: An R 
-package for searching parsimonious models by combining hyperparameter optimization and feature selection (2018) Lecture 
-Notes in Computer Science (including subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics), 
-10870 LNAI, pp. 62-73. [https://doi.org/10.1007/978-3-319-92639-1_6](https://doi.org/10.1007/978-3-319-92639-1_6).
+```
+@InProceedings{10.1007/978-3-031-15471-3_29,
+author="Divas{\'o}n, Jose and Pernia-Espinoza, Alpha and Martinez-de-Pison, Francisco Javier",
+editor="Garc{\'i}a Bringas, Pablo and P{\'e}rez Garc{\'i}a, Hilde and Mart{\'i}nez de Pis{\'o}n, Francisco Javier and Villar Flecha, Jos{\'e} Ram{\'o}n and Troncoso Lora, Alicia and de la Cal, Enrique A. and Herrero, {\'A}lvaro and Mart{\'i}nez {\'A}lvarez, Francisco and Psaila, Giuseppe and Quinti{\'a}n, H{\'e}ctor and Corchado, Emilio",
+title="New Hybrid Methodology Based on Particle Swarm Optimization with Genetic Algorithms to Improve the Search of Parsimonious Models in High-Dimensional Databases",
+booktitle="Hybrid Artificial Intelligent Systems",
+year="2022",
+publisher="Springer International Publishing",
+address="Cham",
+pages="335--347",
+isbn="978-3-031-15471-3"
+}
+```
