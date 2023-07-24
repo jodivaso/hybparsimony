@@ -33,6 +33,7 @@ def check_algorithm(algorithm, is_classification):
         algorithm=algorithms_dict['LogisticRegression'] if is_classification else algorithms_dict['Ridge'] 
     return algorithm   
             
+# Default ML algorithms, complexity and hyperparameters (ranges and constant values)
 algorithms_dict = dict(
     #####################
     # REGRESSION MODELS
@@ -97,10 +98,6 @@ algorithms_dict = dict(
     #########################
     # CLASSIFICATION MODELS
     # #######################
-    # RidgeClassifier = {"estimator": RidgeClassifier,
-    #                "complexity": linearModels_complexity,
-    #                "alpha": {"range": (-5, 3), "type": Population.POWER}
-    #                },
 
     LogisticRegression = {"estimator": LogisticRegression,
                      "complexity": linearModels_complexity,

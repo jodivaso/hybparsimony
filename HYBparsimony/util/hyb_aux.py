@@ -5,12 +5,12 @@ from HYBparsimony.lhs import geneticLHS, improvedLHS, maximinLHS, optimumLHS, ra
 
 def _population(pop, seed_ini, popSize, type_ini_pop="randomLHS", ):
     r"""
-    Population initialization in GA-PARSIMONY with a combined chromosome of model parameters
-    and selected features. Functions for creating an initial population to be used in the GA-PARSIMONY process.
+    Population initialization in HYB-PARSIMONY with a combined chromosome of model parameters
+    and selected features. Functions for creating an initial population to be used in the HYB-PARSIMONY process.
 
-    Generates a random population of `GAparsimony.popSize` individuals. For each individual a
-    random chromosome is generated with `len(GAparsimony.population._params)` real values in the `range[GAparsimony._min, GAparsimony._max] `
-    plus `len(GAparsimony.population.colsnames)` random binary values for feature selection. `random` or Latin Hypercube Sampling can
+    Generates a random population of `HYBparsimony.popSize` individuals. For each individual a
+    random chromosome is generated with `len(HYBparsimony.population._params)` real values in the `range[HYBparsimony._min, HYBparsimony._max] `
+    plus `len(HYBparsimony.population.colsnames)` random binary values for feature selection. `random` or Latin Hypercube Sampling can
     be used to create a efficient spread initial population.
 
     Parameters
@@ -23,7 +23,7 @@ def _population(pop, seed_ini, popSize, type_ini_pop="randomLHS", ):
     Returns
     -------
     numpy.array
-        A matrix of dimension `GAparsimony.popSize` rows and `len(GAparsimony.population._params)+len(GAparsimony.population.colsnames)` columns.
+        A matrix of dimension `HYBparsimony.popSize` rows and `len(HYBparsimony.population._params)+len(HYBparsimony.population.colsnames)` columns.
 
     """
 
@@ -57,7 +57,7 @@ def _rerank(fitnessval, complexity, popSize, rerank_error, preserve_best=True):
     Function for reranking by complexity in parsimonious model selectionprocess. Promotes models with similar fitness but lower complexity to top positions.
 
     This method corresponds with the second step of parsimonious model selection (PMS) procedure.PMS works in the
-    following way: in each GA generation, best solutions are first sorted by their cost,J. Then, in a second step,
+    following way: in each HYB iteration, best solutions are first sorted by their cost,J. Then, in a second step,
     individuals with less complexity are moved to the top positions when theabsolute difference of their J is lower
     than aobject@rerank_errorthreshold value. Therefore, theselection of less complex solutions among those with similar
     accuracy promotes the evolution ofrobust solutions with better generalization capabilities.
@@ -134,7 +134,15 @@ def _rerank(fitnessval, complexity, popSize, rerank_error, preserve_best=True):
 
 
 def _crossover(population, velocities, fitnessval, complexity, parents_indexes, children_indexes, alpha=0.1, perc_to_swap=0.5):
+    r"""
+    Function for crossovering in the PSO process. 
 
+    Returns
+    -------
+    numpy.array
+        A vector with the new individuals obtained with crossovering.
+
+    """
     #p = parents.copy()
     c = children_indexes.copy()
 
