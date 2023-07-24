@@ -254,7 +254,7 @@ Complexity = 11,000,000,039.47
 logloss test = 0.076254
 ```
 
-However, with small databases like *breast_cancer*, it is highly recommended to use a repeated cross-validation and execute
+However, with small datasets like *breast_cancer*, it is highly recommended to use a repeated cross-validation and execute
 *HYBparsimony* with different seeds in order to find the most important input features and best model hyper-parameters.
 
 We also can compare with other algorithms using a robust cross-validation and more time.
