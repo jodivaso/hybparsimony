@@ -1,12 +1,15 @@
 [build-system]
-requires = ["hatchling", "pandas", "scikit-learn", "seaborn", "matplotlib"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
 name = "HYBparsimony"
-version = "0.0.5"
+version = "0.0.6"
 authors = [
   { name="Jose Divasón", email="jose.divason@unirioja.es" },
+]
+dependencies = [
+"pandas", "scikit-learn", "seaborn", "matplotlib"
 ]
 description = "A small example package"
 readme = "README.md"

@@ -24,8 +24,7 @@ import multiprocessing
 import random
 from multiprocessing import Pool
 from functools import partial
-from HYBparsimony import Population, order, getFitness
-from HYBparsimony.util import parsimony_monitor, parsimony_summary, models
+from HYBparsimony.util import Population, order, getFitness, parsimony_monitor, parsimony_summary, models
 from HYBparsimony.util.fitness import fitness_for_parallel
 from HYBparsimony.util.hyb_aux import _rerank, _crossover, _population
 from HYBparsimony.lhs import randomLHS
