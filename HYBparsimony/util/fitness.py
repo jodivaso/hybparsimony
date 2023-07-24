@@ -8,46 +8,45 @@ import os
 
 def getFitness(algorithm, complexity, custom_eval_fun=cross_val_score, ignore_warnings = True):
     r"""
-     Fitness function for GAparsimony.
+     Fitness function for HYBparsimony.
 
     Parameters
     ----------
     algorithm : object
-        The machine learning function to optimize. 
-    metric : function
-        A function that computes the fitness value.
+        The machine learning algorithm to optimize. 
     complexity : function
-        A function that calculates the complexity of the model. There are some functions available in `GAparsimony.util.complexity`.
-    cv : object, optional
-        An `sklearn.model_selection` function. By default, is defined `RepeatedKFold(n_splits=10, n_repeats=5, random_state=42)`.
-    minimize : bool, optional
-        `False`, if the objective is to minimize the metric, to maximize it, set to `True`.
-    test_size : float, int, None
-        If float, should be between 0.0 and 1.0 and represent the proportion
-        of the dataset to include in the test split. If int, represents the
-        absolute number of test samples. If None, model is not tested with testing split returning fitness_test=np.inf. Default 0.2.
-    random_state : int, optional
-        Controls the shuffling applied to the data before applying the split.
-        Pass an int for reproducible output across multiple function calls.
-        Default `42`
-    n_jobs : int, optional
-        Number of jobs to run in parallel. Training the estimator and computing
-        the score are parallelized over the cross-validation splits.
-        ``-1`` means using all processors. Default `-1`
+        A function that calculates the complexity of the model. There are some functions available in `HYBparsimony.util.complexity`.
+    custom_eval_fun : function
+        An evaluation function similar to scikit-learns's 'cross_val_score()'  
+
+    Returns
+    -------
+    float
+        np.array([model's fitness value (J), model's complexity]), model
+
     Examples
     --------
-    Usage example for a regression model 
+    Usage example for a binary classification model 
     
     .. highlight:: python
     .. code-block:: python
 
+        import pandas as pd
+        import numpy as np
+        from sklearn.datasets import load_breast_cancer
         from sklearn.svm import SVC
-        from sklearn.metrics import cohen_kappa_score
-
-        from GAparsimony import getFitness
-        from GAparsimony.util import svm_complexity
-
-        fitness = getFitness(SVC, cohen_kappa_score, svm_complexity, cv, maximize=True, test_size=0.2, random_state=42, n_jobs=-1)
+        from sklearn.model_selection import cross_val_score
+        from HYBparsimony import HYBparsimony
+        from HYBparsimony.util import getFitness, svm_complexity, population
+        # load 'breast_cancer' dataset
+        breast_cancer = load_breast_cancer()
+        X, y = breast_cancer.data, breast_cancer.target
+        chromosome = population.Chromosome(params = [1.0, 0.2],
+                                        name_params = ['C','gamma'],
+                                        const = {'kernel':'rbf'},
+                                        cols= np.random.uniform(size=X.shape[1])>0.50,
+                                        name_cols = breast_cancer.feature_names)
+        print(getFitness(SVC,svm_complexity)(chromosome, X=X, y=y))
     """
 
     if algorithm is None:
@@ -92,9 +91,58 @@ def getFitness(algorithm, complexity, custom_eval_fun=cross_val_score, ignore_wa
 
 
 
-##Hago una igual pero sin estar anidada, para permitir el pickle y por tanto el paralelismo.
-def fitness_for_parallel(algorithm, complexity, custom_eval_fun=cross_val_score, cromosoma=None, X=None,y=None,
-                         minimize=False, test_size=0.2, random_state=42, ignore_warnings = True):
+def fitness_for_parallel(algorithm, complexity, custom_eval_fun=cross_val_score, cromosoma=None, 
+                         X=None, y=None, ignore_warnings = True):
+    r"""
+     Fitness function for HYBparsimony similar to 'getFitness()' without being nested, to allow the pickle and therefore the parallelism.
+
+    Parameters
+    ----------
+    algorithm : object
+        The machine learning algorithm to optimize. 
+    complexity : function
+        A function that calculates the complexity of the model. There are some functions available in `HYBparsimony.util.complexity`.
+    custom_eval_fun : function
+        An evaluation function similar to scikit-learns's 'cross_val_score()'.
+    cromosoma: population.Chromosome class
+        Solution's chromosome.
+    X : {array-like, dataframe} of shape (n_samples, n_features)
+        Input matrix.
+    y : {array-like, dataframe} of shape (n_samples,)
+        Target values (class labels in classification, real numbers in regression).
+    ignore_warnings: True
+        If ignore warnings.
+
+    Returns
+    -------
+    float
+        np.array([model's fitness value (J), model's complexity]), model
+
+    Examples
+    --------
+
+    import pandas as pd
+    import numpy as np
+    from sklearn.datasets import load_breast_cancer
+    from sklearn.svm import SVC
+    from sklearn.model_selection import cross_val_score
+    from HYBparsimony import HYBparsimony
+    from HYBparsimony.util import svm_complexity, population
+    from HYBparsimony.util.fitness import fitness_for_parallel
+    # load 'breast_cancer' dataset
+    breast_cancer = load_breast_cancer()
+    X, y = breast_cancer.data, breast_cancer.target
+    chromosome = population.Chromosome(params = [1.0, 0.2],
+                                       name_params = ['C','gamma'],
+                                       const = {'kernel':'rbf'},
+                                       cols= np.random.uniform(size=X.shape[1])>0.50,
+                                       name_cols = breast_cancer.feature_names)
+    print(fitness_for_parallel(SVC, svm_complexity, 
+                               custom_eval_fun=cross_val_score,
+                               cromosoma=chromosome, X=X, y=y))
+
+    """
+
     if "pandas" in str(type(X)):
         X = X.values
     if "pandas" in str(type(y)):
