@@ -328,7 +328,6 @@ class HYBparsimony(object):
         self.IW_min = IW_min
         self.K = K
         self.tol = tol
-
         self.rerank_error = rerank_error
         self.verbose = verbose
         self.seed_ini = seed_ini
