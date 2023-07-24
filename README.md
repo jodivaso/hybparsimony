@@ -3,11 +3,6 @@
 [![PyPI version](https://badge.fury.io/py/GAparsimony.svg)](https://badge.fury.io/py/GAparsimony)
 [![Documentation Status](https://readthedocs.org/projects/gaparsimony/badge/?version=latest)](https://gaparsimony.readthedocs.io/en/latest/?badge=latest)
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=GAparsimony&metric=alert_status)](https://sonarcloud.io/dashboard?id=GAparsimony)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=GAparsimony&metric=bugs)](https://sonarcloud.io/dashboard?id=GAparsimony)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=GAparsimony&metric=code_smells)](https://sonarcloud.io/dashboard?id=GAparsimony)
-
-
 HYBparsimony
 ===========
 
@@ -263,7 +258,7 @@ logloss test = 0.076254
 ```
 
 However, with small databases like *breast_cancer*, it is highly recommended to use a repeated cross-validation and execute
-*HYBparsimony** with different seeds in order to find the most important input features and best model hyper-parameters.
+*HYBparsimony* with different seeds in order to find the most important input features and best model hyper-parameters.
 
 We also can compare with other algorithms using a robust cross-validation and more time.
 
@@ -450,7 +445,7 @@ HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
 
 ### Custom Search
 
-*HYBparsimony* has predefined the most common scikit-learn algorithms as well as functions to measure [their complexity](https://github.com/jodivaso/hyb-parsimony/util/complexity.py) and the [hyperparameter ranges](https://github.com/jodivaso/hyb-parsimony/util/models.py) to search on. However, all this can be customized. 
+*HYBparsimony* has predefined the most common scikit-learn algorithms as well as functions to measure [their complexity](https://github.com/jodivaso/hyb-parsimony/blob/master/HYBparsimony/util/complexity.py) and the [hyperparameter ranges](https://github.com/jodivaso/hyb-parsimony/blob/master/HYBparsimony/util/models.py) to search on. However, all this can be customized. 
 
 In the following example, the dictionary *MLPRegressor_new* is defined. It consists of the following properties:
 - *estimator* any machine learning algorithm compatible with scikit-learn.
@@ -495,7 +490,7 @@ HYBparsimony_model = HYBparsimony(algorithm=MLPRegressor_new,
 
 References
 ----------
-Divasón, J., Pernia-Espinoza, A., Martinez-de-Pison, F.J. (2022). New Hybrid Methodology Based on Particle Swarm Optimization with Genetic Algorithms to Improve the Search of Parsimonious Models in High-Dimensional Databases. In: García Bringas, P., et al. Hybrid Artificial Intelligent Systems. HAIS 2022. Lecture Notes in Computer Science(), vol 13469. Springer, Cham. [https://doi.org/10.1007/978-3-031-15471-3_29](https://doi.org/10.1007/978-3-031-15471-3_29)
+Divasón, J., Pernia-Espinoza, A., Martinez-de-Pison, F.J. (2022). New Hybrid Methodology Based on Particle Swarm Optimization with Genetic Algorithms to Improve the Search of Parsimonious Models in High-Dimensional Databases. In: García Bringas, P., et al. Hybrid Artificial Intelligent Systems. HAIS 2022. Lecture Notes in Computer Science, vol 13469. Springer, Cham. [https://doi.org/10.1007/978-3-031-15471-3_29](https://doi.org/10.1007/978-3-031-15471-3_29)
 
 **Bibtex**
 
