@@ -204,7 +204,7 @@ def xgboost_complexity(model, nFeatures, **kwargs):
 
 def decision_tree_complexity(model, nFeatures, **kwargs):
     r"""
-    Complexity function for decision tree model.
+    Complexity function for Decision Tree models.
 
     Parameters
     ----------
