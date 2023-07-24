@@ -208,27 +208,27 @@ if __name__ == "__main__":
     #                   CUSTOM EVALUATION             #
     ###################################################
 
-    import pandas as pd
-    from sklearn.model_selection import train_test_split
-    from sklearn.preprocessing import StandardScaler
-    from sklearn.datasets import load_breast_cancer
-    from sklearn.model_selection import cross_val_score
-    from HYBparsimony import HYBparsimony
-    from sklearn.metrics import fbeta_score, make_scorer, cohen_kappa_score, log_loss, accuracy_score
+    # import pandas as pd
+    # from sklearn.model_selection import train_test_split
+    # from sklearn.preprocessing import StandardScaler
+    # from sklearn.datasets import load_breast_cancer
+    # from sklearn.model_selection import cross_val_score
+    # from HYBparsimony import HYBparsimony
+    # from sklearn.metrics import fbeta_score, make_scorer, cohen_kappa_score, log_loss, accuracy_score
     
 
-    # load 'breast_cancer' dataset
-    breast_cancer = load_breast_cancer()
-    X, y = breast_cancer.data, breast_cancer.target 
-    print(X.shape)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
+    # # load 'breast_cancer' dataset
+    # breast_cancer = load_breast_cancer()
+    # X, y = breast_cancer.data, breast_cancer.target 
+    # print(X.shape)
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
     
-    # Standarize X and y (some algorithms require that)
-    scaler_X = StandardScaler()
-    X_train = scaler_X.fit_transform(X_train)
-    X_test = scaler_X.transform(X_test)
+    # # Standarize X and y (some algorithms require that)
+    # scaler_X = StandardScaler()
+    # X_train = scaler_X.fit_transform(X_train)
+    # X_test = scaler_X.transform(X_test)
 
-    # #Example A: Using 10 folds and 'accuracy'
+    # # #Example A: Using 10 folds and 'accuracy'
     # HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
     #                                 scoring='accuracy',
     #                                 cv=10,
@@ -260,25 +260,25 @@ if __name__ == "__main__":
     
     #Example D: Using a 'custom evaluation' function
     #           (Parallelism is not allowed)
-    def custom_fun(estimator, X, y):
-        return cross_val_score(estimator, X, y, scoring="accuracy")
+    # def custom_fun(estimator, X, y):
+    #     return cross_val_score(estimator, X, y, scoring="accuracy")
     
-    HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
-                                    custom_eval_fun=custom_fun,
-                                    n_jobs=1, #parallelism is not allowed with 'custom_eval_fun'
-                                    rerank_error=0.001,
-                                    verbose=1)
+    # HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+    #                                 custom_eval_fun=custom_fun,
+    #                                 n_jobs=1, #parallelism is not allowed with 'custom_eval_fun'
+    #                                 rerank_error=0.001,
+    #                                 verbose=1)
 
 
-    HYBparsimony_model.fit(X_train, y_train, time_limit=0.1)
-    preds = HYBparsimony_model.predict(X_test)
-    print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
-    print(f'Selected features:{HYBparsimony_model.selected_features}')
-    print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
-    print(f'10R5-CV Accuracy = {round(HYBparsimony_model.best_score,6)}')
-    print(f'Accuracy test = {round(accuracy_score(y_test, preds),6)}')
+    # HYBparsimony_model.fit(X_train, y_train, time_limit=0.1)
+    # preds = HYBparsimony_model.predict(X_test)
+    # print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
+    # print(f'Selected features:{HYBparsimony_model.selected_features}')
+    # print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
+    # print(f'10R5-CV Accuracy = {round(HYBparsimony_model.best_score,6)}')
+    # print(f'Accuracy test = {round(accuracy_score(y_test, preds),6)}')
 
-
+    
    
     # HYBparsimony_model = HYBparsimony(n_jobs=1,custom_eval_fun=custom_fun) # Este con paralelismo NO funciona
     # HYBparsimony_model.fit(X_train, y_train, time_limit=0.5)
@@ -354,3 +354,44 @@ if __name__ == "__main__":
     # print(f'RMSE test = {round(mean_squared_error(y_test, preds, squared=False),6)}')
                     
     
+
+
+
+    import pandas as pd
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.datasets import load_breast_cancer
+    from sklearn.model_selection import cross_val_score
+    from HYBparsimony import HYBparsimony
+    from sklearn.metrics import fbeta_score, make_scorer, cohen_kappa_score, log_loss, accuracy_score
+    
+
+    # load 'breast_cancer' dataset
+    breast_cancer = load_breast_cancer()
+    X, y = breast_cancer.data, breast_cancer.target 
+    print(X.shape)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
+    
+    # Standarize X and y (some algorithms require that)
+    scaler_X = StandardScaler()
+    X_train = scaler_X.fit_transform(X_train)
+    X_test = scaler_X.transform(X_test)
+
+    # #Example A: Using 10 folds and 'accuracy'
+    HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+                                    scoring='accuracy',
+                                    keep_history=True,
+                                    cv=10,
+                                    rerank_error=0.001,
+                                    verbose=1)
+    
+
+    HYBparsimony_model.fit(X_train, y_train, time_limit=0.1)
+    preds = HYBparsimony_model.predict(X_test)
+    print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
+    print(f'Selected features:{HYBparsimony_model.selected_features}')
+    print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
+    print(f'10R5-CV Accuracy = {round(HYBparsimony_model.best_score,6)}')
+    print(f'Accuracy test = {round(accuracy_score(y_test, preds),6)}')
+    
+

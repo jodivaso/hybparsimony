@@ -36,11 +36,11 @@ def generic_complexity(model, nFeatures, **kwargs):
     Parameters
     ----------
     model : model
-        The model for calculating complexity.
+        The model from which the internal complexity is calculated.
     nFeatures : int
-        The number of input features the model has been trained with.
+        The number of the selected features.
     **kwargs : 
-        A variable number of named arguments.
+        Other arguments.
 
     Returns
     -------
@@ -57,11 +57,11 @@ def linearModels_complexity(model, nFeatures, **kwargs):
     Parameters
     ----------
     model : model
-        The model for calculating complexity.
+        The model from which the internal complexity is calculated.
     nFeatures : int
-         The number of input features the model has been trained with.
+        The number of the selected features.
     **kwargs : 
-        A variable number of named arguments.
+        Other arguments. 
 
     Returns
     -------
@@ -85,11 +85,11 @@ def svm_complexity(model, nFeatures, **kwargs):
     Parameters
     ----------
     model : model
-        The model for calculating complexity.
+        The model from which the internal complexity is calculated.
     nFeatures : int
-         The number of input features the model has been trained with.
+        The number of the selected features.
     **kwargs : 
-        A variable number of named arguments.
+        Other arguments.
 
     Returns
     -------
@@ -108,11 +108,11 @@ def knn_complexity(model, nFeatures, **kwargs):
     Parameters
     ----------
     model : model
-        The model for calculating complexity.
+        The model from which the internal complexity is calculated.
     nFeatures : int
-         The number of input features the model has been trained with.
+        The number of the selected features.
     **kwargs : 
-        A variable number of named arguments.
+        Other arguments.
 
     Returns
     -------
@@ -131,11 +131,11 @@ def mlp_complexity(model, nFeatures, **kwargs):
     Parameters
     ----------
     model : model
-        The model for calculating complexity.
+        The model from which the internal complexity is calculated.
     nFeatures : int
-         The number of input features the model has been trained with.
+        The number of the selected features.
     **kwargs : 
-        A variable number of named arguments.
+        Other arguments.
 
     Returns
     -------
@@ -153,16 +153,16 @@ def mlp_complexity(model, nFeatures, **kwargs):
 
 def randomForest_complexity(model, nFeatures, **kwargs):
     r"""
-    Complexity function for Random Forest models.
+    Complexity function for RandomForest models.
 
     Parameters
     ----------
     model : model
-        The model for calculating complexity.
+        The model from which the internal complexity is calculated.
     nFeatures : int
-        The number of input features the model has been trained with.
+        The number of the selected features.
     **kwargs : 
-        A variable number of named arguments.
+        Other arguments.
 
     Returns
     -------
@@ -182,11 +182,11 @@ def xgboost_complexity(model, nFeatures, **kwargs):
     Parameters
     ----------
     model : model
-        The model for calculating complexity.
+        The model from which the internal complexity is calculated.
     nFeatures : int
-         The number of input features the model has been trained with.
+        The number of the selected features.
     **kwargs : 
-        A variable number of named arguments.
+        Other arguments.
 
     Returns
     -------
@@ -209,11 +209,11 @@ def decision_tree_complexity(model, nFeatures, **kwargs):
     Parameters
     ----------
     model : model
-        The model for calculating complexity.
+        The model from which the internal complexity is calculated.
     nFeatures : int
-         The number of input features the model has been trained with.
+        The number of the selected features.
     **kwargs : 
-        A variable number of named arguments.
+        Other arguments.
 
     Returns
     -------
