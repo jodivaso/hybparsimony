@@ -8,8 +8,8 @@ setup(
   description = 'TYPE YOUR DESCRIPTION HERE',   # Give a short description about your library
   author = 'Jose Divasón',                   # Type in your name
   author_email = 'jose.divason@unirioja.es',      # Type in your E-Mail
-  url = 'https://github.com/jodivaso/HYBparsimony',   # Provide either the link to your github or to your website
-  download_url = 'https://github.com/jodivaso/HYBparsimony/archive/v_01.tar.gz',    # I explain this later on
+  url = 'https://github.com/jodivaso/hyb-parsimony',   # Provide either the link to your github or to your website
+  download_url = 'https://github.com/jodivaso/hyb-parsimony/archive/refs/tags/0.0.1.tar.gz',
   keywords = ['SOME', 'MEANINGFULL', 'KEYWORDS'],   # Keywords that define your package best
   install_requires=[            # I get to this in a second
           'scikit-learn',
