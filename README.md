@@ -441,6 +441,40 @@ In the following example, the dictionary *MLPRegressor_new* is defined. It consi
 - *complexity* the function that measures the complexity of the model.
 - The hyperparameters of the algorithm. In this case, they can be fixed values (defined by Population.CONSTANT) such as '*solver*', '*activation*', etc.; or a search range $[min, max]$ defined by *{"range":(min, max), "type": Population.X}* and which type can be of three values: integer (Population.INTEGER), float (Population.FLOAT) or in powers of 10 (Population.POWER), i.e. $10^{[min, max]}$.
 
+```python
+...
+
+from HYBparsimony import HYBparsimony, Population
+
+...
+
+def mlp_new_complexity(model, nFeatures, **kwargs):
+    weights = [np.concatenate(model.intercepts_)]
+    for wm in model.coefs_:
+        weights.append(wm.flatten())
+    weights = np.concatenate(weights) 
+    int_comp = np.min((1E09-1,np.sum(weights**2)))
+    return nFeatures*1E09 + int_comp
+
+MLPRegressor_new = {"estimator": MLPRegressor, # The estimator
+              "complexity": mlp_new_complexity, # The complexity
+              "hidden_layer_sizes": {"range": (1, 5), "type": Population.INTEGER},
+              "alpha": {"range": (-5, 5), "type": Population.POWER},
+              "solver": {"value": "adam", "type": Population.CONSTANT},
+              "learning_rate": {"value": "adaptive", "type": Population.CONSTANT},
+              "early_stopping": {"value": True, "type": Population.CONSTANT},
+              "validation_fraction": {"value": 0.10, "type": Population.CONSTANT},
+              "activation": {"value": "tanh", "type": Population.CONSTANT},
+              "n_iter_no_change": {"value": 20, "type": Population.CONSTANT},
+              "tol": {"value": 1e-5, "type": Population.CONSTANT},
+              "random_state": {"value": 1234, "type": Population.CONSTANT},
+              "max_iter": {"value": 200, "type": Population.CONSTANT}
+               }
+HYBparsimony_model = HYBparsimony(algorithm=MLPRegressor_new,
+                                features=diabetes.feature_names,
+                                rerank_error=0.001,
+                                verbose=1)
+```
 
 
 References
