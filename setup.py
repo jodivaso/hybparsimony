@@ -9,7 +9,7 @@ setup(
   author = 'Jose Divasón',                   # Type in your name
   author_email = 'jose.divason@unirioja.es',      # Type in your E-Mail
   url = 'https://github.com/jodivaso/hyb-parsimony',   # Provide either the link to your github or to your website
-  download_url = 'https://github.com/jodivaso/hyb-parsimony/archive/refs/tags/0.0.1.tar.gz',
+  #download_url = 'https://github.com/jodivaso/hyb-parsimony/archive/refs/tags/0.0.2.tar.gz',
   keywords = ['SOME', 'MEANINGFULL', 'KEYWORDS'],   # Keywords that define your package best
   install_requires=[
       'numpy',
