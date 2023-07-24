@@ -439,7 +439,7 @@ HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
 In the following example, the dictionary *MLPRegressor_new* is defined. It consists of the following properties:
 - *estimator* any machine learning algorithm compatible with scikit-learn.
 - *complexity* the function that measures the complexity of the model.
-- The hyperparameters of the algorithm. In this case, they can be fixed values (defined by Population.CONSTANT) such as 'solver', 'activation', etc.; or a search range $[min, max]$ defined by {"range":(min, max), "type": Population.X} and which type can be of three values: integer (Population.INTEGER), float (Population.FLOAT) or in powers of 10 (Population.POWER), i.e. $10^{[min, max]}$.
+- The hyperparameters of the algorithm. In this case, they can be fixed values (defined by Population.CONSTANT) such as '*solver*', '*activation*', etc.; or a search range $[min, max]$ defined by *{"range":(min, max), "type": Population.X}* and which type can be of three values: integer (Population.INTEGER), float (Population.FLOAT) or in powers of 10 (Population.POWER), i.e. $10^{[min, max]}$.
 
 
 
