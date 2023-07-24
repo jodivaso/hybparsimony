@@ -3,9 +3,6 @@
 [![PyPI version](https://badge.fury.io/py/GAparsimony.svg)](https://badge.fury.io/py/GAparsimony)
 [![Documentation Status](https://readthedocs.org/projects/gaparsimony/badge/?version=latest)](https://gaparsimony.readthedocs.io/en/latest/?badge=latest)
 
-HYBparsimony
-===========
-
 [Documentation](https://gaparsimony.readthedocs.io/en/latest/index.html)
 
 **HYBparsimony** for Python is a package **for searching accurate parsimonious models by combining feature selection (FS), model
