@@ -398,7 +398,7 @@ def default_cv_score(estimator, X, y):
   return cross_val_score(estimator, X, y, cv=self.cv, scoring=self.scoring)
 ```
 
-By default $cv=5$, and $scoring$ is defined as *MSE* for regression problems, *log_loss* for binary classification problems, and *f1_macro* for multiclass problems. However, it is possible to choose [another scoring metric](https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter) defined in *scikit-learn* library or design [your own](https://scikit-learn.org/stable/modules/model_evaluation.html#scoring). 
+By default $cv=5$, and $scoring$ is defined as *MSE* for regression problems, *log_loss* for binary classification problems, and *f1_macro* for multiclass problems. However, it is possible to choose [another scoring metric](https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter) defined in *scikit-learn* library or design [your own](https://scikit-learn.org/stable/modules/model_evaluation.html#scoring). Also, the user can define a custom evaluation function.
 
 ```python
 #Example A: Using 10 folds and 'accuracy'
