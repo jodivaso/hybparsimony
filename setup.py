@@ -11,12 +11,12 @@ setup(
   url = 'https://github.com/jodivaso/hyb-parsimony',   # Provide either the link to your github or to your website
   download_url = 'https://github.com/jodivaso/hyb-parsimony/archive/refs/tags/0.0.1.tar.gz',
   keywords = ['SOME', 'MEANINGFULL', 'KEYWORDS'],   # Keywords that define your package best
-  install_requires=[            # I get to this in a second
-          'scikit-learn',
-          'numpy',
-          'pandas',
-          'seaborn',
-          'matplotlib'
+  install_requires=[
+      'numpy',
+      'pandas>=2.0',
+      'scikit-learn',
+      'seaborn',
+      'matplotlib'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
