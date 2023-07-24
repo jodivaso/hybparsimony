@@ -4,15 +4,28 @@ import numpy  as np
 
 
 # new function for monitoring
-def parsimony_monitor(iter, current_best_score, current_best_complexity, fitnessval, bestfitnessVal, bestcomplexity, minutes_gen, digits=6, *args):
-    r"""Functions for monitoring GA-PARSIMONY algorithm evolution
+def parsimony_monitor(iter, current_best_score, current_best_complexity, fitnessval, bestfitnessVal, 
+                      bestcomplexity, minutes_gen, digits=6, *args):
+    r"""Functions for monitoring HYB-PARSIMONY algorithm evolution
 
     Functions to print summary statistics of fitness values at each iteration of a GA search.
 
     Parameters
     ----------
-    object : object of GAparsimony
-        The `GAparsimony` object that we want to monitor .
+    iter: int
+        Iteration.
+    current_best_score: float
+        The best score in the whole process (score of the best model).
+    current_best_complexity: float
+        The complexity of the best model in the whole process.
+    fitnessval: list
+        Fitness values of the population in that iteration.
+    bestfitnessVal: float
+        Best fitness value in this iteration (score of the best model in that iteration)
+    bestcomplexity: float
+        The complexity of the best model in that iteration.
+    minutes_gen: float
+        Time in minutes of that iteration.
     digits : int
         Minimal number of significant digits.
     *args :
@@ -29,7 +42,6 @@ def parsimony_monitor(iter, current_best_score, current_best_complexity, fitness
                     f"ComplexBest = {round(bestcomplexity, 2):,}".center(12),
                     f"Time(min) = {round(minutes_gen, digits)}".center(7)]) + "\n")
  
-
 
 
 # Duda si es todo el rato con x1
