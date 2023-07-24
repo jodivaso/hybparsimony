@@ -12,7 +12,7 @@ class Population:
 
     def __init__(self, params, columns, population = None):
         r"""
-        This class is used to create the GA populations. 
+        This class is used to create the HYB populations. 
         Allow chromosomes to have int, float, and constant values. 
 
 
@@ -26,11 +26,11 @@ class Population:
                 {
                     "<< hyperparameter name >>": {
                         "range": [<< minimum value >>, << maximum value >>],
-                        "type": GAparsimony.FLOAT/GAparsimony.INTEGER
+                        "type": Population.FLOAT/Population.INTEGER/Population.POWER
                     },
                     "<< hyperparameter name >>": {
                         "value": << constant value >>,
-                        "type": GAparsimony.CONSTANT
+                        "type": Population.CONSTANT
                     }
                 }
 
@@ -74,9 +74,6 @@ class Population:
                 self._pos_c.append(i)
             else:
                 self._pos_n.append(i)
-
-
-
 
         def _trans_mut():
 
