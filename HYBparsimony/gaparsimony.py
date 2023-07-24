@@ -1,60 +1,24 @@
 # -*- coding: utf-8 -*-
 
-"""Combines feature selection(FS), hyperparameter tuning (HT), and parsimonious model selection (PMS) 
-with Genetic Algorithm (GA) optimization. GA selection procedure is based on separate cost and complexity 
-evaluations. Therefore, the best individuals are initially sorted by an error fitness function, and afterwards, 
-models with similar costs are rearranged according to the model complexity measurement so as to foster models 
-of lesser complexity. The algorithm can be run sequentially or in parallel.
+"""HYBparsimony for Python is a package for searching accurate parsimonious models by combining feature selection (FS), model
+hyperparameter optimization (HO), and parsimonious model selection (PMS) based on a separate cost and complexity evaluation.
 
-GAparsimonypackage is a new GA wrapper automatic method that efficiently generated machine learning  
-models with reduced complexity and adequate generalization capacity.ga_parsimonyfunction is primarily based on 
-combining FS and HT with a second novel GA selection process (named ReRank algorithm) 
-in order to achieve better overall parsimonious models. Unlike other GA methodologies that use a penalty parameter 
-for combining loss and complexity measures into a unique fitness function, the main contribution of this package 
-is that ga_parsimony selects the best models by considering cost and complexity separately. For this purpose, the 
-*ReRank* algorithm rearranges individuals by their complexity when there is not a significant difference between 
-their costs. Thus, less complex models with similar accuracy are promoted. Furthermore, because the penalty 
-parameter is unnecessary, there is no consequent uncertainty associated with assigning a correct value beforehand. 
-As a result, with GAPARSIMONY, an automatic method for obtaining parsimonious models is finally made possible.
+To improve the search for parsimony, the hybrid method combines GA mechanisms such as selection, crossover and mutation within a PSO-based optimization algorithm that includes a strategy in which the best position of each particle (thus also the best position of each neighborhood) is calculated taking into account not only the goodness-of-fit, but also the parsimony principle. 
+
+In HYBparsimony, the percentage of variables to be replaced with GA at each iteration $t$ is selected by a decreasing exponential function:
+ $pcrossover=max(0.80 \cdot e^{(-\Gamma \cdot t)}, 0.10)$, that is adjusted by a $\Gamma$ parameter (by default $\Gamma$ is set to $0.50$). Thus, in the first iterations parsimony is promoted by GA mechanisms, i.e., replacing by crossover a high percentage of particles at the beginning. Subsequently, optimization with PSO becomes more relevant for the improvement of model accuracy. This differs from other hybrid methods in which the crossover is applied between the best individual position of each particle or other approaches in which the worst particles are also replaced by new particles, but at extreme positions.
+
+Experiments show that, in general, and with a suitable $\Gamma$, HYBparsimony allows to obtain better, more parsimonious and more robust models compared to other methods. It also reduces the number of iterations and, consequently, the computational effort.
 
 References
 ----------
-F.J. Martinez-de-Pison, J. Ferreiro, E. Fraile, A. Pernia-Espinoza, A comparative study of six model complexity 
-metrics to search for parsimonious models with GAparsimony R Package, Neurocomputing,
-Volume 452, 2021, Pages 317-332, ISSN 0925-2312, https://doi.org/10.1016/j.neucom.2020.02.135.
-
-Martinez-de-Pison, F.J., Gonzalez-Sendino, R., Aldama, A., Ferreiro-Cabello, J., Fraile-Garcia, E. Hybrid methodology 
-based on Bayesian optimization and GA-PARSIMONY to search for parsimony models by combining hyperparameter optimization 
-and feature selection (2019) Neurocomputing, 354, pp. 20-26. https://doi.org/10.1016/j.neucom.2018.05.136
-
-Urraca R., Sodupe-Ortega E., Antonanzas E., Antonanzas-Torres F., Martinez-de-Pison, F.J. (2017). Evaluation of a 
-novel GA-based methodology for model structure selection: The GA-PARSIMONY. Neurocomputing, Online July 2017. https://doi.org/10.1016/j.neucom.2016.08.154
-
-Martinez-De-Pison, F.J., Gonzalez-Sendino, R., Ferreiro, J., Fraile, E., Pernia-Espinoza, A. GAparsimony: An R 
-package for searching parsimonious models by combining hyperparameter optimization and feature selection (2018) Lecture 
-Notes in Computer Science (including subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics), 
-10870 LNAI, pp. 62-73. https://doi.org/10.1007/978-3-319-92639-1_6
-
-Applications
-------------
-Eduardo Dulce-Chamorro, Francisco Javier Martinez-de-Pison, An advanced methodology to enhance energy efficiency in 
-a hospital cooling-water system, Journal of Building Engineering, Volume 43,
-2021, 102839, ISSN 2352-7102,https://doi.org/10.1016/j.jobe.2021.102839.
-
-Sanz-Garcia, A., Fernandez-Ceniceros, J., Antonanzas-Torres, F., Pernia-Espinoza, A.V., Martinez-De-Pison, 
-F.J. GA-PARSIMONY: A GA-SVR approach with feature selection and parameter optimization to obtain parsimonious solutions 
-for predicting temperature settings in a continuous annealing furnace (2015) Applied Soft Computing Journal, 35, art. 
-no. 3006, pp. 13-28. https://doi.org/10.1016/j.asoc.2015.06.012
-
-Fernandez-Ceniceros, J., Sanz-Garcia, A., Antoñanzas-Torres, F., Martinez-de-Pison, F.J. A numerical-informational 
-approach for characterising the ductile behaviour of the T-stub component. Part 2: Parsimonious soft-computing-based 
-metamodel (2015) Engineering Structures, 82, pp. 249-260. https://doi.org/10.1016/j.engstruct.2014.06.047
-
-Antonanzas-Torres, F., Urraca, R., Antonanzas, J., Fernandez-Ceniceros, J., Martinez-De-Pison, F.J. Generation of 
-daily global solar irradiation with support vector machines for regression (2015) Energy Conversion and Management, 
-96, pp. 277-286. https://doi.org/10.1016/j.enconman.2015.02.086
-
-
+Divasón, J., Pernia-Espinoza, A., Martinez-de-Pison, F.J. (2022).
+New Hybrid Methodology Based on Particle Swarm Optimization with Genetic Algorithms to Improve 
+the Search of Parsimonious Models in High-Dimensional Databases.
+In: García Bringas, P., et al. 
+Hybrid Artificial Intelligent Systems. HAIS 2022. 
+Lecture Notes in Computer Science, vol 13469. Springer, Cham.
+[https://doi.org/10.1007/978-3-031-15471-3_29](https://doi.org/10.1007/978-3-031-15471-3_29)
 """
 
 from GAparsimony import Population, order

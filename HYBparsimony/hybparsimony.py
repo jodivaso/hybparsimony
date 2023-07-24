@@ -1,3 +1,24 @@
+"""HYBparsimony for Python is a package for searching accurate parsimonious models by combining feature selection (FS), model
+hyperparameter optimization (HO), and parsimonious model selection (PMS) based on a separate cost and complexity evaluation.
+
+To improve the search for parsimony, the hybrid method combines GA mechanisms such as selection, crossover and mutation within a PSO-based optimization algorithm that includes a strategy in which the best position of each particle (thus also the best position of each neighborhood) is calculated taking into account not only the goodness-of-fit, but also the parsimony principle. 
+
+In HYBparsimony, the percentage of variables to be replaced with GA at each iteration $t$ is selected by a decreasing exponential function:
+ $pcrossover=max(0.80 \cdot e^{(-\Gamma \cdot t)}, 0.10)$, that is adjusted by a $\Gamma$ parameter (by default $\Gamma$ is set to $0.50$). Thus, in the first iterations parsimony is promoted by GA mechanisms, i.e., replacing by crossover a high percentage of particles at the beginning. Subsequently, optimization with PSO becomes more relevant for the improvement of model accuracy. This differs from other hybrid methods in which the crossover is applied between the best individual position of each particle or other approaches in which the worst particles are also replaced by new particles, but at extreme positions.
+
+Experiments show that, in general, and with a suitable $\Gamma$, HYBparsimony allows to obtain better, more parsimonious and more robust models compared to other methods. It also reduces the number of iterations and, consequently, the computational effort.
+
+References
+----------
+Divasón, J., Pernia-Espinoza, A., Martinez-de-Pison, F.J. (2022).
+New Hybrid Methodology Based on Particle Swarm Optimization with Genetic Algorithms to Improve 
+the Search of Parsimonious Models in High-Dimensional Databases.
+In: García Bringas, P., et al. 
+Hybrid Artificial Intelligent Systems. HAIS 2022. 
+Lecture Notes in Computer Science, vol 13469. Springer, Cham.
+[https://doi.org/10.1007/978-3-031-15471-3_29](https://doi.org/10.1007/978-3-031-15471-3_29)
+"""
+
 import copy
 import multiprocessing
 import random
@@ -17,7 +38,6 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import make_scorer
 from HYBparsimony.util.models import check_algorithm
-
 
 class HYBparsimony(object):
 
@@ -53,6 +73,247 @@ class HYBparsimony(object):
                  feat_mut_thres = 0.1,
                  n_jobs=1,
                  verbose=0):
+        r"""
+            A class for searching parsimonious models by feature selection and parameter tuning with
+            an hybrid method based on genetic algorithms and particle swarm optimization.
+
+            Parameters
+            ----------
+            fitness : function, optional
+                The fitness function, any function which takes as input a chromosome which combines the model parameters 
+                to tune and the features to be selected. Fitness function returns a numerical vector with three values: validation_cost, 
+                testing_cost and model_complexity, and the trained model.
+            features : list of str, default=None
+                The name of features/columns in the dataset. If None, it extracts the names if X is a dataframe, otherwise it generates a list of the positions according to the value of X.shape[1].
+            algorithm: string or dict, default=None
+                Id string, the name of the algorithm to optimize (defined in 'HYBparsimony.util.models.py') or a dictionary defined
+                with the following properties: {'estimator': any machine learning algorithm compatible with scikit-learn,
+                'complexity': the function that measures the complexity of the model, 'the hyperparameters of the algorithm':
+                in this case, they can be fixed values (defined by Population.CONSTANT) or a search range $[min, max]$ 
+                defined by {"range":(min, max), "type": Population.X} and which type can be of three values: 
+                integer (Population.INTEGER), float (Population.FLOAT) or in powers of 10 (Population.POWER), 
+                i.e. $10^{[min, max]}$}. If algorithm==None, HYBparsimony uses 'LogisticRegression()' for 
+                classification problems, and 'Ridge' for regression problems.
+            custom_eval_fun : function, default=None
+                An evaluation function similar to scikit-learns's 'cross_val_score()'. If None, HYBparsimony uses
+                'cross_val_score(cv=5)'.
+            cv: int, cross-validation generator or an iterable, default=None
+                Determines the cross-validation splitting strategy (see scikit-learn's 'cross_val_score()' function)
+            scoring: str, callable, list, tuple, or dict, default=None.
+                Strategy to evaluate the performance of the cross-validated model on the test set. If None cv=5 and 'scoring' is defined as MSE for regression problems, 
+                'log_loss' for binary classification problems, and 'f1_macro' for multiclass problems. (see scikit-learn's 
+                'cross_val_score()' function)
+            type_ini_pop : str, {'randomLHS', 'geneticLHS', 'improvedLHS', 'maximinLHS', 'optimumLHS', 'random'}, optional
+                Method to create the first population with `GAparsimony._population` function. Possible values: `randomLHS`, `geneticLHS`, 
+                `improvedLHS`, `maximinLHS`, `optimumLHS`, `random`. First 5 methods correspond with several latine hypercube for initial sampling. By default is set to `improvedLHS`.
+            npart = int, default=15
+                Number of particles in the swarm (population size)
+            maxiter = int, default=250
+                The maximum number of iterations to run before the HYB process is halted.
+            early_stop : int, optional
+                The number of consecutive generations without any improvement lower than a difference of 'tol'
+                in the 'best_fitness' value before the search process is stopped.
+            tol : float, default=1e-4,
+                Value defining a significant difference between the 'best_fitness' values between iterations for 'early stopping'.
+            rerank_error : float, default=1e-09
+                When a value is provided, a second reranking process according to the model complexities is called by `parsimony_rerank` function. 
+                Its primary objective isto select individuals with high validation cost while maintaining the robustnessof a parsimonious model. 
+                This function switches the position of two models if the first one is more complex than the latter and no significant difference 
+                is found between their fitness values in terms of cost. Thus, if the absolute difference between the validation costs are 
+                lower than `rerank_error` they are considered similar.
+            gamma_crossover : float, default=0.50
+                In HYBparsimony, the percentage of variables to be replaced with GA at each iteration $t$ is selected by a decreasing exponential function
+                that is adjusted by a 'gamma_crossover' parameter (see references for more info).
+            Lambda : float, default=1.0
+                PSO parameter (see References)
+            c1 : float, default=1/2 + math.log(2)
+                PSO parameter (see References)
+            c2 : float, default=1/2 + math.log(2)
+                PSO parameter (see References)
+            IW_max : float, default=0.9
+                PSO parameter (see References)
+            IW_min : float, default=0.4
+                PSO parameter (see References)
+            K : int, default=4
+                PSO parameter (see References)
+            best_global_thres : float, default=1.0
+                Percentage of particles that will be influenced by the best global of their neighbourhoods
+                (otherwise, they will be influenced by the best of the iteration in each neighbourhood)
+                particles_to_delete is not None and len(particles_to_delete) < maxiter:
+            particles_to_delete : float, default=None
+                The length of the particles to delete is lower than the iterations, 
+                the array is completed with zeros up to the number of iterations.
+            mutation : float, default=0.1
+                The probability of mutation in a parent chromosome. Usually mutation occurs with a small probability. By default is set to `0.10`.
+            feat_mut_thres : float, default=0.1
+                Probability of the muted `features-chromosome` to be one. Default value is set to `0.10`.
+            feat_thres : float, default=0.90
+                Proportion of selected features in the initial population. It is recommended a high percentage of the selected features for 
+                the first generations.
+            keep_history : bool default=False,
+                If True keep results of all particles in each iteration into 'history' attribute.
+            seed_ini : int, optional
+                An integer value containing the random number generator state.
+            n_jobs : int, default=1,
+                Number of cores to parallelize the evaluation of the swarm. It should be used with caution because the 
+                algorithms used or the 'cross_validate()' function used by default to evaluate individuals may also parallelize 
+                their internal processes.
+            verbose : int, default=0
+                The level of messages that we want it to show us. Possible values: 0=silent mode, 1=monitor level,  2=debug level.
+        
+        Attributes
+        ----------
+        minutes_total : float
+            Total elapsed time (in minutes).
+        history : float
+            A list with the results of the population of all iterations.'history[iter]' returns a DataFrame 
+            with the results of iteration 'iter'.
+        best_model
+            The best model in the whole optimization process.
+        best_score : float
+            The validation score of the best model.
+        best_complexity : float
+            The complexity of the best model.
+        selected_features : list,
+            The name of the selected features for the best model.
+        selected_features_bool : list,
+           The selected features for the best model in Boolean form.
+        best_model_conf : Chromosome
+            The parameters and features of the best model in the whole optimization process.
+        
+        Examples
+        --------
+        Usage example for a regression model using the sklearn 'diabetes' dataset 
+
+        .. highlight:: python
+        .. code-block:: python
+
+            
+            import pandas as pd
+            from sklearn.model_selection import train_test_split
+            from sklearn.metrics import mean_squared_error
+            from sklearn.datasets import load_diabetes
+            from sklearn.preprocessing import StandardScaler
+            from HYBparsimony import HYBparsimony
+
+            # Load 'diabetes' dataset
+            diabetes = load_diabetes()
+
+            X, y = diabetes.data, diabetes.target
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state=1234)
+
+            # Standarize X and y
+            scaler_X = StandardScaler()
+            X_train = scaler_X.fit_transform(X_train)
+            X_test = scaler_X.transform(X_test)
+            scaler_y = StandardScaler()
+            y_train = scaler_y.fit_transform(y_train.reshape(-1,1)).flatten()
+            y_test = scaler_y.transform(y_test.reshape(-1,1)).flatten()
+
+            algo = 'KernelRidge'
+            HYBparsimony_model = HYBparsimony(algorithm=algo,
+                                            features=diabetes.feature_names,
+                                            rerank_error=0.001,
+                                            verbose=1)
+
+            # Search the best hyperparameters and features 
+            # (increasing 'time_limit' to improve RMSE with high consuming algorithms)
+            HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
+
+        .. code-block:: text
+
+            Running iteration 0
+            Best model -> Score = -0.510786 Complexity = 9,017,405,352.5 
+            Iter = 0 -> MeanVal = -0.88274  ValBest = -0.510786   ComplexBest = 9,017,405,352.5 Time(min) = 0.005858
+
+            Running iteration 1
+            Best model -> Score = -0.499005 Complexity = 8,000,032,783.88 
+            Iter = 1 -> MeanVal = -0.659969  ValBest = -0.499005   ComplexBest = 8,000,032,783.88 Time(min) = 0.004452
+
+            ...
+            ...
+            ...
+
+            Running iteration 34
+            Best model -> Score = -0.489468 Complexity = 8,000,002,255.68 
+            Iter = 34 -> MeanVal = -0.527314  ValBest = -0.489468   ComplexBest = 8,000,002,255.68 Time(min) = 0.007533
+
+            Running iteration 35
+            Best model -> Score = -0.489457 Complexity = 8,000,002,199.12 
+            Iter = 35 -> MeanVal = -0.526294  ValBest = -0.489457   ComplexBest = 8,000,002,199.12 Time(min) = 0.006522
+
+            Time limit reached. Stopped.
+
+        Usage example for a classification model using the 'breast_cancer' dataset 
+
+        .. highlight:: python
+        .. code-block:: python
+
+            import pandas as pd
+            from sklearn.model_selection import train_test_split
+            from sklearn.preprocessing import StandardScaler
+            from sklearn.datasets import load_breast_cancer
+            from sklearn.metrics import log_loss
+            from HYBparsimony import HYBparsimony
+            
+            # load 'breast_cancer' dataset
+            breast_cancer = load_breast_cancer()
+            X, y = breast_cancer.data, breast_cancer.target 
+            print(X.shape)
+
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
+            
+            # Standarize X and y (some algorithms require that)
+            scaler_X = StandardScaler()
+            X_train = scaler_X.fit_transform(X_train)
+            X_test = scaler_X.transform(X_test)
+
+            HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+                                            rerank_error=0.005,
+                                            verbose=1)
+            HYBparsimony_model.fit(X_train, y_train, time_limit=0.50)
+            # Extract probs of class==1
+            preds = HYBparsimony_model.predict_proba(X_test)[:,1]
+            print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
+            print(f'Selected features:{HYBparsimony_model.selected_features}')
+            print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
+            print(f'5-CV logloss = {-round(HYBparsimony_model.best_score,6)}')
+            print(f'logloss test = {round(log_loss(y_test, preds),6)}')
+        
+        .. code-block:: text
+
+            (569, 30)
+            Detected a binary-class problem. Using 'neg_log_loss' as default scoring function.
+            Running iteration 0
+            Best model -> Score = -0.091519 Complexity = 29,000,000,005.11 
+            Iter = 0 -> MeanVal = -0.297448  ValBest = -0.091519   ComplexBest = 29,000,000,005.11 Time(min) = 0.006501
+
+            Running iteration 1
+            Best model -> Score = -0.085673 Complexity = 27,000,000,009.97 
+            Iter = 1 -> MeanVal = -0.117216  ValBest = -0.085673   ComplexBest = 27,000,000,009.97 Time(min) = 0.004273
+
+            ...
+            ...
+
+            Running iteration 102
+            Best model -> Score = -0.064557 Complexity = 11,000,000,039.47 
+            Iter = 102 -> MeanVal = -0.076314  ValBest = -0.066261   ComplexBest = 9,000,000,047.25 Time(min) = 0.004769
+
+            Running iteration 103
+            Best model -> Score = -0.064557 Complexity = 11,000,000,039.47 
+            Iter = 103 -> MeanVal = -0.086243  ValBest = -0.064995   ComplexBest = 11,000,000,031.2 Time(min) = 0.004591
+
+            Time limit reached. Stopped.
+
+            Best Model = LogisticRegression(C=5.92705799354935)
+            Selected features:['mean texture' 'mean concave points' 'radius error' 'area error'
+            'compactness error' 'worst radius' 'worst perimeter' 'worst area'
+            'worst smoothness' 'worst concavity' 'worst symmetry']
+            Complexity = 11,000,000,039.47
+            5-CV logloss = 0.064557
+            logloss test = 0.076254
+                
+        """
 
         self.type_ini_pop = type_ini_pop
         self.fitness = fitness
@@ -137,8 +398,20 @@ class HYBparsimony(object):
         self.algorithm = algorithm
 
 
-    def fit(self, X, y, iter_ini=0, time_limit=None):
+    def fit(self, X, y, time_limit=None):
+        r"""
+        Performs the search of accurate parsimonious models by combining feature selection, hyperparameter optimizacion,
+            and parsimonious model selection (PMS) with data matrix (X) and targets (y).
 
+        Parameters
+        ----------
+        X : pandas.DataFrame or numpy.array
+            Training vector.
+        y : pandas.DataFrame or numpy.array
+            Target vector relative to X.
+        time_limit : float, default=None
+            Maximum time to perform the optimization process in minutes.
+        """
 
         #############################################
         #  SOME LOGIC ON PARAMETERS' INITIALIZATION
@@ -707,6 +980,20 @@ class HYBparsimony(object):
         return self.best_model
 
     def predict(self, X):
+        r"""
+        Predict result for samples in X.
+
+        Parameters
+        ----------
+        X : numpy.array or pandas.DataFrame
+            Samples.
+
+        Returns
+        -------
+        numpy.array
+            A `numpy.array` with predictions.
+
+        """
         num_rows, num_cols = X.shape
         if num_cols == len(self.selected_features): #Si nos han pasado un X donde ya he cogido las columnas que debía coger
             preds = self.best_model.predict(X)
@@ -720,6 +1007,20 @@ class HYBparsimony(object):
 
 
     def predict_proba(self, X):
+        r"""
+        Predict probabilities for each class and sample in X (only for classification models).
+
+        Parameters
+        ----------
+        X : numpy.array or pandas.DataFrame
+            Samples.
+
+        Returns
+        -------
+        numpy.array
+            A `numpy.array` with predictions. Returns the probability of the sample for each class in the model.
+
+        """
         num_rows, num_cols = X.shape
         if num_cols == len(self.selected_features): #Si nos han pasado un X donde ya he cogido las columnas que debía coger
             preds = self.best_model.predict_proba(X)
