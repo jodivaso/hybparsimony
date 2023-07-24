@@ -402,6 +402,7 @@ By default $cv=5$, and $scoring$ is defined as *MSE* for regression problems, *l
 
 ```python
 #Example A: Using 10 folds and 'accuracy'
+#----------------------------------------
 HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
                                    scoring='accuracy',
                                    cv=10,
@@ -409,6 +410,7 @@ HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
                                    verbose=1)
 
 #Example B: Using 10-repeated 5-fold CV and 'Kappa' score
+#--------------------------------------------------------
 from sklearn.metrics import cohen_kappa_score, make_scorer
 metric_kappa = make_scorer(cohen_kappa_score, greater_is_better=True)
 HYBparsimony_model = HYBparsimony(features=wine.feature_names,
@@ -418,18 +420,32 @@ HYBparsimony_model = HYBparsimony(features=wine.feature_names,
                                   verbose=1)
 
 #Example C: Using a weighted 'log_loss'
+#--------------------------------------
 from sklearn.metrics import cohen_kappa_score, make_scorer
+
 # Assign a double weight to class one
 def my_custom_loss_func(y_true, y_pred):
     sample_weight = np.ones_like(y_true)
     sample_weight[y_true==1] = 2.0
     return log_loss(y_true, y_pred, sample_weight=sample_weight)
+
 # Lower is better and 'log_loss' needs probabilities
 custom_score = make_scorer(my_custom_loss_func, greater_is_better=False, needs_proba=True)
 HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
                                 scoring=custom_score,
                                 rerank_error=0.001,
                                 verbose=1)
+
+ #Example D: Using a 'custom evaluation' function
+#------------------------------------------------
+ def custom_fun(estimator, X, y):
+    return cross_val_score(estimator, X, y, scoring="accuracy")
+
+ HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+                                 custom_eval_fun=custom_fun,
+                                 n_jobs=1, #parallelism is not allowed with 'custom_eval_fun'
+                                 rerank_error=0.001,
+                                 verbose=1)
 ```
 
 ### Custom Search
