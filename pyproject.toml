@@ -3,8 +3,8 @@ requires = ["hatchling", "pandas", "scikit-learn", "seaborn", "matplotlib"]
 build-backend = "hatchling.build"
 
 [project]
-name = "HYBparsiomny"
-version = "0.0.4"
+name = "HYBparsimony"
+version = "0.0.5"
 authors = [
   { name="Jose Divasón", email="jose.divason@unirioja.es" },
 ]
