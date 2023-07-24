@@ -391,17 +391,18 @@ f1_macro test = 1.0
 
 ### Custom Evaluation
 
-HYBparsimony uses by default sklearn's [*cross_val_score*](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html) function as follows:
+*HYBparsimony* uses by default sklearn's [*cross_val_score*](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html) function as follows:
 
 ```python
 def default_cv_score(estimator, X, y):
   return cross_val_score(estimator, X, y, cv=self.cv, scoring=self.scoring)
 ```
 
-By default $cv=5$, and $scoring$ is defined as *MSE* for regression problems, *log_loss* for binary classification problems, and *f1_macro* for multiclass problems. However, it is possible to choose [another scoring metric](https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter) defined in *scikit-learn* library or design [your own](https://scikit-learn.org/stable/modules/model_evaluation.html#scoring). 
+By default $cv=5$, and $scoring$ is defined as *MSE* for regression problems, *log_loss* for binary classification problems, and *f1_macro* for multiclass problems. However, it is possible to choose [another scoring metric](https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter) defined in *scikit-learn* library or design [your own](https://scikit-learn.org/stable/modules/model_evaluation.html#scoring). Also, the user can define a custom evaluation function.
 
 ```python
 #Example A: Using 10 folds and 'accuracy'
+#----------------------------------------
 HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
                                    scoring='accuracy',
                                    cv=10,
@@ -409,6 +410,7 @@ HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
                                    verbose=1)
 
 #Example B: Using 10-repeated 5-fold CV and 'Kappa' score
+#--------------------------------------------------------
 from sklearn.metrics import cohen_kappa_score, make_scorer
 metric_kappa = make_scorer(cohen_kappa_score, greater_is_better=True)
 HYBparsimony_model = HYBparsimony(features=wine.feature_names,
@@ -418,16 +420,74 @@ HYBparsimony_model = HYBparsimony(features=wine.feature_names,
                                   verbose=1)
 
 #Example C: Using a weighted 'log_loss'
+#--------------------------------------
 from sklearn.metrics import cohen_kappa_score, make_scorer
+
 # Assign a double weight to class one
 def my_custom_loss_func(y_true, y_pred):
     sample_weight = np.ones_like(y_true)
     sample_weight[y_true==1] = 2.0
     return log_loss(y_true, y_pred, sample_weight=sample_weight)
+
 # Lower is better and 'log_loss' needs probabilities
 custom_score = make_scorer(my_custom_loss_func, greater_is_better=False, needs_proba=True)
 HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
                                 scoring=custom_score,
+                                rerank_error=0.001,
+                                verbose=1)
+
+ #Example D: Using a 'custom evaluation' function
+#------------------------------------------------
+ def custom_fun(estimator, X, y):
+    return cross_val_score(estimator, X, y, scoring="accuracy")
+
+ HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+                                 custom_eval_fun=custom_fun,
+                                 n_jobs=1, #parallelism is not allowed with 'custom_eval_fun'
+                                 rerank_error=0.001,
+                                 verbose=1)
+```
+
+### Custom Search
+
+*HYBparsimony* has predefined the most common scikit-learn algorithms as well as functions to measure [their complexity](https://github.com/jodivaso/hyb-parsimony/util/complexity.py) and the [hyperparameter ranges](https://github.com/jodivaso/hyb-parsimony/util/models.py) to search on. However, all this can be customized. 
+
+In the following example, the dictionary *MLPRegressor_new* is defined. It consists of the following properties:
+- *estimator* any machine learning algorithm compatible with scikit-learn.
+- *complexity* the function that measures the complexity of the model.
+- The hyperparameters of the algorithm. In this case, they can be fixed values (defined by Population.CONSTANT) such as '*solver*', '*activation*', etc.; or a search range $[min, max]$ defined by *{"range":(min, max), "type": Population.X}* and which type can be of three values: integer (Population.INTEGER), float (Population.FLOAT) or in powers of 10 (Population.POWER), i.e. $10^{[min, max]}$.
+
+```python
+...
+
+from HYBparsimony import HYBparsimony, Population
+
+...
+
+def mlp_new_complexity(model, nFeatures, **kwargs):
+    weights = [np.concatenate(model.intercepts_)]
+    for wm in model.coefs_:
+        weights.append(wm.flatten())
+    weights = np.concatenate(weights) 
+    int_comp = np.min((1E09-1,np.sum(weights**2)))
+    return nFeatures*1E09 + int_comp
+
+MLPRegressor_new = {"estimator": MLPRegressor, # The estimator
+              "complexity": mlp_new_complexity, # The complexity
+              "hidden_layer_sizes": {"range": (1, 5), "type": Population.INTEGER},
+              "alpha": {"range": (-5, 5), "type": Population.POWER},
+              "solver": {"value": "adam", "type": Population.CONSTANT},
+              "learning_rate": {"value": "adaptive", "type": Population.CONSTANT},
+              "early_stopping": {"value": True, "type": Population.CONSTANT},
+              "validation_fraction": {"value": 0.10, "type": Population.CONSTANT},
+              "activation": {"value": "tanh", "type": Population.CONSTANT},
+              "n_iter_no_change": {"value": 20, "type": Population.CONSTANT},
+              "tol": {"value": 1e-5, "type": Population.CONSTANT},
+              "random_state": {"value": 1234, "type": Population.CONSTANT},
+              "max_iter": {"value": 200, "type": Population.CONSTANT}
+               }
+HYBparsimony_model = HYBparsimony(algorithm=MLPRegressor_new,
+                                features=diabetes.feature_names,
                                 rerank_error=0.001,
                                 verbose=1)
 ```
