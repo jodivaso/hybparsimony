@@ -208,75 +208,98 @@ if __name__ == "__main__":
     #                   CUSTOM EVALUATION             #
     ###################################################
 
-    # import pandas as pd
-    # from sklearn.model_selection import train_test_split
-    # from sklearn.preprocessing import StandardScaler
-    # from sklearn.datasets import load_breast_cancer
-    # from sklearn.model_selection import cross_val_score
-    # from HYBparsimony import HYBparsimony
-    # from sklearn.metrics import fbeta_score, make_scorer, cohen_kappa_score, log_loss, accuracy_score
+    import pandas as pd
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.datasets import load_breast_cancer, load_wine
+    from sklearn.model_selection import cross_val_score
+    from HYBparsimony import HYBparsimony
+    from sklearn.metrics import fbeta_score, make_scorer, cohen_kappa_score, log_loss, accuracy_score
     
 
-    # # load 'breast_cancer' dataset
-    # breast_cancer = load_breast_cancer()
-    # X, y = breast_cancer.data, breast_cancer.target 
-    # print(X.shape)
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
+    # load 'breast_cancer' dataset
+    breast_cancer = load_breast_cancer()
+    X, y = breast_cancer.data, breast_cancer.target 
+    print(X.shape)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
     
-    # # Standarize X and y (some algorithms require that)
-    # scaler_X = StandardScaler()
-    # X_train = scaler_X.fit_transform(X_train)
-    # X_test = scaler_X.transform(X_test)
+    # Standarize X and y (some algorithms require that)
+    scaler_X = StandardScaler()
+    X_train = scaler_X.fit_transform(X_train)
+    X_test = scaler_X.transform(X_test)
 
-    # # #Example A: Using 10 folds and 'accuracy'
-    # HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
-    #                                 scoring='accuracy',
-    #                                 cv=10,
-    #                                 rerank_error=0.001,
-    #                                 verbose=1)
-
-    # #Example B: Using 10-repeated 5-fold CV and 'Kappa' score
-    # from sklearn.metrics import cohen_kappa_score, make_scorer
-    # metric_kappa = make_scorer(cohen_kappa_score, greater_is_better=True)
-    # HYBparsimony_model = HYBparsimony(features=wine.feature_names,
-    #                                 scoring=metric_kappa,
-    #                                 cv=RepeatedKFold(n_splits=5, n_repeats=10),
-    #                                 rerank_error=0.001,
-    #                                 verbose=1)
-
-    # #Example C: Using a weighted 'log_loss'
-    # from sklearn.metrics import cohen_kappa_score, make_scorer
-    # # Assign a double weight to class one
-    # def my_custom_loss_func(y_true, y_pred):
-    #     sample_weight = np.ones_like(y_true)
-    #     sample_weight[y_true==1] = 2.0
-    #     return log_loss(y_true, y_pred, sample_weight=sample_weight)
-    # # Lower is better and 'log_loss' needs probabilities
-    # custom_score = make_scorer(my_custom_loss_func, greater_is_better=False, needs_proba=True)
-    # HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
-    #                                 scoring=custom_score,
-    #                                 rerank_error=0.001,
-    #                                 verbose=1)
+    # #Example A: Using 10 folds and 'accuracy'
+    HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+                                    scoring='accuracy',
+                                    cv=10,
+                                    rerank_error=0.001,
+                                    verbose=1)
     
-    #Example D: Using a 'custom evaluation' function
-    #           (Parallelism is not allowed)
-    # def custom_fun(estimator, X, y):
-    #     return cross_val_score(estimator, X, y, scoring="accuracy")
+    HYBparsimony_model.fit(X_train, y_train, time_limit=0.1)
+    preds = HYBparsimony_model.predict(X_test)
+    print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
+    print(f'Selected features:{HYBparsimony_model.selected_features}')
+    print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
+    print(f'10R5-CV Accuracy = {round(HYBparsimony_model.best_score,6)}')
+    print(f'Accuracy test = {round(accuracy_score(y_test, preds),6)}')
+
+
+#     # load 'wine' dataset 
+#     wine = load_wine()
+#     X, y = wine.data, wine.target 
+#     print(X.shape)
+#     # 3 classes
+#     print(len(np.unique(y)))
+
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
     
-    # HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
-    #                                 custom_eval_fun=custom_fun,
-    #                                 n_jobs=1, #parallelism is not allowed with 'custom_eval_fun'
-    #                                 rerank_error=0.001,
-    #                                 verbose=1)
+#    # Standarize X and y (some algorithms require that)
+#     scaler_X = StandardScaler()
+#     X_train = scaler_X.fit_transform(X_train)
+#     X_test = scaler_X.transform(X_test)
+
+#     #Example B: Using 10-repeated 5-fold CV and 'Kappa' score
+#     from sklearn.metrics import cohen_kappa_score, make_scorer
+#     metric_kappa = make_scorer(cohen_kappa_score, greater_is_better=True)
+#     HYBparsimony_model = HYBparsimony(features=wine.feature_names,
+#                                     scoring=metric_kappa,
+#                                     cv=RepeatedKFold(n_splits=5, n_repeats=10),
+#                                     rerank_error=0.001,
+#                                     verbose=1)
+
+#     #Example C: Using a weighted 'log_loss'
+#     from sklearn.metrics import cohen_kappa_score, make_scorer
+#     # Assign a double weight to class one
+#     def my_custom_loss_func(y_true, y_pred):
+#         sample_weight = np.ones_like(y_true)
+#         sample_weight[y_true==1] = 2.0
+#         return log_loss(y_true, y_pred, sample_weight=sample_weight)
+#     # Lower is better and 'log_loss' needs probabilities
+#     custom_score = make_scorer(my_custom_loss_func, greater_is_better=False, needs_proba=True)
+#     HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+#                                     scoring=custom_score,
+#                                     rerank_error=0.001,
+#                                     verbose=1)
+    
+#     # Example D: Using a 'custom evaluation' function
+#     #          (Parallelism is not allowed)
+#     def custom_fun(estimator, X, y):
+#         return cross_val_score(estimator, X, y, scoring="accuracy")
+    
+#     HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+#                                     custom_eval_fun=custom_fun,
+#                                     n_jobs=1, #parallelism is not allowed with 'custom_eval_fun'
+#                                     rerank_error=0.001,
+#                                     verbose=1)
 
 
-    # HYBparsimony_model.fit(X_train, y_train, time_limit=0.1)
-    # preds = HYBparsimony_model.predict(X_test)
-    # print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
-    # print(f'Selected features:{HYBparsimony_model.selected_features}')
-    # print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
-    # print(f'10R5-CV Accuracy = {round(HYBparsimony_model.best_score,6)}')
-    # print(f'Accuracy test = {round(accuracy_score(y_test, preds),6)}')
+#     HYBparsimony_model.fit(X_train, y_train, time_limit=0.1)
+#     preds = HYBparsimony_model.predict(X_test)
+#     print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
+#     print(f'Selected features:{HYBparsimony_model.selected_features}')
+#     print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
+#     print(f'10R5-CV Accuracy = {round(HYBparsimony_model.best_score,6)}')
+#     print(f'Accuracy test = {round(accuracy_score(y_test, preds),6)}')
 
     
    
@@ -355,26 +378,30 @@ if __name__ == "__main__":
                     
     
 
-    import pandas as pd
-    import numpy as np
-    from sklearn.datasets import load_breast_cancer
-    from sklearn.svm import SVC
-    from sklearn.model_selection import cross_val_score
-    from HYBparsimony import HYBparsimony
-    from HYBparsimony.util import getFitness, svm_complexity, population
-    from HYBparsimony.util.fitness import fitness_for_parallel
-    # load 'breast_cancer' dataset
-    breast_cancer = load_breast_cancer()
-    X, y = breast_cancer.data, breast_cancer.target
-    chromosome = population.Chromosome(params = [1.0, 0.2],
-                                       name_params = ['C','gamma'],
-                                       const = {'kernel':'rbf'},
-                                       cols= np.random.uniform(size=X.shape[1])>0.50,
-                                       name_cols = breast_cancer.feature_names)
-    # print(getFitness(SVC,svm_complexity)(chromosome, X=X, y=y))
-    print(fitness_for_parallel(SVC, svm_complexity, 
-                               custom_eval_fun=cross_val_score,
-                               cromosoma=chromosome, X=X, y=y))
+    # ###################################################
+    # # Check getFitness() and fitness_for_parallel()   #
+    # ###################################################
+
+    # import pandas as pd
+    # import numpy as np
+    # from sklearn.datasets import load_breast_cancer
+    # from sklearn.svm import SVC
+    # from sklearn.model_selection import cross_val_score
+    # from HYBparsimony import HYBparsimony
+    # from HYBparsimony.util import getFitness, svm_complexity, population
+    # from HYBparsimony.util.fitness import fitness_for_parallel
+    # # load 'breast_cancer' dataset
+    # breast_cancer = load_breast_cancer()
+    # X, y = breast_cancer.data, breast_cancer.target
+    # chromosome = population.Chromosome(params = [1.0, 0.2],
+    #                                    name_params = ['C','gamma'],
+    #                                    const = {'kernel':'rbf'},
+    #                                    cols= np.random.uniform(size=X.shape[1])>0.50,
+    #                                    name_cols = breast_cancer.feature_names)
+    # # print(getFitness(SVC,svm_complexity)(chromosome, X=X, y=y))
+    # print(fitness_for_parallel(SVC, svm_complexity, 
+    #                            custom_eval_fun=cross_val_score,
+    #                            cromosoma=chromosome, X=X, y=y))
 
 
 
