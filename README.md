@@ -1,9 +1,9 @@
 # HYBparsimony
 
-[![PyPI version](https://badge.fury.io/py/GAparsimony.svg)](https://badge.fury.io/py/GAparsimony)
-[![Documentation Status](https://readthedocs.org/projects/gaparsimony/badge/?version=latest)](https://gaparsimony.readthedocs.io/en/latest/?badge=latest)
+[![PyPI version](https://badge.fury.io/py/hybparsimony.svg)](https://badge.fury.io/py/hybparsimony)
+[![Documentation Status](https://readthedocs.org/projects/hybparsimony/badge/?version=latest)](https://hybparsimony.readthedocs.io/en/latest/?badge=latest)
 
-[Documentation](https://gaparsimony.readthedocs.io/en/latest/index.html)
+[Documentation](https://hybparsimony.readthedocs.io/en/latest/index.html)
 
 ***HYBparsimony*** for Python is a package **for searching accurate parsimonious models by combining feature selection (FS), model
 hyperparameter optimization (HO), and parsimonious model selection (PMS) based on a separate cost and complexity evaluation**.
