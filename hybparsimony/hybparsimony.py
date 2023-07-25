@@ -1,12 +1,12 @@
-"""HYBparsimony for Python is a package for searching accurate parsimonious models by combining feature selection (FS), model
+"""hybparsimony for Python is a package for searching accurate parsimonious models by combining feature selection (FS), model
 hyperparameter optimization (HO), and parsimonious model selection (PMS) based on a separate cost and complexity evaluation.
 
 To improve the search for parsimony, the hybrid method combines GA mechanisms such as selection, crossover and mutation within a PSO-based optimization algorithm that includes a strategy in which the best position of each particle (thus also the best position of each neighborhood) is calculated taking into account not only the goodness-of-fit, but also the parsimony principle. 
 
-In HYBparsimony, the percentage of variables to be replaced with GA at each iteration $t$ is selected by a decreasing exponential function:
+In hybparsimony, the percentage of variables to be replaced with GA at each iteration $t$ is selected by a decreasing exponential function:
  $pcrossover=max(0.80 \cdot e^{(-\Gamma \cdot t)}, 0.10)$, that is adjusted by a $\Gamma$ parameter (by default $\Gamma$ is set to $0.50$). Thus, in the first iterations parsimony is promoted by GA mechanisms, i.e., replacing by crossover a high percentage of particles at the beginning. Subsequently, optimization with PSO becomes more relevant for the improvement of model accuracy. This differs from other hybrid methods in which the crossover is applied between the best individual position of each particle or other approaches in which the worst particles are also replaced by new particles, but at extreme positions.
 
-Experiments show that, in general, and with a suitable $\Gamma$, HYBparsimony allows to obtain better, more parsimonious and more robust models compared to other methods. It also reduces the number of iterations and, consequently, the computational effort.
+Experiments show that, in general, and with a suitable $\Gamma$, hybparsimony allows to obtain better, more parsimonious and more robust models compared to other methods. It also reduces the number of iterations and, consequently, the computational effort.
 
 References
 ----------
@@ -24,10 +24,10 @@ import multiprocessing
 import random
 from multiprocessing import Pool
 from functools import partial
-from HYBparsimony.util import Population, order, getFitness, parsimony_monitor, parsimony_summary, models
-from HYBparsimony.util.fitness import fitness_for_parallel
-from HYBparsimony.util.hyb_aux import _rerank, _crossover, _population
-from HYBparsimony.lhs import randomLHS
+from hybparsimony.util import Population, order, getFitness, parsimony_monitor, parsimony_summary, models
+from hybparsimony.util.fitness import fitness_for_parallel
+from hybparsimony.util.hyb_aux import _rerank, _crossover, _population
+from hybparsimony.lhs import randomLHS
 import math
 import numpy as np
 import pandas as pd
@@ -36,7 +36,7 @@ from numpy.random import multinomial
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import make_scorer
-from HYBparsimony.util.models import check_algorithm
+from hybparsimony.util.models import check_algorithm
 
 class HYBparsimony(object):
 
@@ -85,16 +85,16 @@ class HYBparsimony(object):
             features : list of str, default=None
                 The name of features/columns in the dataset. If None, it extracts the names if X is a dataframe, otherwise it generates a list of the positions according to the value of X.shape[1].
             algorithm: string or dict, default=None
-                Id string, the name of the algorithm to optimize (defined in 'HYBparsimony.util.models.py') or a dictionary defined
+                Id string, the name of the algorithm to optimize (defined in 'hybparsimony.util.models.py') or a dictionary defined
                 with the following properties: {'estimator': any machine learning algorithm compatible with scikit-learn,
                 'complexity': the function that measures the complexity of the model, 'the hyperparameters of the algorithm':
                 in this case, they can be fixed values (defined by Population.CONSTANT) or a search range $[min, max]$ 
                 defined by {"range":(min, max), "type": Population.X} and which type can be of three values: 
                 integer (Population.INTEGER), float (Population.FLOAT) or in powers of 10 (Population.POWER), 
-                i.e. $10^{[min, max]}$}. If algorithm==None, HYBparsimony uses 'LogisticRegression()' for 
+                i.e. $10^{[min, max]}$}. If algorithm==None, hybparsimony uses 'LogisticRegression()' for
                 classification problems, and 'Ridge' for regression problems.
             custom_eval_fun : function, default=None
-                An evaluation function similar to scikit-learns's 'cross_val_score()'. If None, HYBparsimony uses
+                An evaluation function similar to scikit-learns's 'cross_val_score()'. If None, hybparsimony uses
                 'cross_val_score(cv=5)'.
             cv: int, cross-validation generator or an iterable, default=None
                 Determines the cross-validation splitting strategy (see scikit-learn's 'cross_val_score()' function)
@@ -121,7 +121,7 @@ class HYBparsimony(object):
                 is found between their fitness values in terms of cost. Thus, if the absolute difference between the validation costs are 
                 lower than `rerank_error` they are considered similar.
             gamma_crossover : float, default=0.50
-                In HYBparsimony, the percentage of variables to be replaced with GA at each iteration $t$ is selected by a decreasing exponential function
+                In hybparsimony, the percentage of variables to be replaced with GA at each iteration $t$ is selected by a decreasing exponential function
                 that is adjusted by a 'gamma_crossover' parameter (see references for more info).
             Lambda : float, default=1.0
                 PSO parameter (see References)
@@ -193,7 +193,7 @@ class HYBparsimony(object):
             from sklearn.metrics import mean_squared_error
             from sklearn.datasets import load_diabetes
             from sklearn.preprocessing import StandardScaler
-            from HYBparsimony import HYBparsimony
+            from hybparsimony import hybparsimony
 
             # Load 'diabetes' dataset
             diabetes = load_diabetes()
@@ -210,7 +210,7 @@ class HYBparsimony(object):
             y_test = scaler_y.transform(y_test.reshape(-1,1)).flatten()
 
             algo = 'KernelRidge'
-            HYBparsimony_model = HYBparsimony(algorithm=algo,
+            HYBparsimony_model = hybparsimony(algorithm=algo,
                                             features=diabetes.feature_names,
                                             rerank_error=0.001,
                                             verbose=1)
@@ -253,7 +253,7 @@ class HYBparsimony(object):
             from sklearn.preprocessing import StandardScaler
             from sklearn.datasets import load_breast_cancer
             from sklearn.metrics import log_loss
-            from HYBparsimony import HYBparsimony
+            from hybparsimony import hybparsimony
             
             # load 'breast_cancer' dataset
             breast_cancer = load_breast_cancer()
@@ -267,7 +267,7 @@ class HYBparsimony(object):
             X_train = scaler_X.fit_transform(X_train)
             X_test = scaler_X.transform(X_test)
 
-            HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+            HYBparsimony_model = hybparsimony(features=breast_cancer.feature_names,
                                             rerank_error=0.005,
                                             verbose=1)
             HYBparsimony_model.fit(X_train, y_train, time_limit=0.50)

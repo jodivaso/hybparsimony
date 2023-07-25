@@ -35,14 +35,13 @@ This example shows how to search with *HYBparsimony* package for a parsimonious 
 
 In this example, *rerank\_error* is set to $0.001$, but other values could improve the balance between model complexity and accuracy. PMS considers the most parsimonious model with the fewest number of features. The default complexity is $M_c = 10^9{N_{FS}} + int_{comp}$  where ${N_{FS}}$ is the number of selected input features and $int_{comp}$ is the internal measure of model complexity, which depends on the algorithm used for training. In this example, $int_{comp}$ for *KernelRidge* is measured by the sum of the squared coefficients. Therefore, between two models with the same number of features, the smaller sum of the squared weights will determine the more parsimonious model (smaller weights reduce the propagation of perturbations and improve robustness).
 
-
 ```python
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 from sklearn.datasets import load_diabetes
 from sklearn.preprocessing import StandardScaler
-from HYBparsimony import HYBparsimony
+from hybparsimony import HYBparsimony
 
 # Load 'diabetes' dataset
 diabetes = load_diabetes()
@@ -192,7 +191,7 @@ This example shows how to use *HYBparsimony* in a binary classification problem 
  from sklearn.preprocessing import StandardScaler
  from sklearn.datasets import load_breast_cancer
  from sklearn.metrics import log_loss
- from HYBparsimony import HYBparsimony
+ from hybparsimony import HYBparsimony
  
  # load 'breast_cancer' dataset
  breast_cancer = load_breast_cancer()
@@ -317,7 +316,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.datasets import load_wine
 from sklearn.metrics import f1_score
-from HYBparsimony import HYBparsimony
+from hybparsimony import HYBparsimony
 
 # load 'wine' dataset 
 wine = load_wine()
@@ -452,7 +451,7 @@ In the following example, the dictionary *MLPRegressor_new* is defined. It consi
 ```python
 ...
 
-from HYBparsimony import HYBparsimony, Population
+from hybparsimony import HYBparsimony, Population
 
 ...
 

@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split, RepeatedKFold
 from sklearn.metrics import mean_squared_error
 from sklearn.datasets import load_diabetes
 from sklearn.preprocessing import StandardScaler
-from HYBparsimony import HYBparsimony
+from hybparsimony import HYBparsimony
 
 if __name__ == "__main__":
 
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     # for algo in algorithms_reg:
     #     print('#######################')
     #     print('Searching best: ', algo)
-    #     HYBparsimony_model = HYBparsimony(algorithm=algo,
+    #     HYBparsimony_model = hybparsimony(algorithm=algo,
     #                                       features=diabetes.feature_names,
     #                                       rerank_error=0.001,
     #                                       cv=RepeatedKFold(n_splits=5, n_repeats=10),
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     from sklearn.preprocessing import StandardScaler
     from sklearn.datasets import load_breast_cancer
     from sklearn.metrics import log_loss
-    from HYBparsimony import HYBparsimony
+    from hybparsimony import HYBparsimony
     
     # load 'breast_cancer' dataset
     breast_cancer = load_breast_cancer()
@@ -134,7 +134,7 @@ if __name__ == "__main__":
     # for algo in algorithms_clas:
     #     print('#######################')
     #     print('Searching best: ', algo)
-    #     HYBparsimony_model = HYBparsimony(algorithm=algo,
+    #     HYBparsimony_model = hybparsimony(algorithm=algo,
     #                                       features=breast_cancer.feature_names,
     #                                       rerank_error=0.005,
     #                                       cv=RepeatedKFold(n_splits=5, n_repeats=10),
@@ -173,7 +173,7 @@ if __name__ == "__main__":
     from sklearn.preprocessing import StandardScaler
     from sklearn.datasets import load_wine
     from sklearn.metrics import f1_score
-    from HYBparsimony import HYBparsimony
+    from hybparsimony import HYBparsimony
     
     # load 'wine' dataset 
     wine = load_wine()
@@ -213,7 +213,7 @@ if __name__ == "__main__":
     # from sklearn.preprocessing import StandardScaler
     # from sklearn.datasets import load_breast_cancer, load_wine
     # from sklearn.model_selection import cross_val_score
-    # from HYBparsimony import HYBparsimony
+    # from hybparsimony import hybparsimony
     # from sklearn.metrics import fbeta_score, make_scorer, cohen_kappa_score, log_loss, accuracy_score
     
 
@@ -229,7 +229,7 @@ if __name__ == "__main__":
     # X_test = scaler_X.transform(X_test)
 
     # # #Example A: Using 10 folds and 'accuracy'
-    # HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+    # HYBparsimony_model = hybparsimony(features=breast_cancer.feature_names,
     #                                 scoring='accuracy',
     #                                 cv=10,
     #                                 rerank_error=0.001,
@@ -261,7 +261,7 @@ if __name__ == "__main__":
 #     #Example B: Using 10-repeated 5-fold CV and 'Kappa' score
 #     from sklearn.metrics import cohen_kappa_score, make_scorer
 #     metric_kappa = make_scorer(cohen_kappa_score, greater_is_better=True)
-#     HYBparsimony_model = HYBparsimony(features=wine.feature_names,
+#     HYBparsimony_model = hybparsimony(features=wine.feature_names,
 #                                     scoring=metric_kappa,
 #                                     cv=RepeatedKFold(n_splits=5, n_repeats=10),
 #                                     rerank_error=0.001,
@@ -276,7 +276,7 @@ if __name__ == "__main__":
 #         return log_loss(y_true, y_pred, sample_weight=sample_weight)
 #     # Lower is better and 'log_loss' needs probabilities
 #     custom_score = make_scorer(my_custom_loss_func, greater_is_better=False, needs_proba=True)
-#     HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+#     HYBparsimony_model = hybparsimony(features=breast_cancer.feature_names,
 #                                     scoring=custom_score,
 #                                     rerank_error=0.001,
 #                                     verbose=1)
@@ -286,7 +286,7 @@ if __name__ == "__main__":
 #     def custom_fun(estimator, X, y):
 #         return cross_val_score(estimator, X, y, scoring="accuracy")
     
-#     HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+#     HYBparsimony_model = hybparsimony(features=breast_cancer.feature_names,
 #                                     custom_eval_fun=custom_fun,
 #                                     n_jobs=1, #parallelism is not allowed with 'custom_eval_fun'
 #                                     rerank_error=0.001,
@@ -303,7 +303,7 @@ if __name__ == "__main__":
 
     
    
-    # HYBparsimony_model = HYBparsimony(n_jobs=1,custom_eval_fun=custom_fun) # Este con paralelismo NO funciona
+    # HYBparsimony_model = hybparsimony(n_jobs=1,custom_eval_fun=custom_fun) # Este con paralelismo NO funciona
     # HYBparsimony_model.fit(X_train, y_train, time_limit=0.5)
     # preds = HYBparsimony_model.predict(X_test)
     # print("Accuracy test", accuracy_score(y_test, preds))
@@ -321,7 +321,7 @@ if __name__ == "__main__":
     # from sklearn.metrics import mean_squared_error
     # from sklearn.datasets import load_diabetes
     # from sklearn.preprocessing import StandardScaler
-    # from HYBparsimony import HYBparsimony, Population
+    # from hybparsimony import hybparsimony, Population
 
     # # Load 'diabetes' dataset
     # diabetes = load_diabetes()
@@ -359,7 +359,7 @@ if __name__ == "__main__":
     #               "random_state": {"value": 1234, "type": Population.CONSTANT},
     #               "max_iter": {"value": 200, "type": Population.CONSTANT}
     #                }
-    # HYBparsimony_model = HYBparsimony(algorithm=MLPRegressor_new,
+    # HYBparsimony_model = hybparsimony(algorithm=MLPRegressor_new,
     #                                 features=diabetes.feature_names,
     #                                 cv=RepeatedKFold(n_splits=5, n_repeats=10),
     #                                 npart = 10,
@@ -387,9 +387,9 @@ if __name__ == "__main__":
     # from sklearn.datasets import load_breast_cancer
     # from sklearn.svm import SVC
     # from sklearn.model_selection import cross_val_score
-    # from HYBparsimony import HYBparsimony
-    # from HYBparsimony.util import getFitness, svm_complexity, population
-    # from HYBparsimony.util.fitness import fitness_for_parallel
+    # from hybparsimony import hybparsimony
+    # from hybparsimony.util import getFitness, svm_complexity, population
+    # from hybparsimony.util.fitness import fitness_for_parallel
     # # load 'breast_cancer' dataset
     # breast_cancer = load_breast_cancer()
     # X, y = breast_cancer.data, breast_cancer.target
@@ -407,7 +407,7 @@ if __name__ == "__main__":
 
 
     # # #Example A: Using 10 folds and 'accuracy'
-    # HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+    # HYBparsimony_model = hybparsimony(features=breast_cancer.feature_names,
     #                                 scoring='accuracy',
     #                                 keep_history=True,
     #                                 cv=10,

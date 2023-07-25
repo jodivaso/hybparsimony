@@ -8,14 +8,14 @@ import os
 
 def getFitness(algorithm, complexity, custom_eval_fun=cross_val_score, ignore_warnings = True):
     r"""
-     Fitness function for HYBparsimony.
+     Fitness function for hybparsimony.
 
     Parameters
     ----------
     algorithm : object
         The machine learning algorithm to optimize. 
     complexity : function
-        A function that calculates the complexity of the model. There are some functions available in `HYBparsimony.util.complexity`.
+        A function that calculates the complexity of the model. There are some functions available in `hybparsimony.util.complexity`.
     custom_eval_fun : function
         An evaluation function similar to scikit-learns's 'cross_val_score()'  
 
@@ -36,8 +36,8 @@ def getFitness(algorithm, complexity, custom_eval_fun=cross_val_score, ignore_wa
         from sklearn.datasets import load_breast_cancer
         from sklearn.svm import SVC
         from sklearn.model_selection import cross_val_score
-        from HYBparsimony import HYBparsimony
-        from HYBparsimony.util import getFitness, svm_complexity, population
+        from hybparsimony import hybparsimony
+        from hybparsimony.util import getFitness, svm_complexity, population
         # load 'breast_cancer' dataset
         breast_cancer = load_breast_cancer()
         X, y = breast_cancer.data, breast_cancer.target
@@ -94,14 +94,14 @@ def getFitness(algorithm, complexity, custom_eval_fun=cross_val_score, ignore_wa
 def fitness_for_parallel(algorithm, complexity, custom_eval_fun=cross_val_score, cromosoma=None, 
                          X=None, y=None, ignore_warnings = True):
     r"""
-     Fitness function for HYBparsimony similar to 'getFitness()' without being nested, to allow the pickle and therefore the parallelism.
+     Fitness function for hybparsimony similar to 'getFitness()' without being nested, to allow the pickle and therefore the parallelism.
 
     Parameters
     ----------
     algorithm : object
         The machine learning algorithm to optimize. 
     complexity : function
-        A function that calculates the complexity of the model. There are some functions available in `HYBparsimony.util.complexity`.
+        A function that calculates the complexity of the model. There are some functions available in `hybparsimony.util.complexity`.
     custom_eval_fun : function
         An evaluation function similar to scikit-learns's 'cross_val_score()'.
     cromosoma: population.Chromosome class
@@ -126,9 +126,9 @@ def fitness_for_parallel(algorithm, complexity, custom_eval_fun=cross_val_score,
     from sklearn.datasets import load_breast_cancer
     from sklearn.svm import SVC
     from sklearn.model_selection import cross_val_score
-    from HYBparsimony import HYBparsimony
-    from HYBparsimony.util import svm_complexity, population
-    from HYBparsimony.util.fitness import fitness_for_parallel
+    from hybparsimony import hybparsimony
+    from hybparsimony.util import svm_complexity, population
+    from hybparsimony.util.fitness import fitness_for_parallel
     # load 'breast_cancer' dataset
     breast_cancer = load_breast_cancer()
     X, y = breast_cancer.data, breast_cancer.target

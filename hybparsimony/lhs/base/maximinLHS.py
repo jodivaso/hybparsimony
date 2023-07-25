@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from HYBparsimony.lhs.util import initializeAvailableMatrix, convertIntegerToNumericLhs
+from hybparsimony.lhs.util import initializeAvailableMatrix, convertIntegerToNumericLhs
 
 # result es lo que devolvemos
 

@@ -1,16 +1,16 @@
 import numpy as np
 
-from HYBparsimony import order
-from HYBparsimony.lhs import geneticLHS, improvedLHS, maximinLHS, optimumLHS, randomLHS
+from hybparsimony import order
+from hybparsimony.lhs import geneticLHS, improvedLHS, maximinLHS, optimumLHS, randomLHS
 
 def _population(pop, seed_ini, popSize, type_ini_pop="randomLHS", ):
     r"""
     Population initialization in HYB-PARSIMONY with a combined chromosome of model parameters
     and selected features. Functions for creating an initial population to be used in the HYB-PARSIMONY process.
 
-    Generates a random population of `HYBparsimony.popSize` individuals. For each individual a
-    random chromosome is generated with `len(HYBparsimony.population._params)` real values in the `range[HYBparsimony._min, HYBparsimony._max] `
-    plus `len(HYBparsimony.population.colsnames)` random binary values for feature selection. `random` or Latin Hypercube Sampling can
+    Generates a random population of `hybparsimony.popSize` individuals. For each individual a
+    random chromosome is generated with `len(hybparsimony.population._params)` real values in the `range[hybparsimony._min, hybparsimony._max] `
+    plus `len(hybparsimony.population.colsnames)` random binary values for feature selection. `random` or Latin Hypercube Sampling can
     be used to create a efficient spread initial population.
 
     Parameters
@@ -23,7 +23,7 @@ def _population(pop, seed_ini, popSize, type_ini_pop="randomLHS", ):
     Returns
     -------
     numpy.array
-        A matrix of dimension `HYBparsimony.popSize` rows and `len(HYBparsimony.population._params)+len(HYBparsimony.population.colsnames)` columns.
+        A matrix of dimension `hybparsimony.popSize` rows and `len(hybparsimony.population._params)+len(hybparsimony.population.colsnames)` columns.
 
     """
 

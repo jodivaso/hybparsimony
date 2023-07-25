@@ -17,13 +17,13 @@ from sklearn.linear_model import Ridge
 from sklearn.kernel_ridge import KernelRidge
 from sklearn.feature_selection import SequentialFeatureSelector
 
-from HYBparsimony import Population, HYBparsimony, order
-from HYBparsimony.hybparsimony import default_cv_score_classification
-from HYBparsimony.util import knn_complexity
+from hybparsimony import Population, HYBparsimony, order
+from hybparsimony.hybparsimony import default_cv_score_classification
+from hybparsimony.util import knn_complexity
 
 # from PSOparsimony_Nested import PSOparsimony
 from bayes_opt import BayesianOptimization
-# from HYBparsimony import HYBparsimony
+# from hybparsimony import hybparsimony
 import warnings
 from sklearn.exceptions import ConvergenceWarning
 from sklearn import __version__ as sk_version
@@ -145,7 +145,7 @@ if __name__ == "__main__":
         probs_feats = []
         for num_run in range(NUM_RUNS):
             seed_everything(num_run)
-            HYBparsimony_model = HYBparsimony(algorithm='KernelRidge',
+            HYBparsimony_model = hybparsimony(algorithm='KernelRidge',
                                             features=input_names,
                                             rerank_error=0.001,
                                             custom_eval_fun=custom_fun,

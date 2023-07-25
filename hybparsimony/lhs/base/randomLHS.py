@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from HYBparsimony.lhs.util import findorder
-from HYBparsimony import order
+from hybparsimony.lhs.util import findorder
+from hybparsimony import order
 import numpy as np
 
    

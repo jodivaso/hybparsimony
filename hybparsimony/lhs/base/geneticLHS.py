@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from HYBparsimony.lhs import randomLHS_int
-from HYBparsimony.lhs.util import calculateSOptimal, calculateDistance, runifint, runif_std, findorder_zero
+from hybparsimony.lhs import randomLHS_int
+from hybparsimony.lhs.util import calculateSOptimal, calculateDistance, runifint, runif_std, findorder_zero
 
 def geneticLHS(n, k, pop=100, gen=4, pMut=0.1, criterium="S", seed=None):
     r"""Latin Hypercube Sampling with a Genetic Algorithm
