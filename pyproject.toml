@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "HYBparsimony"
+name = "hybparsimony"
 version = "0.0.1"
 authors = [
   { name="Jose Divasón", email="jose.divason@unirioja.es" },
