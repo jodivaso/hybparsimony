@@ -5,7 +5,7 @@
 
 [Documentation](https://gaparsimony.readthedocs.io/en/latest/index.html)
 
-**HYBparsimony** for Python is a package **for searching accurate parsimonious models by combining feature selection (FS), model
+***HYBparsimony*** for Python is a package **for searching accurate parsimonious models by combining feature selection (FS), model
 hyperparameter optimization (HO), and parsimonious model selection (PMS) based on a separate cost and complexity evaluation**.
 
 To improve the search for parsimony, the hybrid method combines GA mechanisms such as selection, crossover and mutation within a PSO-based optimization algorithm that includes a strategy in which the best position of each particle (thus also the best position of each neighborhood) is calculated taking into account not only the goodness-of-fit, but also the parsimony principle. 
@@ -17,13 +17,9 @@ Experiments show that, in general, and with a suitable $\Gamma$, HYBparsimony al
 
 Installation
 ------------
-Install these packages, [pip](https://pypi.org/project/HYBparsimony/):
+Install the package using [pip](https://pypi.org/project/hybparsimony/):
 ``` {.bash}
-pip install HYBparsimony
-```
-To install the current development version, you need to clone the repository and run :
-``` {.bash}
-python -m pip install << path to cloned repository >>
+pip install hybparsimony
 ```
 
 How to use this package
@@ -31,7 +27,7 @@ How to use this package
 
 ### Example 1: Regression
 
-This example shows how to search with *HYBparsimony* package for a parsimonious (with low complexity) *KernelRidge* with *rbf* kernel model and for the *diabetes* dataset. *HYBparsimony* searches for the best input features and *KernelRidge* hyperparameters: $alpha$ and $gamma$. Models are evaluated by default with a 5-fold CV negative mean squared error (*Neg MSE*). Finally, root mean squared error (*RMSE*) is calculated with another test dataset to check the degree of model generalization.
+This example shows how to search with *hybparsimony* package for a parsimonious (with low complexity) *KernelRidge* with *rbf* kernel model and for the *diabetes* dataset. *HYBparsimony* searches for the best input features and *KernelRidge* hyperparameters: $alpha$ and $gamma$. Models are evaluated by default with a 5-fold CV negative mean squared error (*Neg MSE*). Finally, root mean squared error (*RMSE*) is calculated with another test dataset to check the degree of model generalization.
 
 In this example, *rerank\_error* is set to $0.001$, but other values could improve the balance between model complexity and accuracy. PMS considers the most parsimonious model with the fewest number of features. The default complexity is $M_c = 10^9{N_{FS}} + int_{comp}$  where ${N_{FS}}$ is the number of selected input features and $int_{comp}$ is the internal measure of model complexity, which depends on the algorithm used for training. In this example, $int_{comp}$ for *KernelRidge* is measured by the sum of the squared coefficients. Therefore, between two models with the same number of features, the smaller sum of the squared weights will determine the more parsimonious model (smaller weights reduce the propagation of perturbations and improve robustness).
 
