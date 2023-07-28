@@ -437,7 +437,7 @@ HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
 
 ### Custom Search
 
-*HYBparsimony* has predefined the most common scikit-learn algorithms as well as functions to measure [their complexity](https://github.com/jodivaso/hyb-parsimony/blob/master/HYBparsimony/util/complexity.py) and the [hyperparameter ranges](https://github.com/jodivaso/hyb-parsimony/blob/master/HYBparsimony/util/models.py) to search on. However, all this can be customized. 
+*HYBparsimony* has predefined the most common scikit-learn algorithms as well as functions to measure [their complexity](https://github.com/jodivaso/hybparsimony/blob/master/hybparsimony/util/complexity.py) and the [hyperparameter ranges](https://github.com/jodivaso/hybparsimony/blob/master/hybparsimony/util/models.py) to search on. However, all this can be customized. 
 
 In the following example, the dictionary *MLPRegressor_new* is defined. It consists of the following properties:
 - *estimator* any machine learning algorithm compatible with scikit-learn.
