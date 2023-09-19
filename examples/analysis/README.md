@@ -14,6 +14,11 @@ To replicate results:
 4. Execute [SKGENETICSComparative.py](SKGENETICSComparative.py) to obtain results with $sklearn-genetic-opt$ package.
 5. See results with [Comparative_3Methods.ipynb](Comparative_3Methods.ipynb) notebook.
 
-   
+![Results with Binary Datasets](FINAL_Binary_Results.png)
+![Results with Regression datasets](FINAL_Regression_Results.png)
+![Results with Multiclass datasets](FINAL_Multiclass_Results.png)
+![Elapsed Times](Elapsed_times.png)
+
+
 
 
