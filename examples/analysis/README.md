@@ -2,7 +2,7 @@
 
 [Comparative_3Methods.ipynb](Comparative_3Methods.ipynb) notebook presents the results of comparing HYB-PARSIMONY with two other methods: Bayesian Optimization (BO) utilizing all features (*num\_cols*) and a classical three-step methodology based on GA for featuring selection:
 
-- **Bayesian Optimization with all features (BO):** The column $bo_FINAL_SCORE_TST$ represents the testing fitness value ($J_{tst}$) obtained using all input features ($bo\_NFS==num\_cols$),  $KernelRidge$ algorithm, and 250 iterations.
+- **Bayesian Optimization with all features (BO):** The column *bo\_FINAL\_SCORE_TST* represents the testing fitness value (*J_{tst}*) obtained using all input features ($bo\_NFS==num\_cols$), and 250 iterations.
 
 - **HYB-PARSIMONY:** The columns $hyb\_NFS$ and $hyb_FINAL_SCORE_TST$ correspond to the number of features (NFS) and the fitness value ($J_{tst}$) obtained with each test dataset using HYB-PARSIMONY. HYB-PARSIMONY was executed with the following parameters: $\Gamma=0.50$, $nruns=250$, $time\_limit=120min$, $P=15$, $early\_{stopping}=35$, and $KernelRidge$ as the machine learning algorithm. Additionally, $ReRank$ was set to $0.001$, representing the maximum allowable difference between the $J$ values of two models to be considered equal.
 
