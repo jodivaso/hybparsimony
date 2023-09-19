@@ -1,6 +1,6 @@
 # Comparative of HYBparsimony vs Bayesian Optimization and Feature Selection with Genetic Algorithms
 
-[Comparative_3Methods.ipynb](Comparative_3Methods.ipynb) notebook presents the results of comparing HYB-PARSIMONY with two other methods: Bayesian Optimization (BO) utilizing all features ($num\_cols$) and a classical three-step methodology based on GA for featuring selection:
+[Comparative_3Methods.ipynb](Comparative_3Methods.ipynb) notebook presents the results of comparing HYB-PARSIMONY with two other methods: Bayesian Optimization (BO) utilizing all features (num_cols) and a classical three-step methodology based on GA for featuring selection:
 
 - **Bayesian Optimization with all features (BO):** The column $bo_FINAL_SCORE_TST$ represents the testing fitness value ($J_{tst}$) obtained using all input features ($bo\_NFS==num\_cols$),  $KernelRidge$ algorithm, and 250 iterations.
 
