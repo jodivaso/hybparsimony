@@ -6,6 +6,11 @@ In these experiments, half of the instances from each dataset were used for trai
 
 All the results are based on 100 datasets, covering binary (44), multiclass (34), and regression (22) problems, which were sourced from [openml.org](https://www.openml.org/).
 
+![Results with Binary Datasets](FINAL_Binary_Results.png)
+![Results with Regression datasets](FINAL_Regression_Results.png)
+![Results with Multiclass datasets](FINAL_Multiclass_Results.png)
+![Elapsed Times](Elapsed_times.png)
+
 To replicate results:
 
 1. Download datasets from [openml.org](https://www.openml.org/) with [Download_Datasets.ipynb](Download_Datasets.ipynb) notebook.
@@ -13,12 +18,5 @@ To replicate results:
 3. Execute [BOComparative.py](BOComparative.py) to obtain results with Bayesian Optimization.
 4. Execute [SKGENETICSComparative.py](SKGENETICSComparative.py) to obtain results with $sklearn-genetic-opt$ package.
 5. See results with [Comparative_3Methods.ipynb](Comparative_3Methods.ipynb) notebook.
-
-![Results with Binary Datasets](FINAL_Binary_Results.png)
-![Results with Regression datasets](FINAL_Regression_Results.png)
-![Results with Multiclass datasets](FINAL_Multiclass_Results.png)
-![Elapsed Times](Elapsed_times.png)
-
-
 
 
