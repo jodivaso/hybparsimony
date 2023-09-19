@@ -7,7 +7,7 @@ To replicate results:
 1. Download datasets from [openml.org](https://www.openml.org/) with [Download_Datasets.ipynb](Download_Datasets.ipynb) notebook.
 2. Execute [HybComparative.py](HybComparative.py) to obtain results with HYB_PARSIMONY.
 3. Execute [BOComparative.py](BOComparative.py) to obtain results with Bayesian Optimization.
-4. Execute [SKGENETICSComparative.py](SKGENETICSComparative.py) to obtain results with HYB_PARSIMONY.
+4. Execute [SKGENETICSComparative.py](SKGENETICSComparative.py) to obtain results with sklearn-genetic-opt package.
 5. See results with [Comparative_3Methods.ipynb](Comparative_3Methods.ipynb) notebook.
 
    
