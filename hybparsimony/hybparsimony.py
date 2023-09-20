@@ -415,32 +415,45 @@ class HYBparsimony(object):
         #  SOME LOGIC ON PARAMETERS' INITIALIZATION
         #############################################
 
-        # Detect type of problem and define default scoring function.
+        # Check if 'custom_eval_fun' and 'fitness' are not none
+        if self.verbose > 0 and self.custom_eval_fun!=None and self.fitness!=None:
+            print("The two parameters 'fitness' and 'custom_eval_fun' have been defined by the user. 'custom_eval_fun' is only used within the 'fitness' function that exists by default. Thus, the user-defined 'custom_eval_fun' function will not be used.")
+
+        # Check if 'custom_eval_fun' and 'cv' are not none
+        if self.verbose > 0 and self.custom_eval_fun!=None and self._cv!=None:
+            print("The two parameters 'custom_eval_fun' and 'cv' have been defined by the user. 'cv' is only used within the 'custom_eval_fun' function that exists by default. Thus, the user-defined 'cv' function will not be used.")
+
+        # Check if 'custom_eval_fun' and 'scoring' are not none
+        if self.verbose > 0 and self.custom_eval_fun!=None and self._scoring!=None:
+            print("The two parameters 'custom_eval_fun' and 'scoring' have been defined by the user. 'scoring' is only used within the 'custom_eval_fun' function that exists by default. Thus, the user-defined 'scoring' function will not be used.")
+
+
+        # Detect the kind of problem and define the default 'scoring' function.
         def check_classification(y):
            return np.issubdtype(y.dtype, np.integer)
         
         if self._scoring is not None:
             default_scoring = self._scoring
-            if self.verbose > 0:
+            if self.verbose > 0 and self.custom_eval_fun==None and self.fitness==None:
                 print(f"Using '{default_scoring}' as scoring function.")
         elif check_classification(y):
             if len(np.unique(y))==2:
                 default_scoring = 'neg_log_loss'
-                if self.verbose > 0:
+                if self.verbose > 0 and self.custom_eval_fun==None and self.fitness==None:
                     print("Detected a binary-class problem. Using 'neg_log_loss' as default scoring function.")
             else:
                 default_scoring = 'f1_macro'
-                if self.verbose > 0:
+                if self.verbose > 0 and self.custom_eval_fun==None and self.fitness==None:
                     print("Detected a multi-class problem. Using 'f1_macro' as default scoring function.")
         else:
             default_scoring = 'neg_mean_squared_error'
-            if self.verbose > 0:
+            if self.verbose > 0 and self.custom_eval_fun==None and self.fitness==None:
                 print("Detected a regression problem. Using 'neg_mean_squared_error' as default scoring function.")
 
         def default_cv_score(estimator, X, y):
             return cross_val_score(estimator, X, y, cv=5, scoring=default_scoring)
 
-        # Create custom_eval_fun 
+        # Create 'custom_eval_fun' is not defined 
         if self._cv is not None and self.custom_eval_fun is None:
             if self._scoring is not None:
                 self.custom_eval_fun = partial(cross_val_score, cv=self._cv, scoring=self._scoring)
@@ -452,25 +465,28 @@ class HYBparsimony(object):
             else:
                 self.custom_eval_fun = default_cv_score
 
-        # Select and check algorithm from dictionary
+        # Select and check 'algorithm' from dictionary
         self.algorithm = check_algorithm(self.algorithm, check_classification(y))
         self.params = {k: self.algorithm[k] for k in self.algorithm.keys() if k not in ["estimator", "complexity"]}
 
-        # Fitness function
-        if self.n_jobs == 1:
-            self.fitness = getFitness(self.algorithm['estimator'], self.algorithm['complexity'],
-                                      self.custom_eval_fun)
-        else: # Parallelization
-            self.fitness = partial(fitness_for_parallel, self.algorithm['estimator'],
-                                   self.algorithm['complexity'], self.custom_eval_fun)
+        # Create 'fitness' is not defined
+        if self.fitness is None:
+            # Fitness function
+            if self.n_jobs == 1:
+                self.fitness = getFitness(self.algorithm['estimator'], self.algorithm['complexity'],
+                                        self.custom_eval_fun)
+            else: # Parallelization
+                self.fitness = partial(fitness_for_parallel, self.algorithm['estimator'],
+                                    self.algorithm['complexity'], self.custom_eval_fun)
 
         if self.n_jobs > 1:
             pool = Pool(self.n_jobs)
 
-        if self.features is None: # Si no hay features (nombre de las columnas a optimizar), entonces cojo todas
+        # Get colnames o create numeric names if features names are not defined
+        if self.features is None: 
             if "pandas" in str(type(X)):
-                self.features = X.columns # Si es un DataFrame, saco los nombres de las columnas.
-            else: # SI no, entonces es un numpy array y pongo números del 0 al número de columnas
+                self.features = X.columns
+            else:
                 num_rows, num_cols = X.shape
                 self.features = list(range(num_cols))
 
