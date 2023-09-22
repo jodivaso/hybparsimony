@@ -5,7 +5,7 @@
 
 [Documentation](https://hybparsimony.readthedocs.io/en/latest/index.html)
 
-***HYBparsimony*** for Python is a package **for searching accurate parsimonious models by combining feature selection (FS), model hyperparameter optimization (HO), and parsimonious model selection (PMS) based on a separate cost and complexity evaluation**.
+***HYBparsimony*** for Python is a package **for searching accurate parsimonious models by combining feature selection (FS), model hyperparameter optimization (HO), and parsimonious model selection (PMS) based on a separate cost and complexity evaluation** ([slices-HAIS2022](./docs/presentacion_HAIS2022_javi.pdf), [slices-HAIS2023](./docs/presentacion_HAIS2023_javi.pdf))
 
 To improve the search for parsimony, the hybrid method combines GA mechanisms such as selection, crossover and mutation within a PSO-based optimization algorithm that includes a strategy in which the best position of each particle (thus also the best position of each neighborhood) is calculated taking into account not only the goodness-of-fit, but also the parsimony principle.
 
