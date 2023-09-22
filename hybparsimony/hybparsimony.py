@@ -61,7 +61,7 @@ class HYBparsimony(object):
                  #pcrossover_elitists = None,  # an array or a float (number between 0 and 1).
                  #pcrossover = None,  # an array or a float (number between 0 and 1), % of worst individuals to substitute from crossover.
                  gamma_crossover = 0.5,
-                 tol = 1e-4,
+                 tol = 1e-09,
                  rerank_error=1e-09,
                  keep_history = False,
                  feat_thres = 0.90,
@@ -112,7 +112,7 @@ class HYBparsimony(object):
             early_stop : int, optional
                 The number of consecutive generations without any improvement lower than a difference of 'tol'
                 in the 'best_fitness' value before the search process is stopped.
-            tol : float, default=1e-4,
+            tol : float, default=1e-09,
                 Value defining a significant difference between the 'best_fitness' values between iterations for 'early stopping'.
             rerank_error : float, default=1e-09
                 When a value is provided, a second reranking process according to the model complexities is called by `parsimony_rerank` function. 
