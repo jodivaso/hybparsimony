@@ -9,6 +9,9 @@ All the results are based on 100 datasets, covering binary (44), multiclass (34)
 ![Results with Binary Datasets](FINAL_Binary_Results.png)
 ![Results with Regression datasets](FINAL_Regression_Results.png)
 ![Results with Multiclass datasets](FINAL_Multiclass_Results.png)
+
+The following figure shows that the computing time with HYB-PARSIMONY is considerably reduced compared to the feature selection method with GA.
+
 ![Elapsed Times](Elapsed_times.png)
 
 To replicate results:
