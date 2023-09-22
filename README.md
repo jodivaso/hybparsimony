@@ -480,7 +480,7 @@ HYBparsimony_model = HYBparsimony(algorithm=MLPRegressor_new,
 
 ### Using Autogluon
 
-[This notebook](./master/examples/Autogluon_with_SHDD.ipynb) shows how to reduce the input features from 85 to 44 (51.7%) of an Autogluon model for the COIL2000 dataset downloaded from [openml.com](https://www.openml.org/). The difference in the 'log_loss', with a test dataset, of the model trained with the 85 features versus the 44 features was only 0.000312.
+[This notebook](./examples/Autogluon_with_SHDD.ipynb) shows how to reduce the input features from 85 to 44 (51.7%) of an Autogluon model for the COIL2000 dataset downloaded from [openml.com](https://www.openml.org/). The difference in the 'log_loss', with a test dataset, of the model trained with the 85 features versus the 44 features was only 0.000312.
 
 
 
