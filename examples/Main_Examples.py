@@ -44,31 +44,27 @@ if __name__ == "__main__":
     print(f'RMSE test = {round(mean_squared_error(y_test, preds, squared=False),6)}')
     
     
-    input("Press a key to continue...")
+    input("\nPress a key to continue...")
     os.system('clear')
     
 
     ########################################################
     #         Use different regression algorithms          #
     ########################################################
-    algorithms_reg = ['Ridge', 'Lasso', 
-                    'KernelRidge', 'KNeighborsRegressor',
-                    'MLPRegressor', 'SVR',
-                    'DecisionTreeRegressor', 'RandomForestRegressor'
-                    ]
+    algorithms_reg = ['Ridge', 'Lasso', 'KernelRidge', 'KNeighborsRegressor', 'MLPRegressor', 'SVR',
+    'DecisionTreeRegressor', 'RandomForestRegressor']
     res = []
     for algo in algorithms_reg:
         print('#######################')
         print('Searching best: ', algo)
         HYBparsimony_model = HYBparsimony(algorithm=algo,
-                                          features=diabetes.feature_names,
-                                          rerank_error=0.001,
-                                          cv=RepeatedKFold(n_splits=5, n_repeats=10),
-                                          maxiter=1000,
-                                          verbose=1)
+                                        features=diabetes.feature_names,
+                                        maxiter=3, # Extend to 300 generations (time consuming)
+                                        rerank_error=0.001,
+                                        verbose=1)
         # Search the best hyperparameters and features 
         # (increasing 'time_limit' to improve RMSE with high consuming algorithms)
-        HYBparsimony_model.fit(X_train, y_train, time_limit=60)
+        HYBparsimony_model.fit(X_train, y_train, time_limit=5)
         # Check results with test dataset
         preds = HYBparsimony_model.predict(X_test)
         print(algo, "RMSE test", mean_squared_error(y_test, preds, squared=False))
@@ -79,18 +75,17 @@ if __name__ == "__main__":
         res.append(dict(algo=algo,
                         MSE_5CV= -round(HYBparsimony_model.best_score,6),
                         RMSE=round(mean_squared_error(y_test, preds, squared=False),6),
-                        NFS=int(HYBparsimony_model.best_complexity//1e9),
+                        NFS=HYBparsimony_model.best_complexity//1e9,
                         selected_features = HYBparsimony_model.selected_features,
                         best_model=HYBparsimony_model.best_model))
     res = pd.DataFrame(res).sort_values('RMSE')
     res.to_csv('res_models.csv')
     # Visualize results
-    print(res[['algo', 'MSE_5CV', 'RMSE', 'NFS']])
+    print(res[['best_model', 'MSE_5CV', 'RMSE', 'NFS', 'selected_features']])
 
 
-    input("Press a key to continue...")
+    input("\nPress a key to continue...")
     os.system('clear')
-
 
 
 
@@ -117,12 +112,10 @@ if __name__ == "__main__":
     X_train = scaler_X.fit_transform(X_train)
     X_test = scaler_X.transform(X_test)
 
-  
     HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
-                                    #   cv=RepeatedKFold(n_splits=5, n_repeats=10),
-                                      rerank_error=0.005,
-                                      verbose=1)
-    HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
+                                    rerank_error=0.005,
+                                    verbose=1)
+    HYBparsimony_model.fit(X_train, y_train, time_limit=0.50)
     # Extract probs of class==1
     preds = HYBparsimony_model.predict_proba(X_test)[:,1]
     print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
@@ -131,8 +124,8 @@ if __name__ == "__main__":
     print(f'5-CV logloss = {-round(HYBparsimony_model.best_score,6)}')
     print(f'logloss test = {round(log_loss(y_test, preds),6)}')
 
-
-    input("Press a key to continue...")
+ 
+    input("\nPress a key to continue...")
     os.system('clear')
 
 
@@ -140,20 +133,21 @@ if __name__ == "__main__":
     ###########################################################
     #         Use different classification algorithms         #
     ###########################################################
+    
     algorithms_clas = ['LogisticRegression', 'MLPClassifier', 
-                    'SVC', 'DecisionTreeClassifier',
-                    'RandomForestClassifier', 'KNeighborsClassifier',
-                    ]
+                        'SVC', 'DecisionTreeClassifier',
+                        'RandomForestClassifier', 'KNeighborsClassifier',
+                        ]
     res = []
     for algo in algorithms_clas:
         print('#######################')
         print('Searching best: ', algo)
         HYBparsimony_model = HYBparsimony(algorithm=algo,
-                                          features=breast_cancer.feature_names,
-                                          rerank_error=0.005,
-                                          cv=RepeatedKFold(n_splits=5, n_repeats=10),
-                                          maxiter=1000,
-                                          verbose=1)
+                                        features=breast_cancer.feature_names,
+                                        rerank_error=0.005,
+                                        cv=RepeatedKFold(n_splits=5, n_repeats=10),
+                                        maxiter=3, # extend to 300 (time consuming)
+                                        verbose=1)
         # Search the best hyperparameters and features 
         # (increasing 'time_limit' to improve neg_log_loss with high consuming algorithms)
         HYBparsimony_model.fit(X_train, y_train, time_limit=60.0)
@@ -176,7 +170,7 @@ if __name__ == "__main__":
     print(res[['algo', 'Logloss_10R5CV', 'Logloss_Test', 'NFS']])
 
 
-    input("Press a key to continue...")
+    input("\nPress a key to continue...")
     os.system('clear')
 
 
@@ -186,14 +180,13 @@ if __name__ == "__main__":
     ###############################################################
     #                   MULTICLASS CLASSIFICATION                 #
     ###############################################################
-
     import pandas as pd
     from sklearn.model_selection import train_test_split
     from sklearn.preprocessing import StandardScaler
     from sklearn.datasets import load_wine
     from sklearn.metrics import f1_score
     from hybparsimony import HYBparsimony
-    
+
     # load 'wine' dataset 
     wine = load_wine()
     X, y = wine.data, wine.target 
@@ -202,7 +195,7 @@ if __name__ == "__main__":
     print(len(np.unique(y)))
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
-    
+
     # Standarize X and y (some algorithms require that)
     scaler_X = StandardScaler()
     X_train = scaler_X.fit_transform(X_train)
@@ -210,21 +203,27 @@ if __name__ == "__main__":
 
     HYBparsimony_model = HYBparsimony(features=wine.feature_names,
                                     cv=RepeatedKFold(n_splits=5, n_repeats=10),
-                                    npart = 20, # population=20
+                                    npart = 20,
                                     early_stop=20,
                                     rerank_error=0.001,
                                     verbose=1)
-    HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
+    HYBparsimony_model.fit(X_train, y_train, time_limit=5.0)
     preds = HYBparsimony_model.predict(X_test)
     print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
     print(f'Selected features:{HYBparsimony_model.selected_features}')
     print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
     print(f'10R5-CV f1_macro = {round(HYBparsimony_model.best_score,6)}')
     print(f'f1_macro test = {round(f1_score(y_test, preds, average="macro"),6)}')
+
+    import pandas as pd
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.datasets import load_wine
+    from sklearn.metrics import f1_score
+    from hybparsimony import HYBparsimony
     
     
-    
-    input("Press a key to continue...")
+    input("\nPress a key to continue...")
     os.system('clear')
 
     
@@ -270,7 +269,14 @@ if __name__ == "__main__":
     print(f'10R5-CV Accuracy = {round(HYBparsimony_model.best_score,6)}')
     print(f'Accuracy test = {round(accuracy_score(y_test, preds),6)}')
 
+    input("\nPress a key to continue...")
+    os.system('clear')
 
+    
+
+    #Example B: Using 10-repeated 5-fold CV and 'Kappa' score
+    # -------------------------------------------------------
+    
     # load 'wine' dataset 
     wine = load_wine()
     X, y = wine.data, wine.target 
@@ -284,9 +290,7 @@ if __name__ == "__main__":
     scaler_X = StandardScaler()
     X_train = scaler_X.fit_transform(X_train)
     X_test = scaler_X.transform(X_test)
-
-    #Example B: Using 10-repeated 5-fold CV and 'Kappa' score
-    # -------------------------------------------------------
+    
     from sklearn.metrics import cohen_kappa_score, make_scorer
     metric_kappa = make_scorer(cohen_kappa_score, greater_is_better=True)
     HYBparsimony_model = HYBparsimony(features=wine.feature_names,
@@ -294,6 +298,11 @@ if __name__ == "__main__":
                                     cv=RepeatedKFold(n_splits=5, n_repeats=10),
                                     rerank_error=0.001,
                                     verbose=1)
+    
+    input("\nPress a key to continue...")
+    os.system('clear')
+
+
 
     #Example C: Using a weighted 'log_loss'
     # -------------------------------------
@@ -309,6 +318,11 @@ if __name__ == "__main__":
                                     scoring=custom_score,
                                     rerank_error=0.001,
                                     verbose=1)
+    
+    
+    input("\nPress a key to continue...")
+    os.system('clear')
+    
     
     # Example D: Using a 'custom evaluation' function
     #          (Parallelism is not allowed)
@@ -331,6 +345,9 @@ if __name__ == "__main__":
     print(f'10R5-CV Accuracy = {round(HYBparsimony_model.best_score,6)}')
     print(f'Accuracy test = {round(accuracy_score(y_test, preds),6)}')
 
+
+    input("\nPress a key to continue...")
+    os.system('clear')
     
    
     # HYBparsimony_model = hybparsimony(n_jobs=1,custom_eval_fun=custom_fun) # Este con paralelismo NO funciona
@@ -340,8 +357,7 @@ if __name__ == "__main__":
 
 
 
-    input("Press a key to continue...")
-    os.system('clear')
+ 
 
     
                     
@@ -411,7 +427,7 @@ if __name__ == "__main__":
                                     gamma_crossover=0.50,
                                     seed_ini=0,
                                     npart=15,
-                                    maxiter=2, # Extend to 100 generations
+                                    maxiter=2, # Extend to 100 generations (time consuming)
                                     early_stop=20,
                                     verbose=1,
                                     n_jobs=1)
@@ -423,7 +439,7 @@ if __name__ == "__main__":
 
 
 
-    input("Press a key to continue...")
+    input("\nPress a key to continue...")
     os.system('clear')
 
 
@@ -496,7 +512,7 @@ if __name__ == "__main__":
     print(f'RMSE test = {round(mean_squared_error(y_test, preds, squared=False),6)}')
     
     
-    input("Press a key to continue...")
+    input("\nPress a key to continue...")
     os.system('clear')
     
 
@@ -550,6 +566,6 @@ if __name__ == "__main__":
     print(f'Accuracy test = {round(accuracy_score(y_test, preds),6)}')
     
 
-    input("Press a key to continue...")
+    input("\nPress a key to continue...")
     os.system('clear')
 
