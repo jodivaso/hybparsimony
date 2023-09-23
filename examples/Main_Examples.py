@@ -402,7 +402,8 @@ if __name__ == "__main__":
         return np.array([fitness_val, np.sum(cromosoma.columns)]), predictor
 
 
-    # Get COIL2000 dataset
+    # Get COIL2000 datasetm from openml
+
     dataset = openml.datasets.get_dataset('COIL2000')
     label = dataset.default_target_attribute
     X_orig, y_orig, _, _ = dataset.get_data(dataset_format="dataframe", target=label)
