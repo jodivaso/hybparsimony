@@ -10,12 +10,15 @@ if __name__ == "__main__":
     from hybparsimony import HYBparsimony
     import os
     
-    
-    print("These are examples of using and configuring HYBparsimony.\
-    It should be understood that the examples use very small data sets to reduce elapsed times.\
-    In addition, in some cases the number of iterations (maxiter) has been considerably reduced to reduce computation times as well as the use of weak validations for this type of data series.\
-    Due to these reasons the errors and other metrics obtained are not reliable.\
-    To obtain reliable results with these data series, it is recommended to increase the number of iterations and to use repeated cross-validation.")
+    print('############################################################################')
+    print("These are examples of using and configuring HYBparsimony().\
+\nThe examples use very small data sets to reduce elapsed times.\
+\nAlso, in some examples the number of iterations ('maxiter') has been reduced\
+\nas well as the use of weak validation to minimize computation times.\
+\nDue to these reasons some results could not be reliable.\
+\nTo obtain reliable results with these datasets, it is recommended to use\
+\nrepeated cross-validation and increase 'maxiter'.")
+    print('############################################################################')
     
     input("\nFirst example: 'Using KernelRidge regression algorithm'.\nPress a key to continue...")
     os.system('clear')
@@ -27,8 +30,10 @@ if __name__ == "__main__":
     # Load 'diabetes' dataset
     diabetes = load_diabetes()
     X, y = diabetes.data, diabetes.target
+    print(X.shape)
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state=1234)
+    
     
     # Standarize X and y (some algorithms require that)
     scaler_X = StandardScaler()
@@ -69,7 +74,8 @@ if __name__ == "__main__":
         print('Searching best: ', algo)
         HYBparsimony_model = HYBparsimony(algorithm=algo,
                                         features=diabetes.feature_names,
-                                        maxiter=3, # Extend to more generations (time consuming)
+                                        maxiter=2, # Extend to more iterations to improve results (time consuming)
+                                        # cv=RepeatedKFold(n_splits=5, n_repeats=10), #uncomment to improve validation (time consuming)
                                         rerank_error=0.001,
                                         verbose=1)
         # Search the best hyperparameters and features 
@@ -155,8 +161,8 @@ if __name__ == "__main__":
         HYBparsimony_model = HYBparsimony(algorithm=algo,
                                         features=breast_cancer.feature_names,
                                         rerank_error=0.005,
-                                        cv=RepeatedKFold(n_splits=5, n_repeats=10),
-                                        maxiter=3, # extend to more iterations (time consuming)
+                                        # cv=RepeatedKFold(n_splits=5, n_repeats=10), #uncomment to improve validation (time consuming)
+                                        maxiter=2, # extend to more iterations (time consuming)
                                         verbose=1)
         # Search the best hyperparameters and features 
         # (increasing 'time_limit' to improve neg_log_loss with high consuming algorithms)
@@ -377,7 +383,7 @@ if __name__ == "__main__":
     os.system('clear')
     
    
-    HYBparsimony_model = hybparsimony(n_jobs=1,custom_eval_fun=custom_fun) # Este con paralelismo NO funciona
+    HYBparsimony_model = HYBparsimony(n_jobs=1,custom_eval_fun=custom_fun) # Este con paralelismo NO funciona
     HYBparsimony_model.fit(X_train, y_train, time_limit=0.5)
     preds = HYBparsimony_model.predict(X_test)
     print("Accuracy test", accuracy_score(y_test, preds))
