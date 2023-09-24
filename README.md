@@ -23,7 +23,7 @@ pip install hybparsimony
 
 How to use this package
 -----------------------
-Note: The datasets used in these examples are of very small size. These datasets have been selected in order to speed up the calculation process of the examples. With such small datasets it is necessary to use more robust validation methods such as bootstrapping or repeated cross validation. It is also recommended to repeat the use of HYBparsimony with different random seeds in order to obtain more solid conclusions.
+**Note**: The datasets used in these examples are of small size. These datasets have been selected in order to speed up the calculation process of the examples. With such small datasets it is necessary to use robust validation methods such as bootstrapping or repeated cross validation. It is also recommended to repeat the use of HYBparsimony with different random seeds in order to obtain more solid conclusions.
 
 ### Example 1: Regression
 
@@ -63,7 +63,7 @@ HYBparsimony_model = HYBparsimony(algorithm=algo,
 # (increasing 'time_limit' to improve RMSE with high consuming algorithms)
 HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
 ```
-In each iteration, the first row shows the score and complexity of the best model. The second row shows the average score, and the score and complexity of the best model obtained in the same iteration. The values to the left of the first comma of the complexity correspond to the number of features (${N_{FS}}$).
+In each iteration, the first row shows the score and complexity of the best model. The second row shows the average score, and the score and complexity of the best model obtained in the same iteration. The values to the left of the first comma of the complexity correspond to the number of features (${N_{FS}}$), the rest is the internal complexity of the model.
 ```
 Running iteration 0
 Best model -> Score = -0.510786 Complexity = 9,017,405,352.5 
