@@ -32,6 +32,7 @@ import math
 import numpy as np
 import pandas as pd
 import time
+import dill
 from numpy.random import multinomial
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import cross_val_score
@@ -44,34 +45,34 @@ class HYBparsimony(object):
                  fitness = None,
                  features = None,
                  algorithm = None,
-                 custom_eval_fun=None,
-                 cv=None,
-                 scoring=None,
-                 type_ini_pop="improvedLHS",
+                 custom_eval_fun = None,
+                 cv = None,
+                 scoring = None,
+                 type_ini_pop = "improvedLHS",
                  npart = 15,
-                 maxiter=250,
-                 early_stop=None,
-                 Lambda=1.0,
+                 maxiter = 250,
+                 early_stop = None,
+                 Lambda = 1.0,
                  c1 = 1/2 + math.log(2),
                  c2 = 1/2 + math.log(2),
-                 IW_max=0.9,
-                 IW_min=0.4,
-                 K=3,
+                 IW_max = 0.9,
+                 IW_min = 0.4,
+                 K = 3,
                  pmutation = 0.1,
                  #pcrossover_elitists = None,  # an array or a float (number between 0 and 1).
                  #pcrossover = None,  # an array or a float (number between 0 and 1), % of worst individuals to substitute from crossover.
                  gamma_crossover = 0.5,
                  tol = 1e-09,
-                 rerank_error=1e-09,
+                 rerank_error = 1e-09,
                  keep_history = False,
                  feat_thres = 0.90,
                  best_global_thres = 1,
-                 particles_to_delete=None,
+                 particles_to_delete = None,
                  seed_ini = 1234,
                  not_muted = 3,
                  feat_mut_thres = 0.1,
-                 n_jobs=1,
-                 verbose=0):
+                 n_jobs = 5,
+                 verbose = 0):
         r"""
             A class for searching parsimonious models by feature selection and parameter tuning with
             an hybrid method based on genetic algorithms and particle swarm optimization.
@@ -153,10 +154,9 @@ class HYBparsimony(object):
                 If True keep results of all particles in each iteration into 'history' attribute.
             seed_ini : int, optional
                 An integer value containing the random number generator state.
-            n_jobs : int, default=1,
-                Number of cores to parallelize the evaluation of the swarm. It should be used with caution because the 
-                algorithms used or the 'cross_validate()' function used by default to evaluate individuals may also parallelize 
-                their internal processes.
+            n_jobs : int, default=5,
+                Number of cores to include in 'n_jobs' of cross_val_score() included in 'default_cv_score()' function. Default is set to 5 (cv=5 folds).
+                Note: It is important to note that some sklearn algorithms also perform parallelization by default. 
             verbose : int, default=0
                 The level of messages that we want it to show us. Possible values: 0=silent mode, 1=monitor level,  2=debug level.
         
@@ -374,8 +374,9 @@ class HYBparsimony(object):
             self.pcrossover = perc_malos
 
         self.n_jobs=n_jobs
-        if self.n_jobs < 1:
-            self.n_jobs = multiprocessing.cpu_count()  # Si ponemos un -1, entonces todos los cores (aunque la validación cruzada ya hará más aún!).
+        
+        # if self.n_jobs < 1:
+        #     self.n_jobs = multiprocessing.cpu_count()  # Si ponemos un -1, entonces todos los cores (aunque la validación cruzada ya hará más aún!).
 
         if particles_to_delete is not None and len(particles_to_delete) < maxiter:
             # If the length of the particles to delete is lower than the iterations, the array is completed with zeros
@@ -451,17 +452,17 @@ class HYBparsimony(object):
                 print("Detected a regression problem. Using 'neg_mean_squared_error' as default scoring function.")
 
         def default_cv_score(estimator, X, y):
-            return cross_val_score(estimator, X, y, cv=5, scoring=default_scoring)
+            return cross_val_score(estimator, X, y, cv=5, scoring=default_scoring, n_jobs=self.n_jobs)
 
         # Create 'custom_eval_fun' is not defined 
         if self._cv is not None and self.custom_eval_fun is None:
             if self._scoring is not None:
-                self.custom_eval_fun = partial(cross_val_score, cv=self._cv, scoring=self._scoring)
+                self.custom_eval_fun = partial(cross_val_score, cv=self._cv, scoring=self._scoring, n_jobs=self.n_jobs)
             else: # Por defecto:
-                self.custom_eval_fun = partial(cross_val_score, cv=self._cv, scoring=default_scoring)
+                self.custom_eval_fun = partial(cross_val_score, cv=self._cv, scoring=default_scoring, n_jobs=self.n_jobs)
         elif self.custom_eval_fun is None: 
             if self._scoring is not None: 
-                self.custom_eval_fun = partial(cross_val_score, scoring=self._scoring)
+                self.custom_eval_fun = partial(cross_val_score, scoring=self._scoring, n_jobs=self.n_jobs)
             else:
                 self.custom_eval_fun = default_cv_score
 
@@ -472,15 +473,8 @@ class HYBparsimony(object):
         # Create 'fitness' is not defined
         if self.fitness is None:
             # Fitness function
-            if self.n_jobs == 1:
-                self.fitness = getFitness(self.algorithm['estimator'], self.algorithm['complexity'],
+            self.fitness = getFitness(self.algorithm['estimator'], self.algorithm['complexity'],
                                         self.custom_eval_fun)
-            else: # Parallelization
-                self.fitness = partial(fitness_for_parallel, self.algorithm['estimator'],
-                                    self.algorithm['complexity'], self.custom_eval_fun)
-
-        if self.n_jobs > 1:
-            pool = Pool(self.n_jobs)
 
         # Get colnames o create numeric names if features names are not defined
         if self.features is None: 
@@ -545,7 +539,7 @@ class HYBparsimony(object):
         bestGlobalComplexity = np.empty(self.npart)
         bestGlobalComplexity[:] = np.inf
 
-        #Variable that tracks the deleted particles (their number in the table)
+        # Variable that tracks the deleted particles (their number in the table)
         deleted_particles = []
         valid_particles = [x for x in range(self.npart) if
                            x not in deleted_particles]  # valid particles (numbers in the table)
@@ -567,33 +561,17 @@ class HYBparsimony(object):
                 print("Running iteration", iter)
             
             tic = time.time()
+            
             #####################################################
             # Compute solutions
             #####################################################
 
-            if self.n_jobs == 1: # Si NO hay paralelismo (comportamiento por defecto)
-                for t in valid_particles:
-                    c = population.getChromosome(t)
+            for t in valid_particles:
+                c = population.getChromosome(t)
 
-                    if np.sum(c.columns) > 0:
-                        fit = self.fitness(c, X=X, y=y)
-                        fitnessval[t] = fit[0][0]
-                       # fitnesstst[t] = fit[0][1]
-                        complexity[t] = fit[0][1]
-                        _models[t] = fit[1]
-
-            else:
-                list_params = []
-                for t in valid_particles:  # Se entrenan todas siempre (salvo las que eliminemos del proceso)
-                    c = population.getChromosome(t)
-                    if np.sum(c.columns) > 0:
-                        list_params.append([c,X,y])
-
-                results = pool.starmap(self.fitness, list_params)  ## Aquí se hace el paralelismo.
-                # Recorremos los resultados
-                for fit, t in zip(results, valid_particles):
+                if np.sum(c.columns) > 0:
+                    fit = self.fitness(c, X=X, y=y)
                     fitnessval[t] = fit[0][0]
-                    #fitnesstst[t] = fit[0][1]
                     complexity[t] = fit[0][1]
                     _models[t] = fit[1]
 
@@ -606,7 +584,6 @@ class HYBparsimony(object):
 
             PopSorted = population[sort, :].copy()
             FitnessValSorted = fitnessval[sort]
-            #FitnessTstSorted = fitnesstst[sort]
             ComplexitySorted = complexity[sort]
             _modelsSorted = _models[sort]
 
@@ -626,8 +603,6 @@ class HYBparsimony(object):
                 if self.verbose == 2:
                     print("\nStep 2. Fitness reranked")
                     print(np.c_[FitnessValSorted, ComplexitySorted, population.population][:10, :])
-                    # input("Press [enter] to continue")
-
 
             # Keep results
             # ---------------
@@ -636,7 +611,6 @@ class HYBparsimony(object):
             # Keep Best Solution of this iteration
             # ------------------
             bestfitnessVal = FitnessValSorted[0]
-            #bestfitnessTst = FitnessTstSorted[0]
             bestcomplexity = ComplexitySorted[0]
             bestIterSolution = np.concatenate([[bestfitnessVal, bestcomplexity], PopSorted[0]])
             self.bestSolList.append(bestIterSolution)
@@ -843,7 +817,6 @@ class HYBparsimony(object):
                 population_selection = copy.deepcopy(population) # Hago deepcopy porque es array de arrays.
                 population_selection._pop = population_selection._pop[sel]
                 fitnessval_selection = fitnessval[sel].copy()
-                #fitnesstst_selection = fitnesstst[sel].copy()
                 complexity_selection = complexity[sel].copy()
                 velocity_selection = velocity[sel].copy()
 
@@ -857,7 +830,6 @@ class HYBparsimony(object):
                 # Hacemos crossover de la población seleccionada
                 population_crossover = copy.deepcopy(population_selection)
                 fitnessval_crossover = fitnessval_selection.copy()
-                #fitnesstst_crossover = fitnesstst_selection.copy()
                 complexity_crossover = complexity_selection.copy()
                 velocity_crossover = velocity_selection.copy()
 
@@ -876,7 +848,6 @@ class HYBparsimony(object):
                 for i in indexes_worst_particles: #Esto ya me asegura que no toco los elitistas, solo sustituyo las partículas malas.
                     population._pop[i] = population_crossover._pop[random_array[i]]
                     fitnessval[i] = fitnessval_crossover[random_array[i]]
-                    #fitnesstst[i] = fitnesstst_crossover[random_array[i]]
                     complexity[i] = complexity_crossover[random_array[i]]
                     velocity[i] = velocity[random_array[i]]
 
@@ -981,9 +952,6 @@ class HYBparsimony(object):
                     new_value = random.uniform(0.5, 1)
                     population._pop[i, feature_to_change] = new_value
 
-
-        if self.n_jobs>1:
-            pool.close()
 
         # Guardo las features seleccionadas
         aux = self.best_model_conf[nparams:nparams + nfs]

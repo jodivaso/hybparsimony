@@ -20,6 +20,8 @@ if __name__ == "__main__":
 \nrepeated cross-validation and increase 'maxiter'.")
     print('############################################################################')
     
+    # ------------------------------------------------------------
+    
     input("\nFirst example: 'Using KernelRidge regression algorithm'.\nPress a key to continue...")
     os.system('clear')
 
@@ -58,10 +60,10 @@ if __name__ == "__main__":
     print(f'5-CV MSE = {-round(HYBparsimony_model.best_score,6)}')
     print(f'RMSE test = {round(mean_squared_error(y_test, preds, squared=False),6)}')
     
+    # ------------------------------------------------------------
     
     input("\nNext example: 'Using different regression algorithms'.\nPress a key to continue...")
     os.system('clear')
-    
 
     ########################################################
     #         Use different regression algorithms          #
@@ -76,6 +78,7 @@ if __name__ == "__main__":
                                         features=diabetes.feature_names,
                                         maxiter=2, # Extend to more iterations to improve results (time consuming)
                                         # cv=RepeatedKFold(n_splits=5, n_repeats=10), #uncomment to improve validation (time consuming)
+                                        # n_jobs=20, # each job execute one fold
                                         rerank_error=0.001,
                                         verbose=1)
         # Search the best hyperparameters and features 
@@ -99,11 +102,10 @@ if __name__ == "__main__":
     # Visualize results
     print(res[['best_model', 'MSE_5CV', 'RMSE', 'NFS', 'selected_features']])
 
+    # ------------------------------------------------------------
 
     input("\nNext example: 'Binary Classification'.\nPress a key to continue...")
     os.system('clear')
-
-
 
     # ##############################################################
     # #                      BINARY CLASSIFICATION                 #
@@ -140,11 +142,11 @@ if __name__ == "__main__":
     print(f'5-CV logloss = {-round(HYBparsimony_model.best_score,6)}')
     print(f'logloss test = {round(log_loss(y_test, preds),6)}')
 
+
+    # ------------------------------------------------------------
  
     input("\nNext example: 'Using different classification algorithms'.\nPress a key to continue...")
     os.system('clear')
-
-
 
     ###########################################################
     #         Use different classification algorithms         #
@@ -161,8 +163,9 @@ if __name__ == "__main__":
         HYBparsimony_model = HYBparsimony(algorithm=algo,
                                         features=breast_cancer.feature_names,
                                         rerank_error=0.005,
-                                        # cv=RepeatedKFold(n_splits=5, n_repeats=10), #uncomment to improve validation (time consuming)
                                         maxiter=2, # extend to more iterations (time consuming)
+                                        # cv=RepeatedKFold(n_splits=5, n_repeats=10), #uncomment to improve validation (time consuming)
+                                        # n_jobs=20, # each job executes one fold
                                         verbose=1)
         # Search the best hyperparameters and features 
         # (increasing 'time_limit' to improve neg_log_loss with high consuming algorithms)
@@ -185,14 +188,11 @@ if __name__ == "__main__":
     # Visualize results
     print(res[['algo', 'Logloss_10R5CV', 'Logloss_Test', 'NFS']])
 
+    # ------------------------------------------------------------
 
     input("\nNext example: 'Multiclass classification'.\nPress a key to continue...")
     os.system('clear')
-
-
-
-
-
+    
     ###############################################################
     #                   MULTICLASS CLASSIFICATION                 #
     ###############################################################
@@ -224,7 +224,7 @@ if __name__ == "__main__":
                                     npart = 20,
                                     early_stop=20,
                                     rerank_error=0.001,
-                                    n_jobs=-1,
+                                    n_jobs=10, #Use 10 cores (1 core runs 1 fold)
                                     verbose=1)
     HYBparsimony_model.fit(X_train, y_train, time_limit=5.0)
     preds = HYBparsimony_model.predict(X_test)
@@ -234,12 +234,10 @@ if __name__ == "__main__":
     print(f'10R5-CV f1_macro = {round(HYBparsimony_model.best_score,6)}')
     print(f'f1_macro test = {round(f1_score(y_test, preds, average="macro"),6)}')
 
+    # ------------------------------------------------------------
 
     input("\nNext example: 'Custom Evaluation: A. Using accuracy'.\nPress a key to continue...")
     os.system('clear')
-
-    
-    
 
     ###################################################
     #                   CUSTOM EVALUATION             #
@@ -272,6 +270,7 @@ if __name__ == "__main__":
     HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
                                     scoring='accuracy',
                                     cv=10,
+                                    n_jobs=10, #Use 10 cores (1 core run 1 fold)
                                     rerank_error=0.001,
                                     verbose=1)
     
@@ -283,10 +282,10 @@ if __name__ == "__main__":
     print(f'10R5-CV Accuracy = {round(HYBparsimony_model.best_score,6)}')
     print(f'Accuracy test = {round(accuracy_score(y_test, preds),6)}')
 
+
+
     input("\nNext example: 'Custom Evaluation: B: Using 10-repeated 5-fold CV and 'Kappa' score'.\nPress a key to continue...")
     os.system('clear')
-
-    
 
     #Example B: Using 10-repeated 5-fold CV and 'Kappa' score
     # -------------------------------------------------------
@@ -309,18 +308,18 @@ if __name__ == "__main__":
     HYBparsimony_model = HYBparsimony(features=wine.feature_names,
                                     scoring=metric_kappa,
                                     cv=RepeatedKFold(n_splits=5, n_repeats=10),
-                                    n_jobs=-1,
+                                    n_jobs=10, #Use 10 cores (one core=one fold)
                                     rerank_error=0.001,
                                     verbose=1)
     HYBparsimony_model.fit(X_train, y_train, time_limit=0.1)
     print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
     print(f'Selected features:{HYBparsimony_model.selected_features}')
     
+    
+    
     input("\nNext example: 'Custom Evaluation: C: Using a weighted log_loss'.\nPress a key to continue...")
     os.system('clear')
-
-
-
+    
     #Example C: Using a weighted 'log_loss'
     # -------------------------------------
     # Assign a double weight to class one
@@ -346,28 +345,28 @@ if __name__ == "__main__":
                                     scoring=custom_score,
                                     rerank_error=0.001,
                                     verbose=1)
-    HYBparsimony_model.fit(X_train, y_train, time_limit=0.1)
+    HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
     print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
     print(f'Selected features:{HYBparsimony_model.selected_features}')
 
+
+
     input("\nNext example: 'Custom Evaluation:  D: Using a 'custom evaluation' function'.\nPress a key to continue...")
     os.system('clear')
-    
     
     # Example D: Using a 'custom evaluation' function
     #          (Parallelism is not allowed)
     # -----------------------------------------------
     def custom_fun(estimator, X, y):
-        return cross_val_score(estimator, X, y, scoring="accuracy")
+        return cross_val_score(estimator, X, y, scoring="accuracy", n_jobs=10)
     
     HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
                                     custom_eval_fun=custom_fun,
-                                    n_jobs=1, #parallelism is not allowed with 'custom_eval_fun'
                                     rerank_error=0.001,
                                     verbose=1)
 
 
-    HYBparsimony_model.fit(X_train, y_train, time_limit=0.1)
+    HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
     preds = HYBparsimony_model.predict(X_test)
     print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
     print(f'Selected features:{HYBparsimony_model.selected_features}')
@@ -376,24 +375,119 @@ if __name__ == "__main__":
     print(f'Accuracy test = {round(accuracy_score(y_test, preds),6)}')
 
 
+    # ------------------------------------------------------------
+
+    input("\nNext example: 'Custom Search'.\nPress a key to continue...")
+    os.system('clear')
+    
+    ###################################################
+    #                   CUSTOM SEARCH                 #
+    ###################################################
+
+    import pandas as pd
+    import numpy as np
+    import os
+    from sklearn.model_selection import train_test_split, RepeatedKFold
+    from sklearn.neural_network import MLPRegressor
+    from sklearn.metrics import mean_squared_error
+    from sklearn.datasets import load_diabetes
+    from sklearn.preprocessing import StandardScaler
+    from hybparsimony import HYBparsimony, Population
+    
+
+    # Load 'diabetes' dataset
+    diabetes = load_diabetes()
+
+    X, y = diabetes.data, diabetes.target
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state=1234)
+
+    # Standarize X and y
+    scaler_X = StandardScaler()
+    X_train = scaler_X.fit_transform(X_train)
+    X_test = scaler_X.transform(X_test)
+    scaler_y = StandardScaler()
+    y_train = scaler_y.fit_transform(y_train.reshape(-1,1)).flatten()
+    y_test = scaler_y.transform(y_test.reshape(-1,1)).flatten()
+
+    def mlp_new_complexity(model, nFeatures, **kwargs):
+        weights = [np.concatenate(model.intercepts_)]
+        for wm in model.coefs_:
+            weights.append(wm.flatten())
+        weights = np.concatenate(weights) 
+        int_comp = np.min((1E09-1,np.sum(weights**2)))
+        return nFeatures*1E09 + int_comp
+
+    MLPRegressor_new = {"estimator": MLPRegressor, # The estimator
+                  "complexity": mlp_new_complexity, # The complexity
+                  "hidden_layer_sizes": {"range": (1, 5), "type": Population.INTEGER},
+                  "alpha": {"range": (-5, 5), "type": Population.POWER},
+                  "solver": {"value": "adam", "type": Population.CONSTANT},
+                  "learning_rate": {"value": "adaptive", "type": Population.CONSTANT},
+                  "early_stopping": {"value": True, "type": Population.CONSTANT},
+                  "validation_fraction": {"value": 0.10, "type": Population.CONSTANT},
+                  "activation": {"value": "tanh", "type": Population.CONSTANT},
+                  "n_iter_no_change": {"value": 20, "type": Population.CONSTANT},
+                  "tol": {"value": 1e-5, "type": Population.CONSTANT},
+                  "random_state": {"value": 1234, "type": Population.CONSTANT},
+                  "max_iter": {"value": 200, "type": Population.CONSTANT}
+                   }
+    HYBparsimony_model = HYBparsimony(algorithm=MLPRegressor_new,
+                                    features=diabetes.feature_names,
+                                    cv=RepeatedKFold(n_splits=5, n_repeats=10),
+                                    n_jobs= 25, #Use 25 cores (one core=one fold)
+                                    maxiter=2, # Extend to more generations (time consuming)
+                                    npart = 10,
+                                    rerank_error=0.001,
+                                    verbose=1)
+
+    # Search the best hyperparameters and features 
+    # (increasing 'time_limit' to improve RMSE with high consuming algorithms)
+    HYBparsimony_model.fit(X_train, y_train, time_limit=1.00)
+    preds = HYBparsimony_model.predict(X_test)
+    print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
+    print(f'Selected features:{HYBparsimony_model.selected_features}')
+    print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
+    print(f'5-CV MSE = {-round(HYBparsimony_model.best_score,6)}')
+    print(f'RMSE test = {round(mean_squared_error(y_test, preds, squared=False),6)}')
+    
+
+    # ------------------------------------------------------------
+    
+    input("\nNext example: 'Check getFitness() and fitness_for_parallel()'.\nPress a key to continue...")
+    os.system('clear')
+    
+    ###################################################
+    # Check getFitness() and fitness_for_parallel()   #
+    ###################################################
+
+    import pandas as pd
+    import numpy as np
+    from sklearn.datasets import load_breast_cancer
+    from sklearn.svm import SVC
+    from sklearn.model_selection import cross_val_score
+    from hybparsimony import HYBparsimony
+    from hybparsimony.util import getFitness, svm_complexity, population
+    from hybparsimony.util.fitness import fitness_for_parallel
+    import os
+    # load 'breast_cancer' dataset
+    breast_cancer = load_breast_cancer()
+    X, y = breast_cancer.data, breast_cancer.target
+    chromosome = population.Chromosome(params = [1.0, 0.2],
+                                       name_params = ['C','gamma'],
+                                       const = {'kernel':'rbf'},
+                                       cols= np.random.uniform(size=X.shape[1])>0.50,
+                                       name_cols = breast_cancer.feature_names)
+    # print(getFitness(SVC,svm_complexity)(chromosome, X=X, y=y))
+    print(fitness_for_parallel(SVC, svm_complexity, 
+                               custom_eval_fun=cross_val_score,
+                               cromosoma=chromosome, X=X, y=y))
+
+    # ------------------------------------------------------------
+
+
     input("\nNext example: 'Custom Fitness Function:  Using Autogluon (more info see Autogluon_with_SHDD.ipynb)'.\nPress a key to continue...")
     os.system('clear')
     
-   
-    HYBparsimony_model = HYBparsimony(n_jobs=1,custom_eval_fun=custom_fun) # Este con paralelismo NO funciona
-    HYBparsimony_model.fit(X_train, y_train, time_limit=0.5)
-    preds = HYBparsimony_model.predict(X_test)
-    print("Accuracy test", accuracy_score(y_test, preds))
-
-
-
- 
-
-    
-                    
-    
-
-
     ###################################################
     #          USE CUSTOM FITNESS FUNCTION            #
     #        (see Autogluon_with_SHDD.ipynb)          #
@@ -469,119 +563,5 @@ if __name__ == "__main__":
     print(f'Selected feats with HYB-PARSIMONY num={len(selec_feats)}:{selec_feats}')
     print('######################################################')
 
-
-
-    input("\nNext example: 'Custom Search'.\nPress a key to continue...")
-    os.system('clear')
-
-
-
-
-
-    ###################################################
-    #                   CUSTOM SEARCH                 #
-    ###################################################
-
-    import pandas as pd
-    import numpy as np
-    import os
-    from sklearn.model_selection import train_test_split, RepeatedKFold
-    from sklearn.neural_network import MLPRegressor
-    from sklearn.metrics import mean_squared_error
-    from sklearn.datasets import load_diabetes
-    from sklearn.preprocessing import StandardScaler
-    from hybparsimony import HYBparsimony, Population
-    
-
-    # Load 'diabetes' dataset
-    diabetes = load_diabetes()
-
-    X, y = diabetes.data, diabetes.target
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state=1234)
-
-    # Standarize X and y
-    scaler_X = StandardScaler()
-    X_train = scaler_X.fit_transform(X_train)
-    X_test = scaler_X.transform(X_test)
-    scaler_y = StandardScaler()
-    y_train = scaler_y.fit_transform(y_train.reshape(-1,1)).flatten()
-    y_test = scaler_y.transform(y_test.reshape(-1,1)).flatten()
-
-    def mlp_new_complexity(model, nFeatures, **kwargs):
-        weights = [np.concatenate(model.intercepts_)]
-        for wm in model.coefs_:
-            weights.append(wm.flatten())
-        weights = np.concatenate(weights) 
-        int_comp = np.min((1E09-1,np.sum(weights**2)))
-        return nFeatures*1E09 + int_comp
-
-    MLPRegressor_new = {"estimator": MLPRegressor, # The estimator
-                  "complexity": mlp_new_complexity, # The complexity
-                  "hidden_layer_sizes": {"range": (1, 5), "type": Population.INTEGER},
-                  "alpha": {"range": (-5, 5), "type": Population.POWER},
-                  "solver": {"value": "adam", "type": Population.CONSTANT},
-                  "learning_rate": {"value": "adaptive", "type": Population.CONSTANT},
-                  "early_stopping": {"value": True, "type": Population.CONSTANT},
-                  "validation_fraction": {"value": 0.10, "type": Population.CONSTANT},
-                  "activation": {"value": "tanh", "type": Population.CONSTANT},
-                  "n_iter_no_change": {"value": 20, "type": Population.CONSTANT},
-                  "tol": {"value": 1e-5, "type": Population.CONSTANT},
-                  "random_state": {"value": 1234, "type": Population.CONSTANT},
-                  "max_iter": {"value": 200, "type": Population.CONSTANT}
-                   }
-    HYBparsimony_model = HYBparsimony(algorithm=MLPRegressor_new,
-                                    features=diabetes.feature_names,
-                                    cv=RepeatedKFold(n_splits=5, n_repeats=10),
-                                    maxiter=2, # Extend to more generations (time consuming)
-                                    npart = 10,
-                                    rerank_error=0.001,
-                                    verbose=1)
-
-    # Search the best hyperparameters and features 
-    # (increasing 'time_limit' to improve RMSE with high consuming algorithms)
-    HYBparsimony_model.fit(X_train, y_train, time_limit=1.00)
-    preds = HYBparsimony_model.predict(X_test)
-    print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
-    print(f'Selected features:{HYBparsimony_model.selected_features}')
-    print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
-    print(f'5-CV MSE = {-round(HYBparsimony_model.best_score,6)}')
-    print(f'RMSE test = {round(mean_squared_error(y_test, preds, squared=False),6)}')
-    
-    
-    input("\nNext example: 'Check getFitness() and fitness_for_parallel()'.\nPress a key to continue...")
-    os.system('clear')
-    
-
-
-
-    
-
-    ###################################################
-    # Check getFitness() and fitness_for_parallel()   #
-    ###################################################
-
-    import pandas as pd
-    import numpy as np
-    from sklearn.datasets import load_breast_cancer
-    from sklearn.svm import SVC
-    from sklearn.model_selection import cross_val_score
-    from hybparsimony import HYBparsimony
-    from hybparsimony.util import getFitness, svm_complexity, population
-    from hybparsimony.util.fitness import fitness_for_parallel
-    import os
-    # load 'breast_cancer' dataset
-    breast_cancer = load_breast_cancer()
-    X, y = breast_cancer.data, breast_cancer.target
-    chromosome = population.Chromosome(params = [1.0, 0.2],
-                                       name_params = ['C','gamma'],
-                                       const = {'kernel':'rbf'},
-                                       cols= np.random.uniform(size=X.shape[1])>0.50,
-                                       name_cols = breast_cancer.feature_names)
-    # print(getFitness(SVC,svm_complexity)(chromosome, X=X, y=y))
-    print(fitness_for_parallel(SVC, svm_complexity, 
-                               custom_eval_fun=cross_val_score,
-                               cromosoma=chromosome, X=X, y=y))
-
     input("\nPress a key to continue...")
     os.system('clear')
-

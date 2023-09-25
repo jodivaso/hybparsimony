@@ -162,6 +162,7 @@ However, we can improve results in RMSE and parsimony if we increase the time li
                                    features=diabetes.feature_names,
                                    rerank_error=0.001,
                                    cv=RepeatedKFold(n_repeats=10, n_splits=5),
+                                   n_jobs=10, # each job executes one fold
                                    maxiter=1000,
                                    verbose=1)
 HYBparsimony_model.fit(X_train, y_train, time_limit=60)
@@ -330,6 +331,7 @@ X_test = scaler_X.transform(X_test)
 
 HYBparsimony_model = HYBparsimony(features=wine.feature_names,
                                 cv=RepeatedKFold(n_splits=5, n_repeats=10),
+                                n_jobs=10, #Use 10 cores (1 core runs 1 fold)
                                 npart = 20,
                                 early_stop=20,
                                 rerank_error=0.001,
@@ -393,6 +395,7 @@ By default $cv=5$, and $scoring$ is defined as *MSE* for regression problems, *l
 HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
                                    scoring='accuracy',
                                    cv=10,
+                                   n_jobs=10, #Use 10 cores (1 core run 1 fold)
                                    rerank_error=0.001,
                                    verbose=1)
 
@@ -403,6 +406,7 @@ metric_kappa = make_scorer(cohen_kappa_score, greater_is_better=True)
 HYBparsimony_model = HYBparsimony(features=wine.feature_names,
                                   scoring=metric_kappa,
                                   cv=RepeatedKFold(n_splits=5, n_repeats=10),
+                                  n_jobs=10, #Use 10 cores (one core=one fold)
                                   rerank_error=0.001,
                                   verbose=1)
 
@@ -426,7 +430,7 @@ HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
  #Example D: Using a 'custom evaluation' function
 #------------------------------------------------
  def custom_fun(estimator, X, y):
-    return cross_val_score(estimator, X, y, scoring="accuracy")
+    return cross_val_score(estimator, X, y, scoring="accuracy", n_jobs=10)
 
  HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
                                  custom_eval_fun=custom_fun,
