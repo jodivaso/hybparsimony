@@ -197,7 +197,9 @@ if __name__ == "__main__":
     #                   MULTICLASS CLASSIFICATION                 #
     ###############################################################
     import pandas as pd
-    from sklearn.model_selection import train_test_split
+    import numpy as np
+    import os
+    from sklearn.model_selection import train_test_split, RepeatedKFold
     from sklearn.preprocessing import StandardScaler
     from sklearn.datasets import load_wine
     from sklearn.metrics import f1_score
@@ -222,6 +224,7 @@ if __name__ == "__main__":
                                     npart = 20,
                                     early_stop=20,
                                     rerank_error=0.001,
+                                    n_jobs=-1,
                                     verbose=1)
     HYBparsimony_model.fit(X_train, y_train, time_limit=5.0)
     preds = HYBparsimony_model.predict(X_test)
@@ -231,14 +234,7 @@ if __name__ == "__main__":
     print(f'10R5-CV f1_macro = {round(HYBparsimony_model.best_score,6)}')
     print(f'f1_macro test = {round(f1_score(y_test, preds, average="macro"),6)}')
 
-    import pandas as pd
-    from sklearn.model_selection import train_test_split
-    from sklearn.preprocessing import StandardScaler
-    from sklearn.datasets import load_wine
-    from sklearn.metrics import f1_score
-    from hybparsimony import HYBparsimony
-    
-    
+
     input("\nNext example: 'Custom Evaluation: A. Using accuracy'.\nPress a key to continue...")
     os.system('clear')
 
@@ -313,6 +309,7 @@ if __name__ == "__main__":
     HYBparsimony_model = HYBparsimony(features=wine.feature_names,
                                     scoring=metric_kappa,
                                     cv=RepeatedKFold(n_splits=5, n_repeats=10),
+                                    n_jobs=-1,
                                     rerank_error=0.001,
                                     verbose=1)
     HYBparsimony_model.fit(X_train, y_train, time_limit=0.1)
