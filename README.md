@@ -205,7 +205,7 @@ However, we can improve results in RMSE and parsimony if we increase the time li
                                    verbose=1)
 HYBparsimony_model.fit(X_train, y_train, time_limit=60)
 ```
-Note: ç*n_jobs* represents the number of CPU cores used within the *cross_val_score()* function included in *default_cv_score()*. Also, it is important to mention that certain *scikit-learn* algorithms inherently employ parallelization as well. Thus, with some algorithms it will be necessary to consider the sharing of cores between the algorithm and the cross_val_score() function.
+Note: *n_jobs* represents the number of CPU cores used within the *cross_val_score()* function included in *default_cv_score()*. Also, it is important to mention that certain *scikit-learn* algorithms inherently employ parallelization as well. Thus, with some algorithms it will be necessary to consider the sharing of cores between the algorithm and the cross_val_score() function.
 
 The following table shows the best models found for each algorithm. In this case, **the model that best generalizes the problem is an ML regressor with only 6 features out of 10 and a single neuron in the hidden layer!**
 
