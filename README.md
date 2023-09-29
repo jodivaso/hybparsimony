@@ -32,7 +32,7 @@ print(HYBparsimony_model.best_score) # Print the score
 ```
 
 In this example, the output model uses 3 of the 4 input variables, optimizing a LogisticRegression model (being its hyperparameter C optimized to the value 2.4273541856565517) and
-finally with a score (f1 macro) 0.96555.
+obtaining a final score (f1 macro) 0.96555.
 
 
 Installation
