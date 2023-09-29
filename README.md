@@ -5,7 +5,7 @@
 
 [Documentation](https://hybparsimony.readthedocs.io/en/latest/index.html)
 
-***HYBparsimony*** is a Python package for: 
+***HYBparsimony*** is a Python package that simultaneously performs: 
 - **automatic feature selection** (FS)
 - **automatic model hyperparameter optimization** (HO)
 - **automatic parsimonious model selection** (PMS)
@@ -201,6 +201,9 @@ However, we can improve results in RMSE and parsimony if we increase the time li
                                    verbose=1)
 HYBparsimony_model.fit(X_train, y_train, time_limit=60)
 ```
+
+The following table shows the best models found for each algorithm. In this case, **the model that best generalizes the problem is an ML regressor with only 6 features out of 10 and a single neuron in the hidden layer!**
+
 |Algorithm|MSE\_10R5CV|RMSEtst|NFS|selected\_features|best\_model|
 |-|-|-|-|-|-|
 |**MLPRegressor**|0.493201|**0.671856**|**6**|['sex','bmi','bp','s1','s2','s5']|MLPRegressor(activation='logistic', alpha=0.010729877296924203, hidden_layer_sizes=1, max_iter=5000, n_iter_no_change=20, random_state=1234, solver='lbfgs', tol=1e-05)|\
@@ -326,7 +329,7 @@ res.to_csv('res_models_class.csv')
 # Visualize results
 print(res[['algo', 'Logloss_10R5CV', 'Logloss_Test', 'NFS']])
 ```
-In this example, the best model is also obtained with *LogisticRegression* but with $10$ features.
+In this example, the best model is also obtained with *LogisticRegression* but with $10$ features out of $30$.
 
 |algo|Logloss\_10R5CV|Logloss\_Test|NFS|selected\_features|best\_model|
 |-|-|-|-|-|-|
