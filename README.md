@@ -225,7 +225,7 @@ This example shows how to use *HYBparsimony* in a binary classification problem 
 
 ```python
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, RepeatedKFold
 from sklearn.preprocessing import StandardScaler
 from sklearn.datasets import load_breast_cancer
 from sklearn.metrics import log_loss
@@ -308,7 +308,7 @@ for algo in algorithms_clas:
                                         features=breast_cancer.feature_names,
                                         rerank_error=0.005,
                                         cv=RepeatedKFold(n_splits=5, n_repeats=10),
-                                        n_jobs=20, # each job executes one fold
+                                        n_jobs=20,
                                         maxiter=1000,
                                         verbose=1)
     # Search the best hyperparameters and features 
@@ -327,6 +327,7 @@ for algo in algorithms_clas:
                     NFS=int(HYBparsimony_model.best_complexity//1e9),
                     selected_features = HYBparsimony_model.selected_features,
                     best_model=HYBparsimony_model.best_model))
+
 res = pd.DataFrame(res).sort_values('Logloss_Test')
 res.to_csv('res_models_class.csv')
 # Visualize results
