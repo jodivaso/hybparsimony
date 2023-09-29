@@ -5,9 +5,12 @@
 
 [Documentation](https://hybparsimony.readthedocs.io/en/latest/index.html)
 
-***HYBparsimony*** is a Python package for **automatic feature selection (FS), model hyperparameter optimization (HO) and and parsimonious model selection (PMS)**. [See the paper](https://doi.org/10.1016/j.neucom.2023.126840) for further details.
+***HYBparsimony*** is a Python package for: 
+- **automatic feature selection** (FS)
+- **automatic model hyperparameter optimization** (HO)
+- **automatic parsimonious model selection** (PMS)
 
-[Experiments with 100 datasets](https://github.com/jodivaso/hybparsimony/tree/master/examples/analysis) showed that HYBparsimony allows to obtain better, more parsimonious and more robust models compared to other methods, reducing the number of iterations and the computational effort.
+[Experiments with 100 datasets](https://github.com/jodivaso/hybparsimony/tree/master/examples/analysis) showed that ***HYBparsimony*** allows to obtain better, more parsimonious and more robust models compared to other methods, also reducing the number of iterations and the computational effort. [See the paper](https://doi.org/10.1016/j.neucom.2023.126840) for further details.
 
 Its use is very simple:
 
