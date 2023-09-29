@@ -91,6 +91,7 @@ algo = 'KernelRidge'
 HYBparsimony_model = HYBparsimony(algorithm=algo,
                                 features=diabetes.feature_names,
                                 rerank_error=0.001,
+                                n_jobs=1,
                                 verbose=1)
 
 # Search the best hyperparameters and features 
@@ -99,25 +100,26 @@ HYBparsimony_model.fit(X_train, y_train, time_limit=0.20)
 ```
 In each iteration, the first row shows the score and complexity of the best model. The second row shows the average score, and the score and complexity of the best model obtained in the same iteration. The values to the left of the first comma of the complexity correspond to the number of features (${N_{FS}}$), the rest is the internal complexity of the model.
 ```
+Detected a regression problem. Using 'neg_mean_squared_error' as default scoring function.
 Running iteration 0
 Best model -> Score = -0.510786 Complexity = 9,017,405,352.5 
-Iter = 0 -> MeanVal = -0.88274  ValBest = -0.510786  ComplexBest = 9,017,405,352.5 Time(min) = 0.005858
+Iter = 0 -> MeanVal = -0.88274  ValBest = -0.510786   ComplexBest = 9,017,405,352.5 Time(min) = 0.014713
 
 Running iteration 1
 Best model -> Score = -0.499005 Complexity = 8,000,032,783.88 
-Iter = 1 -> MeanVal = -0.659969 ValBest = -0.499005  ComplexBest = 8,000,032,783.88 Time(min) = 0.004452
+Iter = 1 -> MeanVal = -0.659969  ValBest = -0.499005   ComplexBest = 8,000,032,783.88 Time(min) = 0.007782
 
 ...
 ...
 ...
 
-Running iteration 34
-Best model -> Score = -0.489468 Complexity = 8,000,002,255.68 
-Iter = 34 -> MeanVal = -0.527314  ValBest = -0.489468  ComplexBest = 8,000,002,255.68 Time(min) = 0.007533
-
-Running iteration 35
+Running iteration 45
 Best model -> Score = -0.489457 Complexity = 8,000,002,199.12 
-Iter = 35 -> MeanVal = -0.526294 ValBest = -0.489457  ComplexBest = 8,000,002,199.12 Time(min) = 0.006522
+Iter = 45 -> MeanVal = -0.531697  ValBest = -0.490061   ComplexBest = 8,000,000,443.89 Time(min) = 0.003815
+
+Running iteration 46
+Best model -> Score = -0.489457 Complexity = 8,000,002,199.12 
+Iter = 46 -> MeanVal = -0.541818  ValBest = -0.493126   ComplexBest = 7,000,030,081.16 Time(min) = 0.003704
 
 Time limit reached. Stopped.
 ```
@@ -151,9 +153,9 @@ for algo in algorithms_reg:
     print('#######################')
     print('Searching best: ', algo)
     HYBparsimony_model = HYBparsimony(algorithm=algo,
-                                      features=diabetes.feature_names,
-                                      rerank_error=0.001,
-                                      verbose=1)
+                                    features=diabetes.feature_names,
+                                    rerank_error=0.001,
+                                    verbose=1)
     # Search the best hyperparameters and features 
     # (increasing 'time_limit' to improve RMSE with high consuming algorithms)
     HYBparsimony_model.fit(X_train, y_train, time_limit=5)
@@ -170,24 +172,25 @@ for algo in algorithms_reg:
                     NFS=HYBparsimony_model.best_complexity//1e9,
                     selected_features = HYBparsimony_model.selected_features,
                     best_model=HYBparsimony_model.best_model))
+
 res = pd.DataFrame(res).sort_values('RMSE')
-res.to_csv('res_models.csv')
 # Visualize results
 print(res[['best_model', 'MSE_5CV', 'RMSE', 'NFS', 'selected_features']])
 ```
 
 We obtain the following results:
 
+
 ```
-                    algo   MSE_5CV      RMSE  NFS
-4           MLPRegressor  0.491437  0.673157    7
-2            KernelRidge  0.488908  0.679108    7
-1                  Lasso  0.495795  0.694631    8
-0                  Ridge  0.495662  0.694885    8
-5                    SVR  0.487899  0.696137    7
-3    KNeighborsRegressor  0.523190  0.705371    6
-7  RandomForestRegressor  0.546012  0.761268    8
-6  DecisionTreeRegressor  0.630503  0.864194    3
+best_model      MSE_5CV   RMSE      NFS selected_features
+4  MLPRegressor 0.491424  0.672799  7.0 [sex, bmi, bp, s1, s4, s5, s6]
+2  KernelRidge  0.488908  0.679108  7.0 [age, sex, bmi, bp, s3, s5, s6]
+1  Lasso        0.495795  0.694631  8.0 [sex, bmi, bp, s1, s2, s4, s5, s6]
+0  Ridge        0.495662  0.694885  8.0 [sex, bmi, bp, s1, s2, s4, s5, s6]
+5  SVR          0.487899  0.696137  7.0 [sex, bmi, bp, s1, s4, s5, s6]
+3  KNeighbors   0.523190  0.705371  6.0 [sex, bmi, bp, s3, s5, s6]
+7  RandomForest 0.535958  0.760138  6.0 [sex, bmi, s1, s4, s5, s6]
+6  DecisionTree 0.625424  0.847182  3.0 [bmi, s4, s6]
 ```
 However, we can improve results in RMSE and parsimony if we increase the time limit to 60 minutes, the maximum number of iterations to 1000, and use a more robust validation with a 10-repeated 5-fold crossvalidation.
 
@@ -201,6 +204,7 @@ However, we can improve results in RMSE and parsimony if we increase the time li
                                    verbose=1)
 HYBparsimony_model.fit(X_train, y_train, time_limit=60)
 ```
+Note: ç*n_jobs* represents the number of CPU cores used within the *cross_val_score()* function included in *default_cv_score()*. Also, it is important to mention that certain *scikit-learn* algorithms inherently employ parallelization as well. Thus, with some algorithms it will be necessary to consider the sharing of cores between the algorithm and the cross_val_score() function.
 
 The following table shows the best models found for each algorithm. In this case, **the model that best generalizes the problem is an ML regressor with only 6 features out of 10 and a single neuron in the hidden layer!**
 

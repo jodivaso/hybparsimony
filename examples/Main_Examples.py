@@ -97,8 +97,8 @@ if __name__ == "__main__":
                         NFS=HYBparsimony_model.best_complexity//1e9,
                         selected_features = HYBparsimony_model.selected_features,
                         best_model=HYBparsimony_model.best_model))
+
     res = pd.DataFrame(res).sort_values('RMSE')
-    res.to_csv('res_models.csv')
     # Visualize results
     print(res[['best_model', 'MSE_5CV', 'RMSE', 'NFS', 'selected_features']])
 
