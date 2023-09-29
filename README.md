@@ -5,6 +5,43 @@
 
 [Documentation](https://hybparsimony.readthedocs.io/en/latest/index.html)
 
+***HYBparsimony*** is a Python package for **automatic feature selection (FS), model hyperparameter optimization (HO) and and parsimonious model selection (PMS)**. [See the paper](https://doi.org/10.1016/j.neucom.2023.126840) for further details.
+
+[Experiments with 100 datasets](https://github.com/jodivaso/hybparsimony/tree/master/examples/analysis) showed that HYBparsimony allows to obtain better, more parsimonious and more robust models compared to other methods, reducing the number of iterations and the computational effort.
+
+Its use is very simple:
+
+```python
+# Basic example with the Iris dataset (classification)
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_iris
+from hybparsimony import HYBparsimony
+
+iris = load_iris()
+X, y = iris.data, iris.target
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state=1234)
+
+HYBparsimony_model = HYBparsimony()
+HYBparsimony_model.fit(X_train, y_train, time_limit=0.10) # Train with time limit 0.1 minutes (6 seconds)
+print(HYBparsimony_model.selected_features) # Print the selected features
+print(HYBparsimony_model.best_model) # Print the model and its hyperparameters
+print(HYBparsimony_model.best_score) # Print the score
+```
+
+In this example, the output model uses 3 of the 4 input variables, optimizing a LogisticRegression model (being its hyperparameter C optimized to the value 2.4273541856565517) and
+finally with a score (f1 macro) 0.96555.
+
+
+Installation
+------------
+Install the package using [pip](https://pypi.org/project/hybparsimony/):
+``` {.bash}
+pip install hybparsimony
+```
+
+Detailed explanation
+------------
+
 ***HYBparsimony*** for Python is a package **for searching accurate parsimonious models by combining feature selection (FS), model hyperparameter optimization (HO), and parsimonious model selection (PMS) based on a separate cost and complexity evaluation** ([slices-HAIS2022](./docs/presentacion_HAIS2022_javi.pdf), [slices-HAIS2023](./docs/presentacion_HAIS2023_javi.pdf))
 
 To improve the search for parsimony, the hybrid method combines GA mechanisms such as selection, crossover and mutation within a PSO-based optimization algorithm that includes a strategy in which the best position of each particle (thus also the best position of each neighborhood) is calculated taking into account not only the goodness-of-fit, but also the parsimony principle.
@@ -14,14 +51,8 @@ In HYBparsimony, the percentage of variables to be replaced with GA at each iter
 
 [Experiments with 100 datasets](https://github.com/jodivaso/hybparsimony/tree/master/examples/analysis) showed that, in general, and with a suitable $\Gamma$, HYBparsimony allows to obtain better, more parsimonious and more robust models compared to other methods. It also reduces the number of iterations vs previous methods and, consequently, the computational effort.
 
-Installation
-------------
-Install the package using [pip](https://pypi.org/project/hybparsimony/):
-``` {.bash}
-pip install hybparsimony
-```
 
-How to use this package
+Further examples: how to use this package
 -----------------------
 **Note**: The datasets used in these examples are of small size. These datasets have been selected in order to speed up the calculation process of the examples. With such small datasets it is necessary to use robust validation methods such as bootstrapping or repeated cross validation. It is also recommended to repeat the use of HYBparsimony with different random seeds in order to obtain more solid conclusions.
 
