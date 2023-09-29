@@ -351,6 +351,7 @@ If the number of classes is greather than 2, *HYBparsimony* selects *f1\_macro* 
 
 ```python
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.datasets import load_wine
