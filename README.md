@@ -31,7 +31,7 @@ print(HYBparsimony_model.best_model) # Print the model and its hyperparameters
 print(HYBparsimony_model.best_score) # Print the score
 ```
 
-In this example, the output model uses 3 of the 4 input variables, optimizing a LogisticRegression model.
+In this example, the output model uses 3 of the 4 input variables, optimizing a *LogisticRegression* model.
 
 
 Installation
