@@ -256,22 +256,22 @@ In this example, best model is obtained with 11 features from the 30 original in
 Detected a binary-class problem. Using 'neg_log_loss' as default scoring function.
 Running iteration 0
 Best model -> Score = -0.091519 Complexity = 29,000,000,005.11 
-Iter = 0 -> MeanVal = -0.297448  ValBest = -0.091519   ComplexBest = 29,000,000,005.11 Time(min) = 0.006501
+Iter = 0 -> MeanVal = -0.297448 ValBest = -0.091519  ComplexBest = 29,000,000,005.11 Time(min) = 0.006501
 
 Running iteration 1
 Best model -> Score = -0.085673 Complexity = 27,000,000,009.97 
-Iter = 1 -> MeanVal = -0.117216  ValBest = -0.085673   ComplexBest = 27,000,000,009.97 Time(min) = 0.004273
+Iter = 1 -> MeanVal = -0.117216 ValBest = -0.085673  ComplexBest = 27,000,000,009.97 Time(min) = 0.004273
 
 ...
 ...
 
 Running iteration 102
 Best model -> Score = -0.064557 Complexity = 11,000,000,039.47 
-Iter = 102 -> MeanVal = -0.076314  ValBest = -0.066261   ComplexBest = 9,000,000,047.25 Time(min) = 0.004769
+Iter = 102 -> MeanVal = -0.076314 ValBest = -0.066261  ComplexBest = 9,000,000,047.25 Time(min) = 0.004769
 
 Running iteration 103
 Best model -> Score = -0.064557 Complexity = 11,000,000,039.47 
-Iter = 103 -> MeanVal = -0.086243  ValBest = -0.064995   ComplexBest = 11,000,000,031.2 Time(min) = 0.004591
+Iter = 103 -> MeanVal = -0.086243 ValBest = -0.064995  ComplexBest = 11,000,000,031.2 Time(min) = 0.004591
 
 Time limit reached. Stopped.
 
@@ -536,7 +536,8 @@ Divasón, J., Pernia-Espinoza, A., Martinez-de-Pison, F.J. (2023). HYB-PARSIMONY
 
 ```
 @article{hybparsimony,
-title = {HYB-PARSIMONY: A hybrid approach combining Particle Swarm Optimization and Genetic Algorithms to find parsimonious models in high-dimensional datasets},
+title = {HYB-PARSIMONY: A hybrid approach combining Particle Swarm Optimization and Genetic Algorithms to
+find parsimonious models in high-dimensional datasets},
 journal = {Neurocomputing},
 pages = {126840},
 year = {2023},
