@@ -252,14 +252,14 @@ if __name__ == "__main__":
     from hybparsimony import HYBparsimony
     from sklearn.metrics import fbeta_score, make_scorer, cohen_kappa_score, log_loss, accuracy_score
     import os
-    
+
 
     # load 'breast_cancer' dataset
     breast_cancer = load_breast_cancer()
     X, y = breast_cancer.data, breast_cancer.target 
     print(X.shape)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
-    
+
     # Standarize X and y (some algorithms require that)
     scaler_X = StandardScaler()
     X_train = scaler_X.fit_transform(X_train)
@@ -273,7 +273,7 @@ if __name__ == "__main__":
                                     n_jobs=10, #Use 10 cores (1 core run 1 fold)
                                     rerank_error=0.001,
                                     verbose=1)
-    
+
     HYBparsimony_model.fit(X_train, y_train, time_limit=0.1)
     preds = HYBparsimony_model.predict(X_test)
     print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
@@ -297,13 +297,13 @@ if __name__ == "__main__":
     print(len(np.unique(y)))
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
-    
-   # Standarize X and y (some algorithms require that)
+
+    # Standarize X and y (some algorithms require that)
     scaler_X = StandardScaler()
     X_train = scaler_X.fit_transform(X_train)
     X_test = scaler_X.transform(X_test)
-    
-    
+
+
     metric_kappa = make_scorer(cohen_kappa_score, greater_is_better=True)
     HYBparsimony_model = HYBparsimony(features=wine.feature_names,
                                     scoring=metric_kappa,
@@ -314,12 +314,12 @@ if __name__ == "__main__":
     HYBparsimony_model.fit(X_train, y_train, time_limit=0.1)
     print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
     print(f'Selected features:{HYBparsimony_model.selected_features}')
-    
-    
-    
+
+
+
     input("\nNext example: 'Custom Evaluation: C: Using a weighted log_loss'.\nPress a key to continue...")
     os.system('clear')
-    
+
     #Example C: Using a weighted 'log_loss'
     # -------------------------------------
     # Assign a double weight to class one
@@ -327,18 +327,18 @@ if __name__ == "__main__":
         sample_weight = np.ones_like(y_true)
         sample_weight[y_true==1] = 2.0
         return log_loss(y_true, y_pred, sample_weight=sample_weight)
-    
+
     # load 'breast_cancer' dataset
     breast_cancer = load_breast_cancer()
     X, y = breast_cancer.data, breast_cancer.target 
     print(X.shape)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
-    
+
     # Standarize X and y (some algorithms require that)
     scaler_X = StandardScaler()
     X_train = scaler_X.fit_transform(X_train)
     X_test = scaler_X.transform(X_test)
-    
+
     # Lower is better and 'log_loss' needs probabilities
     custom_score = make_scorer(my_custom_loss_func, greater_is_better=False, needs_proba=True)
     HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
@@ -353,13 +353,13 @@ if __name__ == "__main__":
 
     input("\nNext example: 'Custom Evaluation:  D: Using a 'custom evaluation' function'.\nPress a key to continue...")
     os.system('clear')
-    
+
     # Example D: Using a 'custom evaluation' function
     #          (Parallelism is not allowed)
     # -----------------------------------------------
     def custom_fun(estimator, X, y):
         return cross_val_score(estimator, X, y, scoring="accuracy", n_jobs=10)
-    
+
     HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
                                     custom_eval_fun=custom_fun,
                                     rerank_error=0.001,
