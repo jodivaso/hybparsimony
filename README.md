@@ -17,22 +17,21 @@ Its use is very simple:
 ```python
 # Basic example with the Iris dataset (classification)
 from sklearn.model_selection import train_test_split
-from sklearn.datasets import load_iris
+from sklearn.datasets import load_wine
 from hybparsimony import HYBparsimony
 
-iris = load_iris()
-X, y = iris.data, iris.target
+X, y = load_wine(return_X_y=True)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state=1234)
 
 HYBparsimony_model = HYBparsimony()
-HYBparsimony_model.fit(X_train, y_train, time_limit=0.1) # Train with time limit 0.1 minutes (6 seconds)
+HYBparsimony_model.fit(X_train, y_train, time_limit = 1) # Train with time limit 1 minute
 print(HYBparsimony_model.selected_features) # Print the selected features
 print(HYBparsimony_model.best_model) # Print the model and its hyperparameters
 print(HYBparsimony_model.best_score) # Print the score
 ```
 
-In this example, the output model uses 3 of the 4 input variables, optimizing a LogisticRegression model (being its hyperparameter C optimized to the value 2.4273541856565517) and
-obtaining a final score (f1 macro) 0.96555.
+In this example, the output model uses 8 of the 13 input variables, optimizing a LogisticRegression model (being its hyperparameter C optimized to the value 0.34967295933954634) and
+obtaining a final score (f1 macro) 0.99266.
 
 
 Installation
