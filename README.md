@@ -298,19 +298,19 @@ We also can compare with other algorithms using a robust cross-validation and mo
 
 ```python
 algorithms_clas = ['LogisticRegression', 'MLPClassifier', 
-                    'SVC', 'DecisionTreeClassifier',
-                    'RandomForestClassifier', 'KNeighborsClassifier',
-                    ]
+                'SVC', 'DecisionTreeClassifier',
+                'RandomForestClassifier', 'KNeighborsClassifier']
 res = []
 for algo in algorithms_clas:
     print('#######################')
     print('Searching best: ', algo)
     HYBparsimony_model = HYBparsimony(algorithm=algo,
-                                      features=breast_cancer.feature_names,
-                                      rerank_error=0.005,
-                                      cv=RepeatedKFold(n_splits=5, n_repeats=10),
-                                      maxiter=1000,
-                                      verbose=1)
+                                        features=breast_cancer.feature_names,
+                                        rerank_error=0.005,
+                                        cv=RepeatedKFold(n_splits=5, n_repeats=10),
+                                        n_jobs=20, # each job executes one fold
+                                        maxiter=1000,
+                                        verbose=1)
     # Search the best hyperparameters and features 
     # (increasing 'time_limit' to improve neg_log_loss with high consuming algorithms)
     HYBparsimony_model.fit(X_train, y_train, time_limit=60.0)
