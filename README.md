@@ -101,11 +101,11 @@ In each iteration, the first row shows the score and complexity of the best mode
 ```
 Running iteration 0
 Best model -> Score = -0.510786 Complexity = 9,017,405,352.5 
-Iter = 0 -> MeanVal = -0.88274  ValBest = -0.510786   ComplexBest = 9,017,405,352.5 Time(min) = 0.005858
+Iter = 0 -> MeanVal = -0.88274  ValBest = -0.510786  ComplexBest = 9,017,405,352.5 Time(min) = 0.005858
 
 Running iteration 1
 Best model -> Score = -0.499005 Complexity = 8,000,032,783.88 
-Iter = 1 -> MeanVal = -0.659969  ValBest = -0.499005   ComplexBest = 8,000,032,783.88 Time(min) = 0.004452
+Iter = 1 -> MeanVal = -0.659969 ValBest = -0.499005  ComplexBest = 8,000,032,783.88 Time(min) = 0.004452
 
 ...
 ...
@@ -113,11 +113,11 @@ Iter = 1 -> MeanVal = -0.659969  ValBest = -0.499005   ComplexBest = 8,000,032,7
 
 Running iteration 34
 Best model -> Score = -0.489468 Complexity = 8,000,002,255.68 
-Iter = 34 -> MeanVal = -0.527314  ValBest = -0.489468   ComplexBest = 8,000,002,255.68 Time(min) = 0.007533
+Iter = 34 -> MeanVal = -0.527314  ValBest = -0.489468  ComplexBest = 8,000,002,255.68 Time(min) = 0.007533
 
 Running iteration 35
 Best model -> Score = -0.489457 Complexity = 8,000,002,199.12 
-Iter = 35 -> MeanVal = -0.526294  ValBest = -0.489457   ComplexBest = 8,000,002,199.12 Time(min) = 0.006522
+Iter = 35 -> MeanVal = -0.526294 ValBest = -0.489457  ComplexBest = 8,000,002,199.12 Time(min) = 0.006522
 
 Time limit reached. Stopped.
 ```
