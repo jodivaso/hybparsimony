@@ -224,36 +224,36 @@ The following table shows the best models found for each algorithm. In this case
 This example shows how to use *HYBparsimony* in a binary classification problem with *breast_cancer* dataset. By default, method uses *LogisticRegression* algorithm and *neg_log_loss* as scoring metric.
 
 ```python
- import pandas as pd
- from sklearn.model_selection import train_test_split
- from sklearn.preprocessing import StandardScaler
- from sklearn.datasets import load_breast_cancer
- from sklearn.metrics import log_loss
- from hybparsimony import HYBparsimony
- 
- # load 'breast_cancer' dataset
- breast_cancer = load_breast_cancer()
- X, y = breast_cancer.data, breast_cancer.target 
- print(X.shape)
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.datasets import load_breast_cancer
+from sklearn.metrics import log_loss
+from hybparsimony import HYBparsimony
 
- X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
- 
- # Standarize X and y (some algorithms require that)
- scaler_X = StandardScaler()
- X_train = scaler_X.fit_transform(X_train)
- X_test = scaler_X.transform(X_test)
+# load 'breast_cancer' dataset
+breast_cancer = load_breast_cancer()
+X, y = breast_cancer.data, breast_cancer.target 
+print(X.shape)
 
- HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
-                                   rerank_error=0.005,
-                                   verbose=1)
- HYBparsimony_model.fit(X_train, y_train, time_limit=0.50)
- # Extract probs of class==1
- preds = HYBparsimony_model.predict_proba(X_test)[:,1]
- print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
- print(f'Selected features:{HYBparsimony_model.selected_features}')
- print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
- print(f'5-CV logloss = {-round(HYBparsimony_model.best_score,6)}')
- print(f'logloss test = {round(log_loss(y_test, preds),6)}')
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state=1)
+
+# Standarize X and y (some algorithms require that)
+scaler_X = StandardScaler()
+X_train = scaler_X.fit_transform(X_train)
+X_test = scaler_X.transform(X_test)
+
+HYBparsimony_model = HYBparsimony(features=breast_cancer.feature_names,
+                                rerank_error=0.005,
+                                verbose=1)
+HYBparsimony_model.fit(X_train, y_train, time_limit=0.50)
+# Extract probs of class==1
+preds = HYBparsimony_model.predict_proba(X_test)[:,1]
+print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
+print(f'Selected features:{HYBparsimony_model.selected_features}')
+print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
+print(f'5-CV logloss = {-round(HYBparsimony_model.best_score,6)}')
+print(f'logloss test = {round(log_loss(y_test, preds),6)}')
 ```
 
 In this example, best model is obtained with 11 features from the 30 original inputs. 
@@ -297,7 +297,6 @@ However, with small datasets like *breast_cancer*, it is highly recommended to u
 We also can compare with other algorithms using a robust cross-validation and more time.
 
 ```python
-
 algorithms_clas = ['LogisticRegression', 'MLPClassifier', 
                     'SVC', 'DecisionTreeClassifier',
                     'RandomForestClassifier', 'KNeighborsClassifier',
