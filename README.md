@@ -56,7 +56,10 @@ In HYBparsimony, the percentage of variables to be replaced with GA at each iter
 
 Further examples: how to use this package
 -----------------------
-**Note**: The datasets used in these examples are of small size. These datasets have been selected in order to speed up the calculation process of the examples. With such small datasets it is necessary to use robust validation methods such as bootstrapping or repeated cross validation. It is also recommended to repeat the use of HYBparsimony with different random seeds in order to obtain more solid conclusions.
+**Note 1**: The datasets used in these examples are of small size. These datasets have been selected in order to speed up the calculation process of the examples. With such small datasets it is necessary to use robust validation methods such as bootstrapping or repeated cross validation. It is also recommended to repeat the use of HYBparsimony with different random seeds in order to obtain more solid conclusions.
+
+**Note 2**: The results of the examples may vary depending on the hardware available.
+
 
 ### Example 1: Regression
 
