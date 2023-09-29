@@ -526,20 +526,24 @@ HYBparsimony_model = HYBparsimony(algorithm=MLPRegressor_new,
 
 References
 ----------
-Divasón, J., Pernia-Espinoza, A., Martinez-de-Pison, F.J. (2022). New Hybrid Methodology Based on Particle Swarm Optimization with Genetic Algorithms to Improve the Search of Parsimonious Models in High-Dimensional Databases. In: García Bringas, P., et al. Hybrid Artificial Intelligent Systems. HAIS 2022. Lecture Notes in Computer Science, vol 13469. Springer, Cham. [https://doi.org/10.1007/978-3-031-15471-3_29](https://doi.org/10.1007/978-3-031-15471-3_29)
+
+If you use this package, please cite this paper:
+
+Divasón, J., Pernia-Espinoza, A., Martinez-de-Pison, F.J. (2023). HYB-PARSIMONY: A hybrid approach combining Particle Swarm Optimization and Genetic Algorithms to find parsimonious models in high-dimensional datasets. Neurocomputing, 126840.
+2023, Elsevier. [https://doi.org/10.1016/j.neucom.2023.126840](https://doi.org/10.1016/j.neucom.2023.126840)
 
 **Bibtex**
 
 ```
-@InProceedings{10.1007/978-3-031-15471-3_29,
-author="Divas{\'o}n, Jose and Pernia-Espinoza, Alpha and Martinez-de-Pison, Francisco Javier",
-editor="Garc{\'i}a Bringas, Pablo and P{\'e}rez Garc{\'i}a, Hilde and Mart{\'i}nez de Pis{\'o}n, Francisco Javier and Villar Flecha, Jos{\'e} Ram{\'o}n and Troncoso Lora, Alicia and de la Cal, Enrique A. and Herrero, {\'A}lvaro and Mart{\'i}nez {\'A}lvarez, Francisco and Psaila, Giuseppe and Quinti{\'a}n, H{\'e}ctor and Corchado, Emilio",
-title="New Hybrid Methodology Based on Particle Swarm Optimization with Genetic Algorithms to Improve the Search of Parsimonious Models in High-Dimensional Databases",
-booktitle="Hybrid Artificial Intelligent Systems",
-year="2022",
-publisher="Springer International Publishing",
-address="Cham",
-pages="335--347",
-isbn="978-3-031-15471-3"
+@article{hybparsimony,
+title = {HYB-PARSIMONY: A hybrid approach combining Particle Swarm Optimization and Genetic Algorithms to find parsimonious models in high-dimensional datasets},
+journal = {Neurocomputing},
+pages = {126840},
+year = {2023},
+issn = {0925-2312},
+doi = {https://doi.org/10.1016/j.neucom.2023.126840},
+url = {https://www.sciencedirect.com/science/article/pii/S0925231223009633},
+author = {Jose Divasón and Alpha Pernia-Espinoza and Francisco Javier Martinez-de-Pison},
+keywords = {HYB-PARSIMONY, PSO-PARSIMONY, Parsimonious modeling, Auto machine learning, GA-PARSIMONY}
 }
 ```
