@@ -384,22 +384,22 @@ print(f'f1_macro test = {round(f1_score(y_test, preds, average="macro"),6)}')
 Detected a multi-class problem. Using 'f1_macro' as default scoring function.
 Running iteration 0
 Best model -> Score = 0.981068 Complexity = 13,000,000,001.38 
-Iter = 0 -> MeanVal = 0.759953   ValBest = 0.981068   ComplexBest = 13,000,000,001.38 Time(min) = 0.06835
+Iter = 0 -> MeanVal = 0.759953   ValBest = 0.981068  ComplexBest = 13,000,000,001.38 Time(min) = 0.06835
 
 Running iteration 1
 Best model -> Score = 0.985503 Complexity = 11,000,000,036.33 
-Iter = 1 -> MeanVal = 0.938299   ValBest = 0.985503   ComplexBest = 11,000,000,036.33 Time(min) = 0.071658
+Iter = 1 -> MeanVal = 0.938299   ValBest = 0.985503  ComplexBest = 11,000,000,036.33 Time(min) = 0.071658
 
 ...
 ...
 
 Running iteration 45
 Best model -> Score = 0.99615 Complexity = 8,000,000,014.48 
-Iter = 45 -> MeanVal = 0.984447   ValBest = 0.992284   ComplexBest = 8,000,000,009.54 Time(min) = 0.059787
+Iter = 45 -> MeanVal = 0.984447   ValBest = 0.992284  ComplexBest = 8,000,000,009.54 Time(min) = 0.059787
 
 Running iteration 46
 Best model -> Score = 0.99615 Complexity = 8,000,000,014.48 
-Iter = 46 -> MeanVal = 0.979013   ValBest = 0.992943   ComplexBest = 8,000,000,007.89 Time(min) = 0.056873
+Iter = 46 -> MeanVal = 0.979013   ValBest = 0.992943  ComplexBest = 8,000,000,007.89 Time(min) = 0.056873
 
 Early stopping reached. Stopped.
 
