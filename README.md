@@ -25,7 +25,7 @@ X, y = iris.data, iris.target
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state=1234)
 
 HYBparsimony_model = HYBparsimony()
-HYBparsimony_model.fit(X_train, y_train, time_limit=0.10) # Train with time limit 0.1 minutes (6 seconds)
+HYBparsimony_model.fit(X_train, y_train, time_limit=0.1) # Train with time limit 0.1 minutes (6 seconds)
 print(HYBparsimony_model.selected_features) # Print the selected features
 print(HYBparsimony_model.best_model) # Print the model and its hyperparameters
 print(HYBparsimony_model.best_score) # Print the score
