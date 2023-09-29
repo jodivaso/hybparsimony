@@ -355,7 +355,6 @@ if __name__ == "__main__":
     os.system('clear')
 
     # Example D: Using a 'custom evaluation' function
-    #          (Parallelism is not allowed)
     # -----------------------------------------------
     def custom_fun(estimator, X, y):
         return cross_val_score(estimator, X, y, scoring="accuracy", n_jobs=10)
