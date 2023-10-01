@@ -644,7 +644,7 @@ References
 
 If you use this package, please cite this paper:
 
-Divasón, J., Pernia-Espinoza, A., Martinez-de-Pison, F.J. (2023). HYB-PARSIMONY: A hybrid approach combining Particle Swarm Optimization and Genetic Algorithms to find parsimonious models in high-dimensional datasets. Neurocomputing, 126840.
+Divasón, J., Pernia-Espinoza, A., Martinez-de-Pison, F.J. (2023). [HYB-PARSIMONY: A hybrid approach combining Particle Swarm Optimization and Genetic Algorithms to find parsimonious models in high-dimensional datasets](https://authors.elsevier.com/sd/article/S0925-2312(23)00963-3). Neurocomputing, 560, 126840.
 2023, Elsevier. [https://doi.org/10.1016/j.neucom.2023.126840](https://doi.org/10.1016/j.neucom.2023.126840)
 
 **Bibtex**
