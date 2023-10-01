@@ -1,5 +1,5 @@
 # HYBparsimony
-
+[![Python](https://img.shields.io/pypi/pyversions/hybparsimony)](https://img.shields.io/pypi/pyversions/hybparsimony)
 [![PyPI version](https://img.shields.io/pypi/v/hybparsimony.svg)](https://img.shields.io/pypi/v/hybparsimony.svg)
 [![Downloads](https://img.shields.io/pypi/dm/hybparsimony)](https://img.shields.io/pypi/dm/hybparsimony)
 [![Documentation Status](https://readthedocs.org/projects/hybparsimony/badge/?version=latest)](https://hybparsimony.readthedocs.io/en/latest/?badge=latest)
