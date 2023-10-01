@@ -651,9 +651,9 @@ Divasón, J., Pernia-Espinoza, A., Martinez-de-Pison, F.J. (2023). [HYB-PARSIMON
 
 ```
 @article{hybparsimony,
-title = {HYB-PARSIMONY: A hybrid approach combining Particle Swarm Optimization and Genetic Algorithms to
-find parsimonious models in high-dimensional datasets},
+title = {HYB-PARSIMONY: A hybrid approach combining Particle Swarm Optimization and Genetic Algorithms to find parsimonious models in high-dimensional datasets},
 journal = {Neurocomputing},
+volume = {560},
 pages = {126840},
 year = {2023},
 issn = {0925-2312},
