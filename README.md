@@ -1,6 +1,6 @@
 # HYBparsimony
 
-[![PyPI version](https://badge.fury.io/py/hybparsimony.svg)](https://badge.fury.io/py/hybparsimony)
+[![PyPI version](https://img.shields.io/pypi/v/hybparsimony.svg)](https://img.shields.io/pypi/v/hybparsimony.svg)
 [![Documentation Status](https://readthedocs.org/projects/hybparsimony/badge/?version=latest)](https://hybparsimony.readthedocs.io/en/latest/?badge=latest)
 
 [Documentation](https://hybparsimony.readthedocs.io/en/latest/index.html)
