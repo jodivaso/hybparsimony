@@ -565,7 +565,7 @@ class HYBparsimony(object):
             #####################################################
             # Compute solutions
             #####################################################
-
+            time_out = False
             for t in valid_particles:
                 c = population.getChromosome(t)
 
@@ -574,6 +574,15 @@ class HYBparsimony(object):
                     fitnessval[t] = fit[0][0]
                     complexity[t] = fit[0][1]
                     _models[t] = fit[1]
+                    
+                if time_limit is not None and time_limit < (time.time() - start_time)/60:
+                    time_out = True
+                    break
+            
+            if time_out:
+                if self.verbose > 0:
+                    print("Time limit reached. Stopped.")
+                break
 
             if self.seed_ini:
                 np.random.seed(self.seed_ini * iter)
@@ -686,10 +695,10 @@ class HYBparsimony(object):
                 if self.verbose > 0:
                     print("Early stopping reached. Stopped.")
                 break
-            if time_limit is not None and time_limit < (time.time() - start_time)/60:
-                if self.verbose > 0:
-                    print("Time limit reached. Stopped.")
-                break
+            # if time_limit is not None and time_limit < (time.time() - start_time)/60:
+            #     if self.verbose > 0:
+            #         print("Time limit reached. Stopped.")
+            #     break
 
             ####################################################
             # Deletion step (disabled by default)
