@@ -961,7 +961,11 @@ class HYBparsimony(object):
                     new_value = random.uniform(0.5, 1)
                     population._pop[i, feature_to_change] = new_value
 
-
+        if time_out is True and iter==0:
+            if self.verbose > 0:
+                print("The first iteration has not been completed.")
+            return None
+        
         # Guardo las features seleccionadas
         aux = self.best_model_conf[nparams:nparams + nfs]
         self.selected_features_boolean = (aux >= 0.5) # Me guardo como una lista de booleanos si las features están o no
