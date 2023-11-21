@@ -963,7 +963,7 @@ class HYBparsimony(object):
 
         if time_out is True and iter==0:
             if self.verbose > 0:
-                print("The first iteration has not been completed.")
+                print("The first iteration has not been completed. Return 'None'.")
             return None
         
         # Guardo las features seleccionadas
