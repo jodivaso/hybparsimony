@@ -34,7 +34,7 @@ print(HYBparsimony_model.best_score) # Print the score
 In this example, the output model uses 3 of the 4 input variables, optimizing a *LogisticRegression* model.
 
 
-[![Presentation of HYBparsimony (in spanish)](https://github.com/jodivaso/hybparsimony/blob/master/docs/Charla%233.png = 300x200)](https://www.youtube.com/watch?v=F6R_ibMPQgg&t=0s "Presentation of HYBparsimony (in spanish)")
+[![Presentation of HYBparsimony (in spanish)](https://github.com/jodivaso/hybparsimony/blob/master/docs/Charla%233.png)](https://www.youtube.com/watch?v=F6R_ibMPQgg&t=0s "Presentation of HYBparsimony (in spanish)")
 
 Installation
 ------------
