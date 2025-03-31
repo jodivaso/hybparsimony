@@ -4,9 +4,9 @@ hyperparameter optimization (HO), and parsimonious model selection (PMS) based o
 To improve the search for parsimony, the hybrid method combines GA mechanisms such as selection, crossover and mutation within a PSO-based optimization algorithm that includes a strategy in which the best position of each particle (thus also the best position of each neighborhood) is calculated taking into account not only the goodness-of-fit, but also the parsimony principle. 
 
 In hybparsimony, the percentage of variables to be replaced with GA at each iteration $t$ is selected by a decreasing exponential function:
- $pcrossover=max(0.80 \cdot e^{(-\Gamma \cdot t)}, 0.10)$, that is adjusted by a $\Gamma$ parameter (by default $\Gamma$ is set to $0.50$). Thus, in the first iterations parsimony is promoted by GA mechanisms, i.e., replacing by crossover a high percentage of particles at the beginning. Subsequently, optimization with PSO becomes more relevant for the improvement of model accuracy. This differs from other hybrid methods in which the crossover is applied between the best individual position of each particle or other approaches in which the worst particles are also replaced by new particles, but at extreme positions.
+ $pcrossover=max(0.80 · e^{(-Gamma · t)}, 0.10)$, that is adjusted by a $Gamma$ parameter (by default $Gamma$ is set to 0.50). Thus, in the first iterations parsimony is promoted by GA mechanisms, i.e., replacing by crossover a high percentage of particles at the beginning. Subsequently, optimization with PSO becomes more relevant for the improvement of model accuracy. This differs from other hybrid methods in which the crossover is applied between the best individual position of each particle or other approaches in which the worst particles are also replaced by new particles, but at extreme positions.
 
-Experiments show that, in general, and with a suitable $\Gamma$, hybparsimony allows to obtain better, more parsimonious and more robust models compared to other methods. It also reduces the number of iterations and, consequently, the computational effort.
+Experiments show that, in general, and with a suitable $Gamma$, hybparsimony allows to obtain better, more parsimonious and more robust models compared to other methods. It also reduces the number of iterations and, consequently, the computational effort.
 
 References
 ----------
@@ -505,16 +505,16 @@ class HYBparsimony(object):
         nparams = len(population._params)
         self._summary = np.empty((self.maxiter, 6 * 2,))
         self._summary[:] = np.nan
-        self.best_score = np.NINF
-        self.best_complexity = np.Inf
+        self.best_score = -np.inf
+        self.best_complexity = np.inf
 
-        maxFitness = np.Inf
+        maxFitness = np.inf
         best_fit_particle = np.empty(self.npart)
-        best_fit_particle[:] = np.NINF
+        best_fit_particle[:] = -np.inf
 
         best_pos_particle = np.empty(shape=(self.npart, nparams + nfs))
         best_complexity_particle = np.empty(self.npart)  # Complexities
-        best_complexity_particle[:] = np.Inf
+        best_complexity_particle[:] = np.inf
 
         range_numbers = population._max - population._min
         vmax = self.Lambda * range_numbers
@@ -535,7 +535,7 @@ class HYBparsimony(object):
         # Variables to store the best global positions, fitnessval and complexity of each particle
         bestGlobalPopulation = copy.deepcopy(population._pop)
         bestGlobalFitnessVal = np.empty(self.npart)
-        bestGlobalFitnessVal[:] = np.NINF
+        bestGlobalFitnessVal[:] = -np.inf
         bestGlobalComplexity = np.empty(self.npart)
         bestGlobalComplexity[:] = np.inf
 
@@ -770,7 +770,7 @@ class HYBparsimony(object):
             ###########################################
             best_pos_neighbourhood = np.empty(shape=(self.npart, nparams + nfs))  # Matrix in which i-th row contains the best particle of the i-th neighbourhood.
             best_fit_neighbourhood = np.empty(self.npart)  # Array that contains in position i the score of the best particle of the i-th neighbourhood.
-            best_fit_neighbourhood[:] = np.Inf
+            best_fit_neighbourhood[:] = np.inf
 
             for i in valid_particles:
 
