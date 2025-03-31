@@ -70,12 +70,12 @@ def _rerank(fitnessval, complexity, popSize, rerank_error, preserve_best=True):
     """
 
     cost1 = fitnessval.copy().astype(float)
-    # cost1[np.isnan(cost1)] = np.NINF
-    cost1[~np.isfinite(cost1)] = np.NINF
+    # cost1[np.isnan(cost1)] = -np.inf
+    cost1[~np.isfinite(cost1)] = -np.inf
     sort = order(cost1, decreasing=True)
     cost1 = cost1[sort]
     complexity = complexity.copy()
-    complexity[np.isnan(complexity)] = np.Inf
+    complexity[np.isnan(complexity)] = np.inf
     complexity = complexity[sort]
     position = sort
 
@@ -106,7 +106,7 @@ def _rerank(fitnessval, complexity, popSize, rerank_error, preserve_best=True):
         if np.isfinite(error_indiv2) and np.isfinite(error_posic):
             error_dif = abs(error_indiv2 - error_posic)
         else:
-            error_dif = np.Inf
+            error_dif = np.inf
 
         if error_dif < rerank_error:
             # If there is not difference between errors swap if Size2nd < SizeFirst
