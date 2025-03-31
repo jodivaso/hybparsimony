@@ -72,7 +72,7 @@ In this example, *rerank\_error* is set to $0.001$, but other values could impro
 ```python
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import root_mean_squared_error
 from sklearn.datasets import load_diabetes
 from sklearn.preprocessing import StandardScaler
 from hybparsimony import HYBparsimony
@@ -136,7 +136,7 @@ print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
 print(f'Selected features:{HYBparsimony_model.selected_features}')
 print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
 print(f'5-CV MSE = {-round(HYBparsimony_model.best_score,6)}')
-print(f'RMSE test = {round(mean_squared_error(y_test, preds, squared=False),6)}')
+print(f'RMSE test = {round(root_mean_squared_error(y_test, preds),6)}')
 ```
 
 ```
@@ -165,14 +165,14 @@ for algo in algorithms_reg:
     HYBparsimony_model.fit(X_train, y_train, time_limit=5)
     # Check results with test dataset
     preds = HYBparsimony_model.predict(X_test)
-    print(algo, "RMSE test", mean_squared_error(y_test, preds, squared=False))
+    print(algo, "RMSE test", root_mean_squared_error(y_test, preds))
     print('Selected features:',HYBparsimony_model.selected_features)
     print(HYBparsimony_model.best_model)
     print('#######################')
     # Append results
     res.append(dict(algo=algo,
                     MSE_5CV= -round(HYBparsimony_model.best_score,6),
-                    RMSE=round(mean_squared_error(y_test, preds, squared=False),6),
+                    RMSE=round(root_mean_squared_error(y_test, preds),6),
                     NFS=HYBparsimony_model.best_complexity//1e9,
                     selected_features = HYBparsimony_model.selected_features,
                     best_model=HYBparsimony_model.best_model))
@@ -571,7 +571,7 @@ import numpy as np
 import os
 from sklearn.model_selection import train_test_split, RepeatedKFold
 from sklearn.neural_network import MLPRegressor
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import root_mean_squared_error
 from sklearn.datasets import load_diabetes
 from sklearn.preprocessing import StandardScaler
 from hybparsimony import HYBparsimony, Population
@@ -630,7 +630,7 @@ print(f'\n\nBest Model = {HYBparsimony_model.best_model}')
 print(f'Selected features:{HYBparsimony_model.selected_features}')
 print(f'Complexity = {round(HYBparsimony_model.best_complexity, 2):,}')
 print(f'5-CV MSE = {-round(HYBparsimony_model.best_score,6)}')
-print(f'RMSE test = {round(mean_squared_error(y_test, preds, squared=False),6)}')
+print(f'RMSE test = {round(root_mean_squared_error(y_test, preds),6)}')
 
 
 ```
