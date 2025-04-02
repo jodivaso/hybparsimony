@@ -85,7 +85,7 @@ def getFitness(algorithm, complexity, custom_eval_fun=cross_val_score, ignore_wa
             return np.array([fitness_val, complexity(modelo, np.sum(cromosoma.columns))]), modelo
         except Exception as e:    
             print(e)
-            return np.array([np.NINF, np.Inf]), None
+            return np.array([-np.inf, np.inf]), None
 
     return fitness
 
@@ -173,4 +173,4 @@ def fitness_for_parallel(algorithm, complexity, custom_eval_fun=cross_val_score,
         return np.array([fitness_val, complexity(modelo, np.sum(cromosoma.columns))]), modelo
     except Exception as e:
         print(e)
-        return np.array([np.NINF, np.Inf]), None
+        return np.array([-np.inf, np.inf]), None
