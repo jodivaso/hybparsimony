@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "hybparsimony"
-version = "0.0.4"
+version = "0.0.5"
 authors = [
   { name="Jose Divasón", email="jose.divason@unirioja.es" },
   { name="Francisco Javier Martínez de Pisón", email="fjmartin@unirioja.es" },
